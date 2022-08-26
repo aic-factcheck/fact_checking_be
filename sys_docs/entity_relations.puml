@@ -1,0 +1,84 @@
+@startuml
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "User" as user {
+  *_id : string <<generated>>
+  --
+  *email : text
+  *password : text
+  *firstName : text
+  *lastName: text
+  *services : { G+, FB }
+  *role : enum
+  *picture : text
+  *invitedBy: text <<FK>>
+  *nClaimReviews: number
+}
+
+entity "Invitation" as inv {
+  *_id : string <<generated>>
+  --
+  *userId : text <<FK>>
+  *invitedEmail: text
+  *createdAt: date
+  *validUntil: date
+}
+
+entity "Article" as article {
+  *_id : text <<generated>>
+  --
+  *addedBy : text <<FK>>
+  *text : text
+  *sourceUrl: text
+  *sourceType : enum
+  *language : text
+}
+
+entity "Claim" as claim {
+  *_id : text <<generated>>
+  --
+  *priority: number
+  *addedBy: text <<FK>>
+  *articleId : text <<FK>>
+  *text : text
+  --
+  *nUpvotes: number
+  *upvotes: array <<userId>>
+  *nDownvotes: number
+  *downvotes: array <<userId>>
+}
+
+entity "ClaimReview" as claimReview {
+  *_id : text <<generated>>
+  --
+  *userId : text <<FK>>
+  *claimId: text <<FK>>
+  *text: text
+  *isPositiveVote: boolean
+  --
+  *nUpvotes: number
+  *upvotes: array <<userId>>
+  *nDownvotes: number
+  *downvotes: array <<userId>>
+}
+
+entity "Claim review comment" as claimReviewComment {
+  *_id : text <<generated>>
+  --
+  *userId : text <<FK>>
+  *claimReviewId: text <<FK>>
+  *text: text
+}
+
+user ||..o{ article
+user ||..o{ inv
+article ||..o{ claim
+user ||..o{ claimReview
+claim ||..o{ claimReview
+claim }o..|| user
+claimReview ||..o{ claimReviewComment
+@enduml
