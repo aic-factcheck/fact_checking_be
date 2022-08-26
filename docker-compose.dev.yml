@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  api:
+    command: yarn dev -- -L
+    environment:
+      - NODE_ENV=development

@@ -1,0 +1,101 @@
+version: '3'
+
+services:
+  # api:
+  #   build: .
+  #   container_name: api
+  #   environment:
+  #     - MONGO_URI=mongodb://mongodb:27017/express-rest-es2017-boilerplate
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - mongodb
+  #   networks:
+  #     - webproxy
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - webproxy
+
+  nginx: 
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./www:/data/www  
+    ports:
+      - 80:80
+    depends_on:
+      - keycloak
+      # - api
+    # - boilerplate-api
+    networks:
+      - webproxy
+
+  # letsencrypt:
+  #   image: jrcs/letsencrypt-nginx-proxy-companion
+  #   container_name: letsencrypt
+  #   volumes:
+  #     - ./nginx/data/vhost.d:/etc/nginx/vhost.d
+  #     - ./nginx/data/certs:/etc/nginx/certs:rw
+  #     - ./nginx/data/html:/usr/share/nginx/html
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   environment:
+  #     - DEFAULT_EMAIL=some_email@yourdomain.tld
+  #     - NGINX_PROXY_CONTAINER=nginx-proxy
+  #   depends_on:
+  #     - nginx-proxy
+  #   networks:
+  #     - webproxy
+
+  keycloak:
+    image: jboss/keycloak
+    container_name: keycloak
+    restart: always
+    environment: 
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_KEYCLOAK_USER: ${DB_USER}
+      # JDBC_PARAMS: ${JDBC_PARAMS}
+      # KEYCLOAK_HOSTNAME: ${KEYCLOAK_HOSTNAME}
+      # KEYCLOAK_HTTP_PORT: ${KEYCLOAK_HTTP_PORT}
+      KEYCLOAK_USER: ${KEYCLOAK_USER}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+      # KC_HOSTNAME_STRICT_HTTPS: 'true'
+      # VIRTUAL_HOST: ${VIRTUAL_HOST}
+      # VIRTUAL_PORT: ${VIRTUAL_PORT}
+      PROXY_ADDRESS_FORWARDING: ${PROXY_ADDRESS_FORWARDING}
+      # LETSENCRYPT_HOST: ${LETSENCRYPT_HOST}
+      # LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+    depends_on:
+      - postgres
+    networks:
+      - webproxy
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - data:/var/lib/postgresql/data
+    networks:
+      - webproxy  
+   
+networks:
+  webproxy:
+
+volumes:
+  data:
