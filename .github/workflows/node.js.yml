@@ -43,12 +43,12 @@ jobs:
       - name: Build App
         run: yarn
           
-#       - name: Cache node modules
-#         uses: actions/cache@v3
-#         with:
-#           path: ~/.npm
-#           key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
-#           restore-keys: v1-npm-deps-
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: v1-npm-deps-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: v1-npm-deps-
 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
