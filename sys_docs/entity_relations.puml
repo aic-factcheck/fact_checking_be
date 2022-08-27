@@ -72,6 +72,7 @@ entity "Claim review comment" as claimReviewComment {
   *userId : text <<FK>>
   *claimReviewId: text <<FK>>
   *text: text
+  *proofUrls: array [text] 
 }
 
 user ||..o{ article

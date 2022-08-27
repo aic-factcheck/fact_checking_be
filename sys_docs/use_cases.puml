@@ -22,19 +22,19 @@ package "Fact checking system" {
     Functionality in future iterations
   end note
 
-  usecase UC3 as "3. View list of claims"
+  usecase UC3 as "3. View list of claims\n to be reviewed/hottest"
   usecase UC4 as "4. Select and view text + claim\n show additional stats"
   note right of UC4 
     Stats: number of upvotes/downvotes \n
     maybe comments?
   end note
 
-  usecase UC5 as "5. Verify selected article + claim"
+  usecase UC5 as "5. Review selected claim"
   note right of UC5 
     Article can contain multiple claims
   end note
 
-  usecase UC6 as "6. Upvote/downvote selected claim"
+  usecase UC6 as "6. Upvote/downvote selected claim-review"
 
   usecase UC7 as "7. Show most voted claims\n By upvotes or downvotes"
   usecase UC8 as "8. Show users + leaderboards in claiming"

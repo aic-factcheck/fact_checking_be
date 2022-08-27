@@ -1,4 +1,5 @@
 # Fact checking API
+[![users_service CI](https://github.com/rastislavkopal/fact_checking_be/actions/workflows/users_service.yml/badge.svg)](https://github.com/rastislavkopal/fact_checking_be/actions/workflows/users_service.yml)
 
 ## Features
 
