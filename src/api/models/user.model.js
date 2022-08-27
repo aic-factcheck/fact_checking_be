@@ -38,6 +38,17 @@ const userSchema = new mongoose.Schema({
     index: true,
     trim: true,
   },
+  firstName: {
+    type: String,
+    maxlength: 64,
+    trim: true,
+  },
+  lastName: {
+    type: String,
+    maxlength: 64,
+    index: true,
+    trim: true,
+  },
   services: {
     facebook: String,
     google: String,
@@ -50,6 +61,15 @@ const userSchema = new mongoose.Schema({
   picture: {
     type: String,
     trim: true,
+  },
+  invitedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  nClaimReviews: {
+    type: Number,
+    default: 0,
   },
 }, {
   timestamps: true,
@@ -82,7 +102,7 @@ userSchema.pre('save', async function save(next) {
 userSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt'];
+    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt', 'firstName', 'lastName', 'invitedBy', 'nClaimReviews'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

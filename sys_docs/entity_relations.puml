@@ -22,10 +22,11 @@ entity "User" as user {
 entity "Invitation" as inv {
   *_id : string <<generated>>
   --
-  *userId : text <<FK>>
+  *invitedBy : text <<FK>>
   *invitedEmail: text
   *createdAt: date
-  *validUntil: date
+  --
+  - TTL 48 hours
 }
 
 entity "Article" as article {
@@ -46,10 +47,16 @@ entity "Claim" as claim {
   *articleId : text <<FK>>
   *text : text
   --
-  *nUpvotes: number
-  *upvotes: array <<userId>>
-  *nDownvotes: number
-  *downvotes: array <<userId>>
+  *nPositiveVotes: number
+  *positiveVotes: array <<userId>>
+  *nNeutralVotes: number
+  *neutralVotes: array <<userId>>
+  *nNegativeVotes: number
+  *negativeVotes: array <<userId>>
+  ' *nUpvotes: number
+  ' *upvotes: array <<userId>>
+  ' *nDownvotes: number
+  ' *downvotes: array <<userId>>
 }
 
 entity "ClaimReview" as claimReview {
@@ -58,7 +65,7 @@ entity "ClaimReview" as claimReview {
   *userId : text <<FK>>
   *claimId: text <<FK>>
   *text: text
-  *isPositiveVote: boolean
+  *vote: enum {pos, neg, neut}
   --
   *nUpvotes: number
   *upvotes: array <<userId>>
