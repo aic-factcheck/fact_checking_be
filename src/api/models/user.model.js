@@ -65,7 +65,6 @@ const userSchema = new mongoose.Schema({
   invitedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
   },
   nClaimReviews: {
     type: Number,
