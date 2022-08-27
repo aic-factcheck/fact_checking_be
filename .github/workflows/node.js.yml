@@ -5,15 +5,28 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    
+env:
+  NODE_ENV: test
+  PORT: 3000
+  JWT_SECRET: bA2xcjpf8y5aSUFsNB2qN5yymUBSs6es3qHoFpGkec75RCeBb8cpKauGefw5qy4
+  JWT_EXPIRATION_MINUTES: 15
+  MONGO_URI: mongodb://localhost/express-rest-es2017-boilerplate
+  MONGO_URI_TESTS: mongodb://localhost/express-rest-es2017-boilerplate
+  EMAIL_PORT: 587
+  EMAIL_HOST: smtp-relay.sendinblue.com
+  EMAIL_USERNAME: smtp-username
+  EMAIL_PASSWORD: smtp-password
+
 
 jobs:
-  build:
+  test_build:
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [12.x, 14.x]
         mongodb-version: ['6.0']
 
     steps:
@@ -41,20 +54,8 @@ jobs:
         uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
-          
-      - name: create env file
-        run: |
-          touch .env
-          echo NODE_ENV=test >> .env
-          echo PORT=3000 >> .env
-          echo JWT_SECRET=bA2xcjpf8y5aSUFsNB2qN5yymUBSs6es3qHoFpGkec75RCeBb8cpKauGefw5qy4 >> .env
-          echo JWT_EXPIRATION_MINUTES=15 >> .env
-          echo MONGO_URI=mongodb://localhost/express-rest-es2017-boilerplate >> .env
-          echo MONGO_URI_TESTS=mongodb://localhost/express-rest-es2017-boilerplate >> .env
-          echo EMAIL_PORT=587 >> .env
-          echo EMAIL_HOST=smtp-relay.sendinblue.com >> .env
-          echo EMAIL_USERNAME=smtp-username >> .env
-          echo EMAIL_USERNAME=smtp-password >> .env
+          mongodb-port: 27017
+
 
       - run: yarn validate
         env:
