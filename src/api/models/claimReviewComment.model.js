@@ -14,7 +14,7 @@ const commentSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
-  claimReviewId: {
+  reviewId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Claim',
     required: true,
@@ -38,7 +38,7 @@ const commentSchema = new mongoose.Schema({
 commentSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'userId', 'claimReviewId', 'text', 'proofUrls', 'createdAt'];
+    const fields = ['_id', 'userId', 'reviewId', 'text', 'proofUrls', 'createdAt'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

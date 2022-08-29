@@ -1,6 +1,7 @@
 const express = require('express');
 const validate = require('express-validation');
 const controller = require('../../controllers/claim.controller');
+const reviewRoutes = require('./review.route');
 const { authorize } = require('../../middlewares/auth');
 const {
   listClaims,
@@ -144,5 +145,8 @@ router
    * @apiError (Not Found 404)    NotFound      Claims does not exist
    */
   .delete(authorize(), controller.remove);
+
+// add nested routes - review routes
+router.use('/:claimId/reviews', reviewRoutes);
 
 module.exports = router;

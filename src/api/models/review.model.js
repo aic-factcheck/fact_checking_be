@@ -9,10 +9,10 @@ const APIError = require('../errors/api-error');
 const voteTypes = ['positive', 'negative', 'neutral'];
 
 /**
- * ClaimReview Schema
+ * Review Schema
  * @private
  */
-const claimReviewSchema = new mongoose.Schema({
+const reviewSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -58,7 +58,7 @@ const claimReviewSchema = new mongoose.Schema({
 /**
  * Methods
  */
-claimReviewSchema.method({
+reviewSchema.method({
   transform() {
     const transformed = {};
     const fields = ['_id', 'userId', 'claimId', 'text', 'createdAt', 'vote',
@@ -75,13 +75,15 @@ claimReviewSchema.method({
 /**
  * Statics
  */
-claimReviewSchema.statics = {
+reviewSchema.statics = {
+
+  voteTypes,
 
   /**
-   * Get ClaimReview
+   * Get Review
    *
-   * @param {ObjectId} id - The objectId of ClaimReview.
-   * @returns {Promise<ClaimReview, APIError>}
+   * @param {ObjectId} id - The objectId of Review.
+   * @returns {Promise<Review, APIError>}
    */
   async get(id) {
     let inv;
@@ -94,13 +96,13 @@ claimReviewSchema.statics = {
     }
 
     throw new APIError({
-      message: 'ClaimReview does not exist',
+      message: 'Review does not exist',
       status: httpStatus.NOT_FOUND,
     });
   },
 };
 
 /**
- * @typedef ClaimReview
+ * @typedef Review
  */
-module.exports = mongoose.model('ClaimReview', claimReviewSchema);
+module.exports = mongoose.model('Review', reviewSchema);

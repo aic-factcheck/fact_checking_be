@@ -66,7 +66,7 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
-  nClaimReviews: {
+  nReviews: {
     type: Number,
     default: 0,
   },
@@ -101,7 +101,7 @@ userSchema.pre('save', async function save(next) {
 userSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt', 'firstName', 'lastName', 'invitedBy', 'nClaimReviews'];
+    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt', 'firstName', 'lastName', 'invitedBy', 'nReviews'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

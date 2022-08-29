@@ -16,7 +16,7 @@ entity "User" as user {
   *role : enum
   *picture : text
   *invitedBy: text <<FK>>
-  *nClaimReviews: number
+  *nReviews: number
 }
 
 entity "Invitation" as inv {
@@ -59,7 +59,7 @@ entity "Claim" as claim {
   ' *downvotes: array <<userId>>
 }
 
-entity "ClaimReview" as claimReview {
+entity "Review" as review {
   *_id : text <<generated>>
   --
   *userId : text <<FK>>
@@ -77,7 +77,7 @@ entity "Claim review comment" as claimReviewComment {
   *_id : text <<generated>>
   --
   *userId : text <<FK>>
-  *claimReviewId: text <<FK>>
+  *reviewId: text <<FK>>
   *text: text
   *proofUrls: array [text] 
 }
@@ -85,8 +85,8 @@ entity "Claim review comment" as claimReviewComment {
 user ||..o{ article
 user ||..o{ inv
 article ||..o{ claim
-user ||..o{ claimReview
-claim ||..o{ claimReview
+user ||..o{ review
+claim ||..o{ review
 claim }o..|| user
-claimReview ||..o{ claimReviewComment
+review ||..o{ claimReviewComment
 @enduml
