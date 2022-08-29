@@ -9,7 +9,7 @@ const Article = require('../models/article.model');
 exports.load = async (req, res, next, id) => {
   try {
     const article = await Article.get(id);
-    req.locals = { article };
+    req.locals = _.assign(req.locals, { article });
     return next();
   } catch (error) {
     return next(error);

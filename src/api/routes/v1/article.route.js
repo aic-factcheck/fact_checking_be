@@ -1,6 +1,7 @@
 const express = require('express');
 const validate = require('express-validation');
 const controller = require('../../controllers/article.controller');
+const claimRoutes = require('./claim.route');
 const { authorize } = require('../../middlewares/auth');
 const {
   listArticles,
@@ -9,7 +10,7 @@ const {
   updateArticle,
 } = require('../../validations/article.validation');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 /**
  * Load article when API with articleId route parameter is hit
@@ -149,8 +150,11 @@ router
    * @apiSuccess (No Content 204)  Successfully deleted
    *
    * @apiError (Unauthorized 401) Unauthorized  Only authenticated users can delete the data
-   * @apiError (Not Found 404)    NotFound      User does not exist
+   * @apiError (Not Found 404)    NotFound      article does not exist
    */
   .delete(authorize(), controller.remove);
+
+// include nested - Claim routes
+router.use('/:articleId/claims', claimRoutes);
 
 module.exports = router;
