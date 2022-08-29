@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { omit } = require('lodash');
+const { _, omit } = require('lodash');
 const User = require('../models/user.model');
 
 /**
@@ -9,7 +9,7 @@ const User = require('../models/user.model');
 exports.load = async (req, res, next, id) => {
   try {
     const user = await User.get(id);
-    req.locals = { user };
+    req.locals = _.assign(req.locals, { user });
     return next();
   } catch (error) {
     return next(error);

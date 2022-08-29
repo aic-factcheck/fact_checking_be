@@ -24,7 +24,6 @@ const invitationSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    expires: '48h',
     default: Date.now,
   },
 });
@@ -72,6 +71,9 @@ invitationSchema.statics = {
     });
   },
 };
+
+// add index so invitations can expity automatically
+invitationSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 });
 
 /**
  * @typedef Invitation

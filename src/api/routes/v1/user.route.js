@@ -1,6 +1,7 @@
 const express = require('express');
 const validate = require('express-validation');
 const controller = require('../../controllers/user.controller');
+const invitationRoutes = require('./invitation.route');
 const { authorize, ADMIN, LOGGED_USER } = require('../../middlewares/auth');
 const {
   listUsers,
@@ -9,7 +10,7 @@ const {
   updateUser,
 } = require('../../validations/user.validation');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 /**
  * Load user when API with userId route parameter is hit
@@ -185,5 +186,8 @@ router
    * @apiError (Not Found 404)    NotFound      User does not exist
    */
   .delete(authorize(LOGGED_USER), controller.remove);
+
+// include nested - Claim routes
+router.use('/:userId/invitations', invitationRoutes);
 
 module.exports = router;
