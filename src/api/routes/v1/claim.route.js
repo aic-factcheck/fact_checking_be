@@ -84,7 +84,7 @@ router
    * @apiSuccess {String}  articleId    Claim id
    * @apiSuccess {Number}  nPositiveVotes    Number of positive votes
    * @apiSuccess {array}  positiveVotes    positive votes - user Ids
-   * @apiSuccess (Number}  nNeutralVotes    Number of neutral votes
+   * @apiSuccess {Number}  nNeutralVotes    Number of neutral votes
    * @apiSuccess {array}  neutralVotes    neutral votes - user Ids
    * @apiSuccess {Number}  nNegativeVotes    Number of negative votes
    * @apiSuccess {array}  negativeVotes    negative votes - user Ids

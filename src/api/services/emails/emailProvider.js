@@ -1,6 +1,6 @@
 const Email = require('email-templates');
 const nodemailer = require('nodemailer');
-const { emailConfig } = require('../../../config/vars');
+const { emailConfig, feUrl } = require('../../../config/vars');
 
 // SMTP is the main transport in Nodemailer for delivering messages.
 // SMTP is also the protocol used between almost all email hosts, so its truly universal.
@@ -8,6 +8,7 @@ const { emailConfig } = require('../../../config/vars');
 // such as an email service API or nodemailer-sendgrid-transport
 
 const transporter = nodemailer.createTransport({
+  name: 'FactChecking',
   port: emailConfig.port,
   host: emailConfig.host,
   auth: {
@@ -21,6 +22,8 @@ const transporter = nodemailer.createTransport({
 transporter.verify((error) => {
   if (error) {
     console.log('error with email connection');
+  } else {
+    console.info('SMTP server successfully set up.');
   }
 });
 
@@ -74,4 +77,34 @@ exports.sendPasswordChangeEmail = async (user) => {
       },
     })
     .catch(() => console.log('error sending change password email'));
+};
+
+exports.sendInvitationRequest = async (invitation, user) => {
+  const email = new Email({
+    views: { root: __dirname },
+    message: {
+      from: 'info@fact-check.cz',
+    },
+    // uncomment below to send emails in development/test env:
+    send: true,
+    transport: transporter,
+  });
+
+  email
+    .send({
+      template: 'invitationRequest',
+      message: {
+        to: invitation.invitedEmail,
+      },
+      locals: {
+        productName: 'Fact-Checking APP',
+        invitedBy: user.email,
+        invitedEmail: invitation.invitedEmail,
+        invitedByFirstName: user.firstName,
+        invitedByLastName: user.lastName,
+        verificationCode: invitation.verificationCode,
+        feUrl,
+      },
+    })
+    .catch(() => console.log('error sending invitation request email'));
 };

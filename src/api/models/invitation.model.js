@@ -22,6 +22,10 @@ const invitationSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
+  verificationCode: {
+    type: Number,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

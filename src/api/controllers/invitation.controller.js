@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
 const Invitation = require('../models/invitation.model');
+const emailProvider = require('../services/emails/emailProvider');
 
 /**
  * Load invitation and append to req.
@@ -33,9 +34,14 @@ exports.create = async (req, res, next) => {
     const invitation = new Invitation(_.assign(req.body, {
       invitedBy: req.user.id,
     }));
-    const savedClaim = await invitation.save();
+    // generate verification code
+    invitation.verificationCode = Math.floor(1000 + Math.random() * 9000);
+
+    const savedInvitation = await invitation.save();
+    emailProvider.sendInvitationRequest(savedInvitation, req.user, invitation.verificationCode);
+
     res.status(httpStatus.CREATED);
-    res.json(savedClaim.transform());
+    res.json(savedInvitation.transform());
   } catch (error) {
     next(error);
   }
