@@ -43,12 +43,17 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  TODO
+   * @apiParam  {String}          invitedEmail     Invited user's email address
    *
-   * @apiSuccess TODO
+   *
+   * @apiSuccess (Created 201) {String}  _id                  Invitation's id
+   * @apiSuccess (Created 201) {String}  invitedBy            Logged-in user's id
+   * @apiSuccess (Created 201) {String}  invitedEmail         Invited user's email
+   * @apiSuccess (Created 201) {Number}  verificationCode     Invitation verification code (TEST)
+   * @apiSuccess (Created 201) {Date}    createdAt            Timestamp
    *
    * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
-   * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can access the data
+   * @apiError (Forbidden 403)     Forbidden    Only user with same id or admins can access the data
    * @apiError (Unauthorized 401)  Unauthorized     Only authenticated users can create the data
    */
   .post(authorize(LOGGED_USER), validate(createInvitation), controller.create);

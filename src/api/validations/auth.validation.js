@@ -14,6 +14,23 @@ module.exports = {
     },
   },
 
+  // POST /v1/auth/register-code
+  registerWithCode: {
+    body: {
+      email: Joi.string()
+        .email()
+        .required(),
+      password: Joi.string()
+        .required()
+        .min(6)
+        .max(128),
+      verificationCode: Joi.number()
+        .min(999)
+        .max(10000)
+        .required(),
+    },
+  },
+
   // POST /v1/auth/login
   login: {
     body: {

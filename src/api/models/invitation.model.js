@@ -26,6 +26,10 @@ const invitationSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  isValid: {
+    type: Boolean,
+    default: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -38,7 +42,7 @@ const invitationSchema = new mongoose.Schema({
 invitationSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'invitedBy', 'invitedEmail', 'createdAt'];
+    const fields = ['_id', 'invitedBy', 'invitedEmail', 'verificationCode', 'createdAt'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -65,6 +69,24 @@ invitationSchema.statics = {
     if (mongoose.Types.ObjectId.isValid(id)) {
       inv = await this.findById(id).exec();
     }
+    if (inv) {
+      return inv;
+    }
+
+    throw new APIError({
+      message: 'Invitation does not exist',
+      status: httpStatus.NOT_FOUND,
+    });
+  },
+
+  /**
+   * Get Invitation by invitedEmail field
+   *
+   * @param {Email} invitedEmail
+   * @returns {Promise<Invitation, APIError>}
+   */
+  async getByInvitedEmail(invitedEmail) {
+    const inv = await this.findOne({ invitedEmail }).exec();
     if (inv) {
       return inv;
     }

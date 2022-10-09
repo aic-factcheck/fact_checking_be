@@ -26,6 +26,7 @@ entity "Invitation" as inv {
   *invitedEmail: text
   *createdAt: date
   *verificationCode: Number
+  *isValid: Boolean
   --
   - TTL 48 hours
 }

@@ -4,6 +4,7 @@ const { omit } = require('lodash');
 const User = require('../models/user.model');
 const RefreshToken = require('../models/refreshToken.model');
 const PasswordResetToken = require('../models/passwordResetToken.model');
+const Invitation = require('../models/invitation.model');
 const { jwtExpirationInterval } = require('../../config/vars');
 const APIError = require('../errors/api-error');
 const emailProvider = require('../services/emails/emailProvider');
@@ -31,6 +32,52 @@ function generateTokenResponse(user, accessToken) {
 exports.register = async (req, res, next) => {
   try {
     const userData = omit(req.body, 'role');
+    const user = await new User(userData).save();
+    const userTransformed = user.transform();
+    const token = generateTokenResponse(user, user.token());
+    res.status(httpStatus.CREATED);
+    return res.json({ token, user: userTransformed });
+  } catch (error) {
+    return next(User.checkDuplicateEmail(error));
+  }
+};
+
+/*
+ * Finds invitation by invitedEmail and validate verificationCode
+ * if invitation exists
+ * Invalidates invitation after successfull validation
+ */
+const verifiedInvitationCode = async (invitedEmail, verificationCode) => {
+  const invitation = await Invitation.getByInvitedEmail(invitedEmail);
+  if (!invitation) {
+    throw new APIError({
+      status: httpStatus.FORBIDDEN,
+      message: 'This email address has no active invitation.',
+    });
+  }
+
+  if (invitation.verificationCode !== verificationCode) {
+    throw new APIError({
+      status: httpStatus.FORBIDDEN,
+      message: 'Invalid verification code.',
+    });
+  }
+
+  // invalidate invitation
+  // invitation.isValid = false;
+  // await invitation.save();
+};
+
+/**
+ * Returns jwt token if registration was successful with correct verification code
+ * @public
+ */
+exports.registerCodeVerificated = async (req, res, next) => {
+  try {
+    const userData = omit(req.body, 'role');
+
+    await verifiedInvitationCode(req.body.email, req.body.verificationCode);
+
     const user = await new User(userData).save();
     const userTransformed = user.transform();
     const token = generateTokenResponse(user, user.token());
