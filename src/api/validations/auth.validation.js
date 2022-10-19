@@ -28,6 +28,14 @@ module.exports = {
         .min(999)
         .max(10000)
         .required(),
+      firstName: Joi.string()
+        .required()
+        .min(2)
+        .max(64),
+      lastName: Joi.string()
+        .required()
+        .min(2)
+        .max(64),
     },
   },
 

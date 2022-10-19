@@ -64,7 +64,8 @@ router.route('/register')
  * @apiSuccess (Created 201) {String}  token.timezone      The server's Timezone
  *
  * @apiSuccess (Created 201) {String}  user.id         User's id
- * @apiSuccess (Created 201) {String}  user.name       User's name
+ * @apiSuccess (Created 201) {String}  user.firstName  User's first name
+ * @apiSuccess (Created 201) {String}  user.lastName   User's last name
  * @apiSuccess (Created 201) {String}  user.email      User's email
  * @apiSuccess (Created 201) {String}  user.role       User's role
  * @apiSuccess (Created 201) {Date}    user.createdAt  Timestamp

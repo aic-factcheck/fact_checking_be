@@ -18,7 +18,7 @@ router
   .route('/')
   /**
    * @api {get} v1/users/:userId/invitations List invitations
-   * @apiDescription Get a list of invitations
+   * @apiDescription Get a list of invitations of 'my' invitations
    * @apiVersion 1.0.0
    * @apiName ListInvitations
    * @apiGroup Invitation
