@@ -1,79 +1,136 @@
-// /* eslint-disable arrow-body-style */
-// /* eslint-disable no-unused-expressions */
-// const request = require('supertest');
-// const httpStatus = require('http-status');
-// const { expect } = require('chai');
-// const bcrypt = require('bcryptjs');
-// const app = require('../../../index');
-// const User = require('../../models/user.model');
-// const Invitation = require('../../models/invitation.model');
+/* eslint-disable arrow-body-style */
+/* eslint-disable no-unused-expressions */
+const request = require('supertest');
+const httpStatus = require('http-status');
+const { expect } = require('chai');
+const { some } = require('lodash');
+const app = require('../../../index');
+const User = require('../../models/user.model');
+const Invitation = require('../../models/invitation.model');
 // const { updateUser } = require('../../validations/user.validation');
-// // const emailProvider = require('../../services/emails/emailProvider');
+// const emailProvider = require('../../services/emails/emailProvider');
 
-// describe('Invitations API', async () => {
-//   let userAccessToken;
-//   let user;
-//   let userId;
-//   let invitation;
+describe('Invitations API', async () => {
+  let userAccessToken;
+  let user;
+  let invitation1;
+  let invitation2;
 
-//   const password = '123456';
-//   const passwordHashed = await bcrypt.hash(password, 1);
+  // const password = '123456';
+  // const passwordHashed = await bcrypt.hash(password, 1);
 
-//   before(async () => {
-//     await Invitation.deleteMany({});
-//     await User.deleteMany({});
-//   });
+  before(async () => {
+    await Invitation.deleteMany({});
+    await User.deleteMany({});
+  });
 
-//   beforeEach(async () => {
-//     user = {
-//       email: 'user1@gmail.com',
-//       password: passwordHashed,
-//       name: 'Admin user',
-//       role: 'admin',
-//     };
+  beforeEach(async () => {
+    user = {
+      _id: '41224d776a326fb40f000001',
+      email: 'user1@gmail.com',
+      password: '123456',
+      name: 'Admin User',
+      role: 'admin',
+    };
 
-//     invitation = {
-//       invitedEmail: 'testInvited@test.com',
-//     };
+    invitation1 = {
+      invitedEmail: 'test.invited1@test.com',
+    };
 
-//     await Invitation.deleteMany({});
-//     await User.deleteMany({});
+    invitation2 = {
+      invitedEmail: 'test.invited22@test.com',
+    };
 
-//     await User.create(user);
-//     userAccessToken = (await User.findAndGenerateToken(user)).accessToken;
-//     userId = (await User.findOne({ email: user.email }).exec())._id;
-//   });
+    await User.deleteMany({});
 
-//   describe('POST /v1/users/:userId/invitations', async () => {
-//     // save user _ids and update local objects from db
-//     // const locUser = await User.findOne({ email: user.email }).exec();
-//     // console.log('-----------------------');
-//     // console.log(locUser);
+    await User.create(user);
+    userAccessToken = (await User.findAndGenerateToken(user)).accessToken;
+  });
 
-//     it('should create a new invitation from user', () => {
-//       return request(app)
-//         .post(`/v1/users/${userId}/invitations`)
-//         .set('Authorization', `Bearer ${userAccessToken}`)
-//         .send(invitation)
-//         .expect(httpStatus.CREATED)
-//         .then((res) => {
-//           console.log(res.body);
-//           // delete admin.password;
-//           expect(res.body._id);
-//           // expect(res.body.code).to.be.equal(httpStatus.CREATED);
-//         });
-//     });
-//   });
+  describe('POST /v1/users/:userId/invitations', () => {
+    it('should create a new invitation from user', () => {
+      return request(app)
+        .post(`/v1/users/${user._id}/invitations`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(invitation1)
+        .expect(httpStatus.CREATED)
+        .then((res) => {
+          expect(res.body).to.have.a.property('_id');
+          expect(res.body).to.have.a.property('verificationCode');
+          expect(res.body.invitedBy).to.be.equal(user._id);
+          expect(res.body.invitedEmail).to.be.equal(invitation1.invitedEmail);
+          invitation1._id = res.body._id;
+        });
+    });
 
-//   // describe('GET /v1/users/:userId/invitations', () => {
+    it('should create a new invitation from user', () => {
+      return request(app)
+        .post(`/v1/users/${user._id}/invitations`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(invitation2)
+        .expect(httpStatus.CREATED)
+        .then((res) => {
+          invitation2._id = res.body._id;
+          expect(res.body).to.have.a.property('_id');
+          expect(res.body).to.have.a.property('verificationCode');
+          expect(res.body.invitedBy).to.be.equal(user._id);
+          expect(res.body.invitedEmail).to.be.equal(invitation2.invitedEmail);
+        });
+    });
+  });
 
-//   // });
+  describe('GET /v1/users/:userId/invitations', () => {
+    it('should get invitations by user', () => {
+      return request(app)
+        .get(`/v1/users/${user._id}/invitations`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.OK)
+        .then(async (res) => {
+          const includesInv1 = some(res.body, invitation1);
+          const includesInv2 = some(res.body, invitation2);
 
-//   // describe('GET /v1/users/:userId/invitations/:invitationId', () => {
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.lengthOf(2);
+          expect(includesInv1).to.be.true;
+          expect(includesInv2).to.be.true;
+        });
+    });
+  });
 
-//   // });
+  describe('GET /v1/users/:userId/invitations/:invitationId', () => {
+    it('should get invitations by id', async () => {
+      const inv = await Invitation.findOne({ invitedEmail: 'test.invited1@test.com' });
+      return request(app)
+        .get(`/v1/users/${user._id}/invitations/${inv._id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.OK)
+        .then(async (res) => {
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.a.property('_id');
+          expect(res.body).to.have.a.property('invitedBy');
+          expect(res.body).to.have.a.property('invitedEmail');
+          expect(res.body).to.have.a.property('verificationCode');
+          expect(res.body.invitedEmail).to.be.equal(invitation1.invitedEmail);
+        });
+    });
+  });
 
-//   // describe('DELETE /v1/users/:userId/invitations/:invitationId', () => {
+  describe('DELETE /v1/users/:userId/invitations/:invitationId', () => {
+    it('should delete invitation', async () => {
+      const inv = await Invitation.findOne({ invitedEmail: 'test.invited1@test.com' });
 
-//   // });
-// });
+      return request(app)
+        .delete(`/v1/users/${user._id}/invitations/${inv._id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.NO_CONTENT)
+        .then(() => {
+          request(app)
+            .get(`/v1/users/${user._id}/invitations`)
+            .set('Authorization', `Bearer ${userAccessToken}`)
+            .then(async (res) => {
+              expect(res.body).to.have.lengthOf(1);
+            });
+        });
+    });
+  });
+});
