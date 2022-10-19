@@ -6,6 +6,7 @@ const sinon = require('sinon');
 const moment = require('moment-timezone');
 const app = require('../../../index');
 const User = require('../../models/user.model');
+const Invitation = require('../../models/invitation.model');
 const RefreshToken = require('../../models/refreshToken.model');
 const PasswordResetToken = require('../../models/passwordResetToken.model');
 const authProviders = require('../../services/authProviders');
@@ -24,10 +25,52 @@ const fakeOAuthRequest = () => Promise.resolve({
 describe('Authentication API', () => {
   let dbUser;
   let user;
+  let invitation;
   let refreshToken;
   let resetToken;
   let expiredRefreshToken;
   let expiredResetToken;
+
+  let invalidRegisterCode;
+  let validRegisterCode;
+  let notInvitedEmail;
+
+  before(async () => {
+    invitation = {
+      _id: '63504c9680b75d00282fba00',
+      invitedEmail: 'invited.email1@test.com',
+      invitedBy: '63504c6f80b75d00282fba8d',
+      verificationCode: 1674,
+    };
+
+    invalidRegisterCode = {
+      email: invitation.invitedEmail,
+      password: '123xyz',
+      verificationCode: 1111,
+      firstName: 'Invalid',
+      lastName: 'test',
+    };
+
+    validRegisterCode = {
+      email: invitation.invitedEmail,
+      password: '123xyz',
+      verificationCode: invitation.verificationCode,
+      firstName: 'Valid',
+      lastName: 'test',
+    };
+
+    notInvitedEmail = {
+      email: 'not.invited.email1@test.com',
+      password: '123xyz',
+      verificationCode: invitation.verificationCode,
+      firstName: 'Not invited',
+      lastName: 'Mail',
+    };
+
+    await Invitation.deleteMany({});
+    await User.deleteMany({});
+    await Invitation.create(invitation);
+  });
 
   beforeEach(async () => {
     dbUser = {
@@ -521,6 +564,59 @@ describe('Authentication API', () => {
         .then((res) => {
           expect(res.body.code).to.be.equal(401);
           expect(res.body.message).to.include('Reset token is expired');
+        });
+    });
+  });
+
+  describe('POST /v1/auth/register-code', () => {
+    it('Should returns errors - without required fields', async () => {
+      return request(app)
+        .post('/v1/auth/register-code')
+        .send({})
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          const { field } = res.body.errors[0];
+          const { location } = res.body.errors[0];
+          const { messages } = res.body.errors[0];
+          expect(field).to.be.equal('email');
+          expect(location).to.be.equal('body');
+          expect(messages).to.include('"email" is required');
+        });
+    });
+
+    it('Should return invalid code', async () => {
+      return request(app)
+        .post('/v1/auth/register-code')
+        .send(invalidRegisterCode)
+        .expect(httpStatus.UNAUTHORIZED)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.UNAUTHORIZED);
+          expect(res.body.message).to.be.equal('Invalid verification code.');
+        });
+    });
+
+    it('Should not register not invited email address', async () => {
+      return request(app)
+        .post('/v1/auth/register-code')
+        .send(notInvitedEmail)
+        .expect(httpStatus.NOT_FOUND);
+    });
+
+    it('Should register invited user with correct code', async () => {
+      return request(app)
+        .post('/v1/auth/register-code')
+        .send(validRegisterCode)
+        .expect(httpStatus.CREATED)
+        .then((res) => {
+          expect(res.body.token.tokenType).to.be.equal('Bearer');
+          expect(res.body.token.accessToken).to.be.a('string');
+          expect(res.body.token.refreshToken).to.be.a('string');
+
+          expect(res.body.user.id).to.be.a('string');
+          expect(res.body.user.firstName).to.be.equal(validRegisterCode.firstName);
+          expect(res.body.user.lastName).to.be.equal(validRegisterCode.lastName);
+          expect(res.body.user.email).to.be.equal(validRegisterCode.email);
+          expect(res.body.user.role).to.be.equal('user');
         });
     });
   });

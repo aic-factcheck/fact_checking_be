@@ -70,7 +70,9 @@ router.route('/register')
  * @apiSuccess (Created 201) {String}  user.role       User's role
  * @apiSuccess (Created 201) {Date}    user.createdAt  Timestamp
  *
- * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
+ * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
+ * @apiError (Unauthorized 401)  Unauthorized     Incorrect verification code
+ * @apiError (Not Found 404)     NotFound         Invitation does not exist
  */
 router.route('/register-code')
   .post(validate(registerWithCode), controller.registerCodeVerificated);

@@ -51,14 +51,14 @@ const verifiedInvitationCode = async (invitedEmail, verificationCode) => {
   const invitation = await Invitation.getByInvitedEmail(invitedEmail);
   if (!invitation) {
     throw new APIError({
-      status: httpStatus.FORBIDDEN,
+      status: httpStatus.NOT_FOUND,
       message: 'This email address has no active invitation.',
     });
   }
 
   if (invitation.verificationCode !== verificationCode) {
     throw new APIError({
-      status: httpStatus.FORBIDDEN,
+      status: httpStatus.UNAUTHORIZED,
       message: 'Invalid verification code.',
     });
   }
@@ -84,7 +84,7 @@ exports.registerCodeVerificated = async (req, res, next) => {
     res.status(httpStatus.CREATED);
     return res.json({ token, user: userTransformed });
   } catch (error) {
-    return next(User.checkDuplicateEmail(error));
+    return next(error);
   }
 };
 
