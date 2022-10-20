@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
 const Claim = require('../models/claim.model');
+const Review = require('../models/review.model');
 
 /**
  * Load claim and append to req.
@@ -20,8 +21,23 @@ exports.loadClaim = async (req, res, next, id) => {
  * Get claim
  * @public
  */
-exports.get = (req, res) => {
-  res.json(req.locals.claim.transform());
+exports.get = async (req, res, next) => {
+  const usr = req.user;
+  try {
+    const currentUserReview = await Review.findOne({
+      userId: usr._id,
+      claimId: req.locals.claim._id,
+    });
+
+    let resJson = _.assign(req.locals.claim.transform());
+
+    if (currentUserReview) {
+      resJson = _.merge(resJson, { userReview: currentUserReview });
+    }
+    res.json(resJson);
+  } catch (e) {
+    next(e);
+  }
 };
 
 /**

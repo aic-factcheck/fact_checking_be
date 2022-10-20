@@ -2,7 +2,7 @@ const express = require('express');
 const validate = require('express-validation');
 const controller = require('../../controllers/claim.controller');
 const reviewRoutes = require('./review.route');
-const { authorize } = require('../../middlewares/auth');
+const { authorize, LOGGED_USER } = require('../../middlewares/auth');
 const {
   listClaims,
   createClaim,
@@ -34,7 +34,7 @@ router
    *
    * @apiSuccess {Object[]} Claims List of Claims.
    */
-  .get(validate(listClaims), controller.list)
+  .get(authorize(), validate(listClaims), controller.list)
   /**
    * @api {post} v1/articles/:articleId/claims Create Claim
    * @apiDescription Create a new Claims
@@ -89,10 +89,12 @@ router
    * @apiSuccess {Number}  nNegativeVotes    Number of negative votes
    * @apiSuccess {array}  negativeVotes    negative votes - user Ids
    * @apiSuccess {Date}    createdAt    Timestamp
+   * @apiSuccess {Object}  userReview    Object containing logged user review
+   * @apiSuccess {String}  userReview.vote    Logged user review vote - positive/neutral/negative
    *
    * @apiError (Not Found 404)    NotFound     Claims does not exist
    */
-  .get(controller.get)
+  .get(authorize(), controller.get)
   /**
    * @api {put} v1/articles/:articleId/claims/:id Replace Claim
    * @apiDescription Replace the whole Claims document with a new one
@@ -110,7 +112,7 @@ router
    * @apiError (Unauthorized 401) Unauthorized Only authenticated users can modify the data
    * @apiError (Not Found 404)    NotFound     Claims does not exist
    */
-  .put(authorize(), validate(replaceClaim), controller.replace)
+  .put(authorize(LOGGED_USER), validate(replaceClaim), controller.replace)
   /**
    * @api {patch} v1/articles/:articleId/claims/:id Update Claim
    * @apiDescription Update some fields of a Claims document
@@ -128,7 +130,7 @@ router
    * @apiError (Unauthorized 401) Unauthorized Only authenticated users can modify the data
    * @apiError (Not Found 404)    NotFound     Claims does not exist
    */
-  .patch(authorize(), validate(updateClaim), controller.update)
+  .patch(authorize(LOGGED_USER), validate(updateClaim), controller.update)
   /**
    * @api {patch} v1/articles/:articleId/claims/:id Delete Claim
    * @apiDescription Delete an Claims
@@ -144,7 +146,7 @@ router
    * @apiError (Unauthorized 401) Unauthorized  Only authenticated users can delete the data
    * @apiError (Not Found 404)    NotFound      Claims does not exist
    */
-  .delete(authorize(), controller.remove);
+  .delete(authorize(LOGGED_USER), controller.remove);
 
 // add nested routes - review routes
 router.use('/:claimId/reviews', reviewRoutes);

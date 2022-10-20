@@ -54,6 +54,8 @@ router.route('/register')
  * @apiParam  {String}          email     User's email
  * @apiParam  {String{6..128}}  password  User's password
  * @apiParam  {Number{1000..9999}}  verificationCode  User's password
+ * @apiParam  {String{6..128}}  firstName  User's first name
+ * @apiParam  {String{6..128}}  lastName   User's last name
  *
  * @apiSuccess (Created 201) {String}  token.tokenType     Access Token's type
  * @apiSuccess (Created 201) {String}  token.accessToken   Authorization Token

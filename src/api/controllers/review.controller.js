@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
 const Review = require('../models/review.model');
+const APIError = require('../errors/api-error');
 
 /**
  * Load review and append to req.
@@ -24,17 +25,51 @@ exports.get = (req, res) => {
   res.json(req.locals.review.transform());
 };
 
+/*
+ * Check whether user (who sends the request) already voted
+ * for this claim -> throws conflict http status
+ */
+const checkCurrentUserReview = async (userId, claimId, next) => {
+  const review = await Review.findOne({ userId, claimId });
+
+  if (review) {
+    throw new APIError({
+      status: httpStatus.CONFLICT,
+      message: 'User already voted for this claim.',
+    });
+  }
+};
+
 /**
  * Create new Review
  * @public
  */
 exports.create = async (req, res, next) => {
   try {
+    await checkCurrentUserReview(req.user.id, req.locals.claim._id, next);
+
     const review = new Review(_.assign(req.body, {
       userId: req.user.id,
       priority: 1,
       claimId: req.locals.claim._id,
     }));
+
+    const claim = Object.assign(req.locals.claim);
+
+    // based on vote type, update claim's votes
+    if (req.body.vote === 'positive') {
+      claim.nPositiveVotes += 1;
+      claim.positiveVotes = [...claim.positiveVotes, req.user.id];
+    } else if (req.body.vote === 'neutral') {
+      claim.nNeutralVotes += 1;
+      claim.neutralVotes = [...claim.neutralVotes, req.user.id];
+    } else if (req.body.vode === 'negative') {
+      claim.nNegativeVotes += 1;
+      claim.negativeVotes = [...claim.negativeVotes, req.user.id];
+    }
+
+    await claim.save();
+
     const savedReview = await review.save();
     res.status(httpStatus.CREATED);
     res.json(savedReview.transform());
