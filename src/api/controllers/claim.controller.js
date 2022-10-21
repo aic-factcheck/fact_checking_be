@@ -89,6 +89,26 @@ exports.update = (req, res, next) => {
     .catch((e) => next(e));
 };
 
+/*
+ * Takes `claims` array and logged user array of `reviews`
+ * returns new array of merged claims with user's review for each claim
+ */
+const mergeClaimsWithReviews = async (claims, reviews) => {
+  const mergedClaims = claims.map((claim) => {
+    const userReview = _.find(reviews, { claimId: claim._id });
+
+    const mergedClaim = _.assign(claim, { userReview });
+    if (userReview) {
+      mergedClaim.userReview = userReview.vote;
+    } else {
+      mergedClaim.userReview = null;
+    }
+    return mergedClaim;
+  });
+
+  return mergedClaims;
+};
+
 /**
  * Get claim list
  * @public
@@ -96,9 +116,13 @@ exports.update = (req, res, next) => {
 exports.list = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
+    const userReviews = await Review.find({ userId: req.user.id }).lean();
+
     const claims = await Claim.find().limit(perPage).skip(perPage * (page - 1));
     const transformedClaims = claims.map((x) => x.transform());
-    res.json(transformedClaims);
+
+    const mergedClaims = await mergeClaimsWithReviews(transformedClaims, userReviews);
+    res.json(mergedClaims);
   } catch (error) {
     next(error);
   }

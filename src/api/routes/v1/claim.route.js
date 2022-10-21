@@ -33,6 +33,7 @@ router
    * @apiParam  {Number{1-100}}      [perPage=1]  Users per page
    *
    * @apiSuccess {Object[]} Claims List of Claims.
+   * @apiSuccess {[].userReview} Logged user's review for claim.
    */
   .get(authorize(), validate(listClaims), controller.list)
   /**
