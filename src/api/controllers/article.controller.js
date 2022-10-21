@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
 const Article = require('../models/article.model');
+const { checkIsOwnerOfResurce } = require('../utils/helpers/resourceOwner');
 
 /**
  * Load article and append to req.
@@ -46,7 +47,10 @@ exports.replace = async (req, res, next) => {
     const { article } = req.locals;
     const newArticle = new Article(req.body);
 
-    await article.updateOne(newArticle, { override: true, upsert: true });
+    await checkIsOwnerOfResurce(article.addedBy, req);
+
+    const newArticleObject = _.omit(newArticle.toObject(), ['_id']);
+    await article.updateOne(newArticleObject, { override: true, upsert: true });
     const savedArticle = await Article.findById(article._id);
 
     res.json(savedArticle.transform());

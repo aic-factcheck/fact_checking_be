@@ -23,10 +23,15 @@ module.exports = {
 
   // PUT /v1/articles/:articleId
   replaceArticle: {
-    // body: {
-    // },
-    // params: {
-    // },
+    body: {
+      text: Joi.string().min(6).max(16448).required(),
+      sourceUrl: Joi.string().max(128),
+      sourceType: Joi.string().valid(Article.articleTypes).required(),
+      language: Joi.string().valid(Article.languages).required(),
+    },
+    params: {
+      articleId: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required(),
+    },
   },
 
   // PATCH /v1/articles/:articleId

@@ -130,12 +130,16 @@ router
    * @apiParam  {String{6..128}}     password  User's password
    * @apiParam  {String{..128}}      [name]    User's name
    * @apiParam  {String=user,admin}  [role]    User's role
+   * @apiParam  {String}             firstName  User's first name
+   * @apiParam  {String}             lastName   User's last name
    * (You must be an admin to change the user's role)
    *
    * @apiSuccess {String}  id         User's id
    * @apiSuccess {String}  name       User's name
    * @apiSuccess {String}  email      User's email
    * @apiSuccess {String}  role       User's role
+   * @apiSuccess {String}  firstName  User's first name
+   * @apiSuccess {String}  lastName   User's last name
    * @apiSuccess {Date}    createdAt  Timestamp
    *
    * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
@@ -158,12 +162,16 @@ router
    * @apiParam  {String{6..128}}     password  User's password
    * @apiParam  {String{..128}}      [name]    User's name
    * @apiParam  {String=user,admin}  [role]    User's role
+   * @apiParam  {String}             firstName  User's first name
+   * @apiParam  {String}             lastName   User's last name
    * (You must be an admin to change the user's role)
    *
    * @apiSuccess {String}  id         User's id
    * @apiSuccess {String}  name       User's name
    * @apiSuccess {String}  email      User's email
    * @apiSuccess {String}  role       User's role
+   * @apiSuccess {String}  firstName  User's first name
+   * @apiSuccess {String}  lastName   User's last name
    * @apiSuccess {Date}    createdAt  Timestamp
    *
    * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values

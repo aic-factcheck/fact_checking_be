@@ -32,9 +32,9 @@ exports.get = (req, res) => res.json(req.locals.user.transform());
 exports.loggedIn = async (req, res, next) => {
   try {
     const baseUserInfo = req.user.transform();
-    baseUserInfo.nArticles = await Article.count({ addedBy: req.user.id }).exec();
-    baseUserInfo.nClaim = await Claim.count({ addedBy: req.user.id }).exec();
-    baseUserInfo.nReviews = await Review.count({ userId: req.user.id }).exec();
+    baseUserInfo.nArticles = await Article.countDocuments({ addedBy: req.user.id }).exec();
+    baseUserInfo.nClaim = await Claim.countDocuments({ addedBy: req.user.id }).exec();
+    baseUserInfo.nReviews = await Review.countDocuments({ userId: req.user.id }).exec();
     res.json(baseUserInfo);
   } catch (error) {
     next(error);
