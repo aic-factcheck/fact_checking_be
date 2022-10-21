@@ -84,6 +84,9 @@ router
    * @apiSuccess {String}  name       User's name
    * @apiSuccess {String}  email      User's email
    * @apiSuccess {String}  role       User's role
+   * @apiSuccess {Number}  nArticles  Number of user's articles
+   * @apiSuccess {Number}  nClaims    Number of user's claims
+   * @apiSuccess {Number}  nReviews   Number of user's reviews
    * @apiSuccess {Date}    createdAt  Timestamp
    *
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated Users can access the data

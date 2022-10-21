@@ -1,6 +1,9 @@
 const httpStatus = require('http-status');
 const { _, omit } = require('lodash');
 const User = require('../models/user.model');
+const Article = require('../models/article.model');
+const Claim = require('../models/claim.model');
+const Review = require('../models/review.model');
 
 /**
  * Load user and append to req.
@@ -26,7 +29,17 @@ exports.get = (req, res) => res.json(req.locals.user.transform());
  * Get logged in user info
  * @public
  */
-exports.loggedIn = (req, res) => res.json(req.user.transform());
+exports.loggedIn = async (req, res, next) => {
+  try {
+    const baseUserInfo = req.user.transform();
+    baseUserInfo.nArticles = await Article.count({ addedBy: req.user.id }).exec();
+    baseUserInfo.nClaim = await Claim.count({ addedBy: req.user.id }).exec();
+    baseUserInfo.nReviews = await Review.count({ userId: req.user.id }).exec();
+    res.json(baseUserInfo);
+  } catch (error) {
+    next(error);
+  }
+};
 
 /**
  * Create new user
