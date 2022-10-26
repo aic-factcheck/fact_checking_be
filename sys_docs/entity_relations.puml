@@ -17,6 +17,11 @@ entity "User" as user {
   *picture : text
   *invitedBy: text <<FK>>
   *nReviews: number
+  --
+  *nPositiveVotes: number
+  *positiveVotes: array <<userId>>
+  *nNegativeVotes: number
+  *negativeVotes: array <<userId>>
 }
 
 entity "Invitation" as inv {
