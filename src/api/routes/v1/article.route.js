@@ -81,6 +81,10 @@ router
    * @apiSuccess {String}  sourceUrl      Source url of article
    * @apiSuccess {String}  sourceType     Source type of article
    * @apiSuccess {String}  language       Language of article
+   * @apiSuccess (Created 201) {Number}  nPositiveVotes    Number of positive votes
+   * @apiSuccess (Created 201) {array}  positiveVotes    positive votes - user Ids
+   * @apiSuccess (Created 201) {Number}  nNegativeVotes    Number of negative votes
+   * @apiSuccess (Created 201) {array}  negativeVotes    negative votes - user Ids
    * @apiSuccess {Date}    createdAt      Timestamp
    *
    * @apiError (Not Found 404)    NotFound     Article does not exist

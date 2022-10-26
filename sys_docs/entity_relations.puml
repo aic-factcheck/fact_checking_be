@@ -39,6 +39,11 @@ entity "Article" as article {
   *sourceUrl: text
   *sourceType : enum
   *language : text
+  --
+  *nPositiveVotes: number
+  *positiveVotes: array <<userId>>
+  *nNegativeVotes: number
+  *negativeVotes: array <<userId>>
 }
 
 entity "Claim" as claim {
@@ -55,10 +60,6 @@ entity "Claim" as claim {
   *neutralVotes: array <<userId>>
   *nNegativeVotes: number
   *negativeVotes: array <<userId>>
-  ' *nUpvotes: number
-  ' *upvotes: array <<userId>>
-  ' *nDownvotes: number
-  ' *downvotes: array <<userId>>
 }
 
 entity "Review" as review {
