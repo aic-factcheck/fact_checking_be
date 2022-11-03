@@ -4,30 +4,33 @@ const httpStatus = require('http-status');
 const APIError = require('../errors/api-error');
 
 /**
- * ClaimReviewComment Schema
+* Vote types
+*/
+const voteTypes = ['positive', 'negative', 'neutral'];
+
+/**
+ * Rating Schema
  * @private
  */
-const commentSchema = new mongoose.Schema({
+const ratingSchema = new mongoose.Schema({
+  ratedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true,
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
     index: true,
   },
-  reviewId: {
+  claimId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Claim',
     required: true,
     index: true,
   },
-  text: {
-    type: String,
-    maxlength: 512,
-  },
-  proofUrls: [{
-    type: String,
-    maxlength: 256,
-  }],
 }, {
   timestamps: true,
 });
@@ -35,10 +38,11 @@ const commentSchema = new mongoose.Schema({
 /**
  * Methods
  */
-commentSchema.method({
+ratingSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'userId', 'reviewId', 'text', 'proofUrls', 'createdAt'];
+    const fields = ['_id', 'userId', 'claimId', 'text', 'createdAt', 'vote',
+      'nUpvotes', 'upvotes', 'nDownvotes', 'downvotes'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -51,32 +55,34 @@ commentSchema.method({
 /**
  * Statics
  */
-commentSchema.statics = {
+ratingSchema.statics = {
+
+  voteTypes,
 
   /**
-   * Get ClaimReviewComment
+   * Get Rating
    *
-   * @param {ObjectId} id - The objectId of ClaimReviewComment.
-   * @returns {Promise<ClaimReviewComment, APIError>}
+   * @param {ObjectId} id - The objectId of Rating.
+   * @returns {Promise<Rating, APIError>}
    */
   async get(id) {
-    let review;
+    let rating;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      review = await this.findById(id).exec();
+      rating = await this.findById(id).exec();
     }
-    if (review) {
-      return review;
+    if (rating) {
+      return rating;
     }
 
     throw new APIError({
-      message: 'ClaimReviewComment does not exist',
+      message: 'Rating does not exist',
       status: httpStatus.NOT_FOUND,
     });
   },
 };
 
 /**
- * @typedef ClaimReviewComment
+ * @typedef Rating
  */
-module.exports = mongoose.model('ClaimReviewComment', commentSchema);
+module.exports = mongoose.model('Rating', ratingSchema);

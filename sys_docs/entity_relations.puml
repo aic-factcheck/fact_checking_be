@@ -36,9 +36,26 @@ entity "Invitation" as inv {
   - TTL 48 hours
 }
 
+entity "Rating" as rating {
+  *_id : string <<generated>>
+  --
+  *ratedBy : text <<FK>>
+  --
+  One of following is required
+  --
+  *userId: text <<FK>>
+  *articleId: text <<FK>>
+  *claimId: text <<FK>>
+  *reviewId: text <<FK>>
+  --
+  *createdAt: date
+  *vote: {positive, neutral, negative}
+}
+
 entity "Article" as article {
   *_id : text <<generated>>
   --
+  *claims: [<<FK>>,...]
   *addedBy : text <<FK>>
   *text : text
   *sourceUrl: text
@@ -54,6 +71,7 @@ entity "Article" as article {
 entity "Claim" as claim {
   *_id : text <<generated>>
   --
+  *articles: [<<FK>>,...]
   *priority: number
   *addedBy: text <<FK>>
   *articleId : text <<FK>>
@@ -92,9 +110,13 @@ entity "Claim review comment" as claimReviewComment {
 
 user ||..o{ article
 user ||..o{ inv
-article ||..o{ claim
+article }o..o{ claim
+article ||..o{ rating
 user ||..o{ review
+user ||..o{ rating
 claim ||..o{ review
 claim }o..|| user
+claim ||..o{ rating
 review ||..o{ claimReviewComment
+review ||..o{ rating
 @enduml

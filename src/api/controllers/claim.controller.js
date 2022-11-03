@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
 const Claim = require('../models/claim.model');
+const Article = require('../models/article.model');
 const Review = require('../models/review.model');
 
 /**
@@ -50,10 +51,38 @@ exports.create = async (req, res, next) => {
       addedBy: req.user.id,
       priority: 1,
       articleId: req.locals.article._id,
+      articles: [req.locals.article._id],
     }));
+
     const savedClaim = await claim.save();
+    await Article.addClaimId(req.locals.article._id, savedClaim._id);
+
     res.status(httpStatus.CREATED);
     res.json(savedClaim.transform());
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Add articleId to existing claim with claimId
+ * @public
+ */
+exports.addExistingClaim = async (req, res, next) => {
+  try {
+    // const claim = req.claim
+    console.log(req.locals);
+    // new Claim(_.assign(req.body, {
+    //   addedBy: req.user.id,
+    //   priority: 1,
+    //   articleId: req.locals.article._id,
+    //   articles: [req.locals.article._id],
+    // }));
+
+    // const savedClaim = await claim.save();
+    res.status(httpStatus.CREATED);
+    res.json('yp');
+    // res.json(savedClaim.transform());
   } catch (error) {
     next(error);
   }

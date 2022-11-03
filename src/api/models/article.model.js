@@ -28,6 +28,14 @@ const articleSchema = new mongoose.Schema({
     type: String,
     maxlength: 16448,
   },
+  claims: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Claim',
+      // required: true,
+      index: true,
+    },
+  ],
   sourceUrl: {
     type: String,
     maxlength: 512,
@@ -71,7 +79,7 @@ articleSchema.method({
   transform() {
     const transformed = {};
     const fields = ['_id', 'addedBy', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt',
-      'nPositiveVotes', 'positiveVotes', 'nNegativeVotes', 'negativeVotes'];
+      'nPositiveVotes', 'positiveVotes', 'nNegativeVotes', 'negativeVotes', 'claims'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -96,13 +104,38 @@ articleSchema.statics = {
    * @returns {Promise<Article, APIError>}
    */
   async get(id) {
-    let inv;
+    let article;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      inv = await this.findById(id).exec();
+      article = await this.findById(id).exec();
     }
-    if (inv) {
-      return inv;
+    if (article) {
+      return article;
+    }
+
+    throw new APIError({
+      message: 'Article does not exist',
+      status: httpStatus.NOT_FOUND,
+    });
+  },
+
+  /**
+   * Find article and push claimId into claims array
+   *
+   * @param {ObjectId} id - The objectId of Article.
+   * @param {ObjectId} claimId - The objectId of Claim that is added.
+   * @returns {Promise<Article, APIError>}
+   */
+  async addClaimId(id, claimId) {
+    let article;
+
+    if (mongoose.Types.ObjectId.isValid(id) && mongoose.Types.ObjectId.isValid(claimId)) {
+      article = await this.findByIdAndUpdate(id, {
+        $push: { claims: claimId },
+      });
+    }
+    if (article) {
+      return article;
     }
 
     throw new APIError({

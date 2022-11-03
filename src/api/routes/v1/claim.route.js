@@ -8,6 +8,7 @@ const {
   createClaim,
   replaceClaim,
   updateClaim,
+  addExistingClaim,
 } = require('../../validations/claim.validation');
 
 const router = express.Router({ mergeParams: true });
@@ -147,7 +148,23 @@ router
    * @apiError (Unauthorized 401) Unauthorized  Only authenticated users can delete the data
    * @apiError (Not Found 404)    NotFound      Claims does not exist
    */
-  .delete(authorize(LOGGED_USER), controller.remove);
+  .delete(authorize(LOGGED_USER), controller.remove)
+  /**
+   * @api {put} v1/articles/:articleId/claims/:id Add articleId to claim
+   * @apiDescription Adding existing claim to article
+   * @apiVersion 1.0.0
+   * @apiName AddExistingClaim
+   * @apiGroup Claim
+   * @apiPermission user
+   *
+   * @apiHeader {String} Authorization   User's access token
+   *
+   *
+   * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
+   * @apiError (Unauthorized 401) Unauthorized Only authenticated users can modify the data
+   * @apiError (Not Found 404)    NotFound     Claims does not exist
+   */
+  .post(authorize(LOGGED_USER), validate(addExistingClaim), controller.addExistingClaim);
 
 // add nested routes - review routes
 router.use('/:claimId/reviews', reviewRoutes);

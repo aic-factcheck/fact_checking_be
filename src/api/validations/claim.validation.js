@@ -19,6 +19,14 @@ module.exports = {
   },
 
   // PUT /v1/articles/:id/claims/:claimId
+  addExistingClaim: {
+    // body: {
+    // },
+    // params: {
+    // },
+  },
+
+  // PUT /v1/articles/:id/claims/:claimId
   replaceClaim: {
     // body: {
     // },
