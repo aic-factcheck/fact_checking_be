@@ -4,11 +4,6 @@ const httpStatus = require('http-status');
 const APIError = require('../errors/api-error');
 
 /**
-* Vote types
-*/
-const voteTypes = ['positive', 'negative', 'neutral'];
-
-/**
  * Rating Schema
  * @private
  */
@@ -22,14 +17,27 @@ const ratingSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
+    index: true,
+  },
+  articleId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Article',
     index: true,
   },
   claimId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Claim',
-    required: true,
     index: true,
+  },
+  rating: {
+    type: Number,
+    required: true,
+    min: -1,
+    max: 10,
+  },
+  text: {
+    type: String,
+    maxlength: 128,
   },
 }, {
   timestamps: true,
@@ -41,8 +49,7 @@ const ratingSchema = new mongoose.Schema({
 ratingSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'userId', 'claimId', 'text', 'createdAt', 'vote',
-      'nUpvotes', 'upvotes', 'nDownvotes', 'downvotes'];
+    const fields = ['_id', 'ratedBy', 'userId', 'articleId', 'claimId', 'rating', 'text', 'createdAt'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -56,8 +63,6 @@ ratingSchema.method({
  * Statics
  */
 ratingSchema.statics = {
-
-  voteTypes,
 
   /**
    * Get Rating
