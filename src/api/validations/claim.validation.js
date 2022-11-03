@@ -13,6 +13,9 @@ module.exports = {
 
   // POST /v1/articles/:id/claims/:claimId
   createClaim: {
+    query: {
+      claimId: Joi.string().hex().length(24),
+    },
     body: {
       text: Joi.string().min(6).max(512).required(),
     },

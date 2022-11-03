@@ -49,6 +49,7 @@ router
    *
    * @apiParam  {String}             text      Claims's text
    * @apiParam  {Number}             priority  Priority of claim
+   * @apiParam  {Number}             claimId  Iff adding existing claim to article
    *
    * @apiSuccess (Created 201) {String}  text         Claim's text
    * @apiSuccess (Created 201) {String}  priority     Claim's priority

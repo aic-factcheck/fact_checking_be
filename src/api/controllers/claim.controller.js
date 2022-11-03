@@ -47,18 +47,29 @@ exports.get = async (req, res, next) => {
  */
 exports.create = async (req, res, next) => {
   try {
-    const claim = new Claim(_.assign(req.body, {
-      addedBy: req.user.id,
-      priority: 1,
-      articleId: req.locals.article._id,
-      articles: [req.locals.article._id],
-    }));
+    const { claimId } = req.query;
 
-    const savedClaim = await claim.save();
-    await Article.addClaimId(req.locals.article._id, savedClaim._id);
+    // adding existing claim -> add articleId to claim and claimId to article
+    if (claimId) {
+      const claim = await Claim.addArticleId(claimId, req.locals.article._id);
+      await Article.addClaimId(req.locals.article._id, claimId);
 
-    res.status(httpStatus.CREATED);
-    res.json(savedClaim.transform());
+      res.status(httpStatus.CREATED);
+      res.json(claim.transform());
+    } else { // add new claim
+      const claim = new Claim(_.assign(req.body, {
+        addedBy: req.user.id,
+        priority: 1,
+        articleId: req.locals.article._id,
+        articles: [req.locals.article._id],
+      }));
+
+      const savedClaim = await claim.save();
+      await Article.addClaimId(req.locals.article._id, savedClaim._id);
+
+      res.status(httpStatus.CREATED);
+      res.json(savedClaim.transform());
+    }
   } catch (error) {
     next(error);
   }
@@ -70,19 +81,13 @@ exports.create = async (req, res, next) => {
  */
 exports.addExistingClaim = async (req, res, next) => {
   try {
-    // const claim = req.claim
-    console.log(req.locals);
-    // new Claim(_.assign(req.body, {
-    //   addedBy: req.user.id,
-    //   priority: 1,
-    //   articleId: req.locals.article._id,
-    //   articles: [req.locals.article._id],
-    // }));
+    const { claim } = req.locals;
 
-    // const savedClaim = await claim.save();
+    const savedClaim = await Claim.addArticleId(claim._id, req.locals.article._id);
+    await Article.addClaimId(req.locals.article._id, claim._id);
+
     res.status(httpStatus.CREATED);
-    res.json('yp');
-    // res.json(savedClaim.transform());
+    res.json(savedClaim.transform());
   } catch (error) {
     next(error);
   }
