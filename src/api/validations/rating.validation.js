@@ -11,7 +11,7 @@ module.exports = {
     },
     body: {
       text: Joi.string().min(0).max(128),
-      rating: Joi.number().min(-1).max(10).required(),
+      rating: Joi.number().min(-1).max(1).required(),
     },
   },
 };

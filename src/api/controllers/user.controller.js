@@ -115,3 +115,31 @@ exports.remove = (req, res, next) => {
     .then(() => res.status(httpStatus.NO_CONTENT).end())
     .catch((e) => next(e));
 };
+
+/**
+ * Get list of user's articles
+ * @public
+ */
+exports.getUsersArticles = async (req, res, next) => {
+  try {
+    const articles = await Article.list(req.query);
+    const transformedArticles = articles.map((x) => x.transform());
+    res.json(transformedArticles);
+  } catch (e) {
+    next(e);
+  }
+};
+
+/**
+ * Get list of user's claims
+ * @public
+ */
+exports.getUsersClaims = async (req, res, next) => {
+  try {
+    const claims = await Claim.list(req.query);
+    const transformedClaims = claims.map((x) => x.transform());
+    res.json(transformedClaims);
+  } catch (e) {
+    next(e);
+  }
+};

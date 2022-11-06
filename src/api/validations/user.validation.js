@@ -53,4 +53,26 @@ module.exports = {
       userId: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required(),
     },
   },
+
+  // GET /v1/users/:userId/articles
+  listUsersArticles: {
+    query: {
+      page: Joi.number().min(1),
+      perPage: Joi.number().min(1).max(100),
+    },
+    params: {
+      userId: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required(),
+    },
+  },
+
+  // GET /v1/users/:userId/claims
+  listUsersClaims: {
+    query: {
+      page: Joi.number().min(1),
+      perPage: Joi.number().min(1).max(100),
+    },
+    params: {
+      userId: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required(),
+    },
+  },
 };

@@ -48,8 +48,9 @@ entity "Rating" as rating {
   *claimId: text <<FK>>
   *reviewId: text <<FK>>
   --
+  *text: Text
+  *rating: Number {-1..10}
   *createdAt: date
-  *vote: {positive, neutral, negative}
 }
 
 entity "Article" as article {

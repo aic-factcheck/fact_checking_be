@@ -143,6 +143,23 @@ articleSchema.statics = {
       status: httpStatus.NOT_FOUND,
     });
   },
+
+  /**
+   * List articles in descending order of 'createdAt' timestamp.
+   *
+   * @param {number} skip - Number of articles to be skipped.
+   * @param {number} limit - Limit number of articles to be returned.
+   * @returns {Promise<Article[]>}
+   */
+  list({
+    page = 1, perPage = 30,
+  }) {
+    return this.find({})
+      .sort({ createdAt: -1 })
+      .skip(perPage * (page - 1))
+      .limit(perPage)
+      .exec();
+  },
 };
 
 /**

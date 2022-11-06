@@ -114,6 +114,23 @@ claimSchema.statics = {
   },
 
   /**
+   * List claims in descending order of 'createdAt' timestamp.
+   *
+   * @param {number} skip - Number of claims to be skipped.
+   * @param {number} limit - Limit number of claims to be returned.
+   * @returns {Promise<Claim[]>}
+   */
+  list({
+    page = 1, perPage = 30,
+  }) {
+    return this.find({})
+      .sort({ createdAt: -1 })
+      .skip(perPage * (page - 1))
+      .limit(perPage)
+      .exec();
+  },
+
+  /**
    * Find Claim and push articleId into articles array
    *
    * @param {ObjectId} id - The objectId of Article.
