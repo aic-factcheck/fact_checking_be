@@ -87,6 +87,11 @@ ratingSchema.statics = {
   },
 };
 
+// TODO uncomment
+// ratingSchema.index({ ratedBy: 1, userId: 1 }, { unique: true });
+// ratingSchema.index({ ratedBy: 1, articleId: 1 }, { unique: true });
+// ratingSchema.index({ ratedBy: 1, claimId: 1 }, { unique: true });
+
 /**
  * @typedef Rating
  */

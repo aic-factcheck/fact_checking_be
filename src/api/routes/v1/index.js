@@ -4,6 +4,7 @@ const authRoutes = require('./auth.route');
 const articleRoutes = require('./article.route');
 const searchRoutes = require('./search.route');
 const ratingRoutes = require('./rating.route');
+const hotRoutes = require('./hot.route');
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use('/auth', authRoutes);
 router.use('/articles', articleRoutes);
 router.use('/search', searchRoutes);
 router.use('/vote', ratingRoutes);
+router.use('/hot', hotRoutes);
 
 module.exports = router;

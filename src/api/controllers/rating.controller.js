@@ -15,22 +15,25 @@ exports.voteFor = async (req, res, next) => {
   try {
     const { claimId, articleId, userId } = req.query;
 
-    // const rating = new Rating({ addedBy: req.user.id });
     const rating = new Rating(_.assign(req.body, {
       ratedBy: req.user.id,
     }));
-    let exists = true;
 
-    // TODO check if referenced object exists ... article/claim/user
+    let referencedExists = true;
+    let alreadyExists = false;
+
     if (userId) {
       rating.userId = userId;
-      exists = await User.exists({ _id: userId });
+      referencedExists = await User.exists({ _id: userId });
+      alreadyExists = await Rating.findOne({ addedBy: req.user.id, userId });
     } else if (articleId) {
       rating.articleId = articleId;
-      exists = await Article.exists({ _id: articleId });
+      referencedExists = await Article.exists({ _id: articleId });
+      alreadyExists = await Rating.findOne({ addedBy: req.user.id, articleId });
     } else if (claimId) {
       rating.articleId = articleId;
-      exists = await Claim.exists({ _id: claimId });
+      referencedExists = await Claim.exists({ _id: claimId });
+      alreadyExists = await Rating.findOne({ addedBy: req.user.id, claimId });
     } else {
       throw new APIError({
         status: httpStatus.BAD_REQUEST,
@@ -38,7 +41,14 @@ exports.voteFor = async (req, res, next) => {
       });
     }
 
-    if (!exists) {
+    if (alreadyExists) {
+      throw new APIError({
+        status: httpStatus.CONFLICT,
+        message: 'Already voted.',
+      });
+    }
+
+    if (!referencedExists) {
       throw new APIError({
         status: httpStatus.BAD_REQUEST,
         message: 'Referenced id does not exists.',
