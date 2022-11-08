@@ -1,8 +1,8 @@
 // const { _ } = require('lodash');
-// const Claim = require('../models/claim.model');
-const Article = require('../models/article.model');
 const User = require('../models/user.model');
-// const Rating = require('../models/rating.model');
+const Article = require('../models/article.model');
+const Claim = require('../models/claim.model');
+const Rating = require('../models/rating.model');
 // const APIError = require('../errors/api-error');
 
 /**
@@ -11,17 +11,25 @@ const User = require('../models/user.model');
  */
 exports.hottestUsers = async (req, res, next) => {
   try {
-    const users = await User.aggregate(
-      [{
-        $group: {
-          _id: '$users',
-          numOfRatings: { $sum: 1 },
-        },
-      }],
-    );
-    // const userss = await User.aggregate().group({ _id: '$userId' });
-    console.log(users);
-    res.json('Dummy');
+    let page = 1;
+    let perPage = 20;
+    if (req.page) {
+      page = req.page;
+    }
+    if (req.perPage) {
+      perPage = req.perPage;
+    }
+
+    const ratings = await Rating
+      .aggregate()
+      .group({ _id: '$userId', count: { $sum: 1 } })
+      .unwind('_id')
+      .skip(perPage * (page - 1))
+      .limit(perPage)
+      .sort({ count: 'desc' });
+
+    const users = await User.find().where('_id').in(ratings).exec();
+    res.json(users);
   } catch (error) {
     next(error);
   }
@@ -33,18 +41,24 @@ exports.hottestUsers = async (req, res, next) => {
  */
 exports.hottestArticles = async (req, res, next) => {
   try {
-    const articles = await Article.aggregate(
-      [{
-        $group: {
-          _id: '$articleId',
-          count: { $sum: 1 },
-        },
-      }], (err, results) => {
-        console.log(results);
-      },
-    );
-    // const userss = await User.aggregate().group({ _id: '$userId' });
-    console.log(articles);
+    let page = 1;
+    let perPage = 20;
+    if (req.page) {
+      page = req.page;
+    }
+    if (req.perPage) {
+      perPage = req.perPage;
+    }
+
+    const ratings = await Rating
+      .aggregate()
+      .group({ _id: '$articleId', count: { $sum: 1 } })
+      .unwind('_id')
+      .skip(perPage * (page - 1))
+      .limit(perPage)
+      .sort({ count: 'desc' });
+
+    const articles = await Article.find().where('_id').in(ratings).exec();
     res.json(articles);
   } catch (error) {
     next(error);
@@ -57,7 +71,25 @@ exports.hottestArticles = async (req, res, next) => {
  */
 exports.hottestClaims = async (req, res, next) => {
   try {
-    res.json('Dummy');
+    let page = 1;
+    let perPage = 20;
+    if (req.page) {
+      page = req.page;
+    }
+    if (req.perPage) {
+      perPage = req.perPage;
+    }
+
+    const ratings = await Rating
+      .aggregate()
+      .group({ _id: '$claimId', count: { $sum: 1 } })
+      .unwind('_id')
+      .skip(perPage * (page - 1))
+      .limit(perPage)
+      .sort({ count: 'desc' });
+
+    const claims = await Claim.find().where('_id').in(ratings).exec();
+    res.json(claims);
   } catch (error) {
     next(error);
   }
