@@ -27,6 +27,7 @@ const articleSchema = new mongoose.Schema({
   text: {
     type: String,
     maxlength: 16448,
+    index: 'text',
   },
   claims: [
     {
@@ -39,6 +40,7 @@ const articleSchema = new mongoose.Schema({
   sourceUrl: {
     type: String,
     maxlength: 512,
+    index: 'text',
   },
   sourceType: {
     type: String,

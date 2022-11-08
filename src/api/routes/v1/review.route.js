@@ -52,6 +52,7 @@ router
    * @apiSuccess {String}  vote          Vote - decision of reviewer
    * @apiSuccess {String}  userId        Reviewer's id
    * @apiSuccess {String}  claimId       Claim id
+   * @apiSuccess {String}  articleId     ArticleId associated with selected claim
    * @apiSuccess {Number}  nUpvotes      Number of positive votes
    * @apiSuccess {array}    upvotes      List of user Ids who upvoted
    * @apiSuccess {Number}  nDownvotes    Number of negative votes

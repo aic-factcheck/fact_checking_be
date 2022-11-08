@@ -91,6 +91,7 @@ entity "Review" as review {
   --
   *userId : text <<FK>>
   *claimId: text <<FK>>
+  *articleId: text <<FK>>
   *text: text
   *vote: enum {pos, neg, neut}
   --

@@ -25,6 +25,11 @@ const reviewSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
+  articleId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Article',
+    // required: true, TODO ?
+  },
   text: {
     type: String,
     maxlength: 512,
@@ -61,7 +66,7 @@ const reviewSchema = new mongoose.Schema({
 reviewSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'userId', 'claimId', 'text', 'createdAt', 'vote',
+    const fields = ['_id', 'userId', 'claimId', 'articleId', 'text', 'createdAt', 'vote',
       'nUpvotes', 'upvotes', 'nDownvotes', 'downvotes'];
 
     fields.forEach((field) => {
