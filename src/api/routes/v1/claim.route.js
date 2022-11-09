@@ -55,12 +55,6 @@ router
    * @apiSuccess (Created 201) {String}  priority     Claim's priority
    * @apiSuccess (Created 201) {String}  addedBy      User id who added
    * @apiSuccess (Created 201) {String}  articleId    Claim id
-   * @apiSuccess (Created 201) {Number}  nPositiveVotes    Number of positive votes
-   * @apiSuccess (Created 201) {array}  positiveVotes    positive votes - user Ids
-   * @apiSuccess (Created 201) {Number}  nNeutralVotes    Number of neutral votes
-   * @apiSuccess (Created 201) {array}  neutralVotes    neutral votes - user Ids
-   * @apiSuccess (Created 201) {Number}  nNegativeVotes    Number of negative votes
-   * @apiSuccess (Created 201) {array}  negativeVotes    negative votes - user Ids
    * @apiSuccess (Created 201) {Date}    createdAt    Timestamp
    *
    * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
@@ -85,12 +79,6 @@ router
    * @apiSuccess {String}  priority     Claim's priority
    * @apiSuccess {String}  addedBy      User id who added
    * @apiSuccess {String}  articleId    Claim id
-   * @apiSuccess {Number}  nPositiveVotes    Number of positive votes
-   * @apiSuccess {array}  positiveVotes    positive votes - user Ids
-   * @apiSuccess {Number}  nNeutralVotes    Number of neutral votes
-   * @apiSuccess {array}  neutralVotes    neutral votes - user Ids
-   * @apiSuccess {Number}  nNegativeVotes    Number of negative votes
-   * @apiSuccess {array}  negativeVotes    negative votes - user Ids
    * @apiSuccess {Date}    createdAt    Timestamp
    * @apiSuccess {Object}  userReview    Object containing logged user review
    * @apiSuccess {String}  userReview.vote    Logged user review vote - positive/neutral/negative

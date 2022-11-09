@@ -70,24 +70,6 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  nPositiveVotes: {
-    type: Number,
-    default: 0,
-    index: true,
-  },
-  positiveVotes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }],
-  nNegativeVotes: {
-    type: Number,
-    default: 0,
-    index: true,
-  },
-  negativeVotes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }],
 }, {
   timestamps: true,
 });
@@ -119,8 +101,7 @@ userSchema.pre('save', async function save(next) {
 userSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt', 'firstName', 'lastName',
-      'invitedBy', 'nReviews', 'nPositiveVotes', 'positiveVotes', 'nNegativeVotes', 'negativeVotes'];
+    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt', 'firstName', 'lastName', 'invitedBy', 'nReviews'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

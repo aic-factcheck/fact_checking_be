@@ -38,24 +38,6 @@ const reviewSchema = new mongoose.Schema({
     type: String,
     enum: voteTypes,
   },
-  nUpvotes: {
-    type: Number,
-    default: 0,
-    index: true,
-  },
-  upvotes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }],
-  nDownvotes: {
-    type: Number,
-    default: 0,
-    index: true,
-  },
-  downvotes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }],
 }, {
   timestamps: true,
 });
@@ -66,8 +48,7 @@ const reviewSchema = new mongoose.Schema({
 reviewSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'userId', 'claimId', 'articleId', 'text', 'createdAt', 'vote',
-      'nUpvotes', 'upvotes', 'nDownvotes', 'downvotes'];
+    const fields = ['_id', 'userId', 'claimId', 'articleId', 'text', 'createdAt', 'vote'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

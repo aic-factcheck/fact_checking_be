@@ -17,11 +17,6 @@ entity "User" as user {
   *picture : text
   *invitedBy: text <<FK>>
   *nReviews: number
-  --
-  *nPositiveVotes: number
-  *positiveVotes: array <<userId>>
-  *nNegativeVotes: number
-  *negativeVotes: array <<userId>>
 }
 
 entity "Invitation" as inv {
@@ -62,11 +57,6 @@ entity "Article" as article {
   *sourceUrl: text
   *sourceType : enum
   *language : text
-  --
-  *nPositiveVotes: number
-  *positiveVotes: array <<userId>>
-  *nNegativeVotes: number
-  *negativeVotes: array <<userId>>
 }
 
 entity "Claim" as claim {
@@ -77,13 +67,6 @@ entity "Claim" as claim {
   *addedBy: text <<FK>>
   *articleId : text <<FK>>
   *text : text
-  --
-  *nPositiveVotes: number
-  *positiveVotes: array <<userId>>
-  *nNeutralVotes: number
-  *neutralVotes: array <<userId>>
-  *nNegativeVotes: number
-  *negativeVotes: array <<userId>>
 }
 
 entity "Review" as review {
@@ -94,11 +77,6 @@ entity "Review" as review {
   *articleId: text <<FK>>
   *text: text
   *vote: enum {pos, neg, neut}
-  --
-  *nUpvotes: number
-  *upvotes: array <<userId>>
-  *nDownvotes: number
-  *downvotes: array <<userId>>
 }
 
 entity "Claim review comment" as claimReviewComment {

@@ -52,24 +52,6 @@ const articleSchema = new mongoose.Schema({
     enum: languages,
     default: 'cz',
   },
-  nPositiveVotes: {
-    type: Number,
-    default: 0,
-    index: true,
-  },
-  positiveVotes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }],
-  nNegativeVotes: {
-    type: Number,
-    default: 0,
-    index: true,
-  },
-  negativeVotes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }],
 }, {
   timestamps: true,
 });
@@ -80,8 +62,7 @@ const articleSchema = new mongoose.Schema({
 articleSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'addedBy', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt',
-      'nPositiveVotes', 'positiveVotes', 'nNegativeVotes', 'negativeVotes', 'claims'];
+    const fields = ['_id', 'addedBy', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

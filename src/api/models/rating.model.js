@@ -29,6 +29,11 @@ const ratingSchema = new mongoose.Schema({
     ref: 'Claim',
     index: true,
   },
+  reviewId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Review',
+    index: true,
+  },
   rating: {
     type: Number,
     required: true,
@@ -49,7 +54,7 @@ const ratingSchema = new mongoose.Schema({
 ratingSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'ratedBy', 'userId', 'articleId', 'claimId', 'rating', 'text', 'createdAt'];
+    const fields = ['_id', 'ratedBy', 'userId', 'articleId', 'claimId', 'reviewId', 'rating', 'text', 'createdAt'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

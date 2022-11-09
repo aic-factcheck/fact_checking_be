@@ -31,6 +31,8 @@ exports.connect = () => {
       useUnifiedTopology: true,
       useFindAndModify: false,
     })
-    .then(() => console.log('mongoDB connected...'));
+    .then(() => console.log('mongoDB connected...'))
+    .catch((e) => { console.error(e); });
+
   return mongoose.connection;
 };

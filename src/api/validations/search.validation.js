@@ -17,7 +17,7 @@ module.exports = {
     query: {
       text: Joi.string()
         .min(3).max(512)
-        .alphanum()
+        // .alphanum()
         .required(),
     },
   },
