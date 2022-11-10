@@ -2,7 +2,7 @@ const express = require('express');
 const validate = require('express-validation');
 const controller = require('../../controllers/claim.controller');
 const reviewRoutes = require('./review.route');
-const { authorize, LOGGED_USER } = require('../../middlewares/auth');
+const { authorize } = require('../../middlewares/auth');
 const {
   listClaims,
   createClaim,
@@ -103,7 +103,7 @@ router
    * @apiError (Unauthorized 401) Unauthorized Only authenticated users can modify the data
    * @apiError (Not Found 404)    NotFound     Claims does not exist
    */
-  .put(authorize(LOGGED_USER), validate(replaceClaim), controller.replace)
+  .put(authorize(), validate(replaceClaim), controller.replace)
   /**
    * @api {patch} v1/articles/:articleId/claims/:id Update Claim
    * @apiDescription Update some fields of a Claims document
@@ -121,7 +121,7 @@ router
    * @apiError (Unauthorized 401) Unauthorized Only authenticated users can modify the data
    * @apiError (Not Found 404)    NotFound     Claims does not exist
    */
-  .patch(authorize(LOGGED_USER), validate(updateClaim), controller.update)
+  .patch(authorize(), validate(updateClaim), controller.update)
   /**
    * @api {patch} v1/articles/:articleId/claims/:id Delete Claim
    * @apiDescription Delete an Claims
@@ -137,7 +137,7 @@ router
    * @apiError (Unauthorized 401) Unauthorized  Only authenticated users can delete the data
    * @apiError (Not Found 404)    NotFound      Claims does not exist
    */
-  .delete(authorize(LOGGED_USER), controller.remove)
+  .delete(authorize(), controller.remove)
   /**
    * @api {put} v1/articles/:articleId/claims/:id Add articleId to claim
    * @apiDescription Adding existing claim to article
@@ -153,7 +153,7 @@ router
    * @apiError (Unauthorized 401) Unauthorized Only authenticated users can modify the data
    * @apiError (Not Found 404)    NotFound     Claims does not exist
    */
-  .post(authorize(LOGGED_USER), validate(addExistingClaim), controller.addExistingClaim);
+  .post(authorize(), validate(addExistingClaim), controller.addExistingClaim);
 
 // add nested routes - review routes
 router.use('/:claimId/reviews', reviewRoutes);
