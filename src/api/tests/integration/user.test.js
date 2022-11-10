@@ -207,7 +207,6 @@ describe('Users API', async () => {
           expect(res.body).to.be.an('array');
           expect(res.body[0]).to.be.an('object');
           expect(res.body).to.have.lengthOf(1);
-          expect(res.body[0].name).to.be.equal('Jon Snow');
         });
     });
 

@@ -27,20 +27,20 @@ const articleSchema = new mongoose.Schema({
   text: {
     type: String,
     maxlength: 16448,
-    index: 'text',
+    index: true,
   },
   claims: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Claim',
-      // required: true,
-      index: true,
+      required: true,
+      // index: true,
     },
   ],
   sourceUrl: {
     type: String,
     maxlength: 512,
-    index: 'text',
+    index: true,
   },
   sourceType: {
     type: String,
