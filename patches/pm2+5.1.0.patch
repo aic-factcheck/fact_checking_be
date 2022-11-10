@@ -1,0 +1,72 @@
+diff --git a/node_modules/pm2/lib/God/ActionMethods.js b/node_modules/pm2/lib/God/ActionMethods.js
+index 5e7d2e3..b9b56fd 100644
+--- a/node_modules/pm2/lib/God/ActionMethods.js
++++ b/node_modules/pm2/lib/God/ActionMethods.js
+@@ -57,66 +57,7 @@ module.exports = function(God) {
+       }))
+     }
+ 
+-    pidusage(pids, function retPidUsage(err, statistics) {
+-      // Just log, we'll set empty statistics
+-      if (err) {
+-        console.error('Error caught while calling pidusage');
+-        console.error(err);
+-
+-        return cb(null, processes.map(function(pro) {
+-          pro['monit'] = {
+-            memory : 0,
+-            cpu : 0
+-          };
+-          return pro
+-        }))
+-      }
+-
+-      if (!statistics) {
+-        console.error('Statistics is not defined!')
+-
+-        return cb(null, processes.map(function(pro) {
+-          pro['monit'] = {
+-            memory : 0,
+-            cpu : 0
+-          };
+-          return pro
+-        }))
+-      }
+-
+-      processes = processes.map(function(pro) {
+-        if (filterBadProcess(pro) === false) {
+-          pro['monit'] = {
+-            memory : 0,
+-            cpu : 0
+-          };
+-
+-          return pro;
+-        }
+-
+-        var pid = getProcessId(pro);
+-        var stat = statistics[pid];
+-
+-        if (!stat) {
+-          pro['monit'] = {
+-            memory : 0,
+-            cpu : 0
+-          };
+-
+-          return pro;
+-        }
+-
+-        pro['monit'] = {
+-          memory: stat.memory,
+-          cpu: Math.round(stat.cpu * 10) / 10
+-        };
+-
+-        return pro;
+-      });
+-
+-      cb(null, processes);
+-    });
+-  };
++    pidusage(pids, { usePs: true });
+ 
+   /**
+    * Description
