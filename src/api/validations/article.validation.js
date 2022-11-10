@@ -14,6 +14,7 @@ module.exports = {
   // POST /v1/articles
   createArticle: {
     body: {
+      title: Joi.string().min(6).max(512),
       text: Joi.string().min(6).max(16448).required(),
       sourceUrl: Joi.string().max(128),
       sourceType: Joi.string().valid(Article.articleTypes).required(),

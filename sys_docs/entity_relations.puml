@@ -53,6 +53,7 @@ entity "Article" as article {
   --
   *claims: [<<FK>>,...]
   *addedBy : text <<FK>>
+  *title: text
   *text : text
   *sourceUrl: text
   *sourceType : enum

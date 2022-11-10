@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const fs = require('fs');
+// const fs = require('fs');
 const logger = require('./logger');
 const { mongo, env } = require('./vars');
 
@@ -30,17 +30,19 @@ const mongooseOptions = {
 
 /*
  * SSL CA CERT filepath where cert will be stored
- * saved on flight from env.var since mongoose does not support env var ssl
+ * saved on flight into file from env.var since mongoose does not support env var ssl
  *
  * Add production params to MongoDB options
+ * Add cert to mongo uri
  */
-if (env === 'production') {
-  const mongoCertPath = 'mongo-ca-cert.crt';
-  fs.writeFileSync(mongoCertPath, mongo.cert);
-  mongooseOptions.sslCA = mongoCertPath;
-  mongooseOptions.tlsCAFile = mongoCertPath;
-  mongooseOptions.ssl = true;
-}
+// let finalMongoUri = mongo.uri;
+// if (env === 'production') {
+//   const mongoCertPath = '/app/SSL_CERTS/mongo-ca-cert.crt';
+//   fs.writeFileSync(mongoCertPath, mongo.cert);
+//   mongooseOptions.ssl = true;
+//   mongooseOptions.tlsCAFile = mongoCertPath;
+//   finalMongoUri += `&tlsCAFile=${mongoCertPath}`;
+// }
 
 /**
  * Connect to mongo db

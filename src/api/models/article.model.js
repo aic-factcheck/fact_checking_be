@@ -24,6 +24,11 @@ const articleSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
+  title: {
+    type: String,
+    maxlength: 256,
+    index: true,
+  },
   text: {
     type: String,
     maxlength: 16448,
@@ -62,7 +67,7 @@ const articleSchema = new mongoose.Schema({
 articleSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'addedBy', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims'];
+    const fields = ['_id', 'addedBy', 'title', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
