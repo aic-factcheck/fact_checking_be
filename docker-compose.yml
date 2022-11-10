@@ -4,7 +4,7 @@ services:
   api:
     build: .
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/express-rest-es2017-boilerplate
+      MONGO_URI: ${MONGO_URI}
     volumes:
       - .:/app
     ports:
