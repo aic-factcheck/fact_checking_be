@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const fs = require('fs');
 const logger = require('./logger');
 const { mongo, env } = require('./vars');
 
@@ -16,6 +17,31 @@ if (env === 'development') {
   mongoose.set('debug', true);
 }
 
+/*
+ * Define options and setup MongoDB params
+ */
+const mongooseOptions = {
+  useCreateIndex: true,
+  keepAlive: 1,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+};
+
+/*
+ * SSL CA CERT filepath where cert will be stored
+ * saved on flight from env.var since mongoose does not support env var ssl
+ *
+ * Add production params to MongoDB options
+ */
+if (env === 'production') {
+  const mongoCertPath = 'mongo-ca-cert.crt';
+  fs.writeFileSync(mongoCertPath, mongo.cert);
+  mongooseOptions.sslCA = mongoCertPath;
+  mongooseOptions.tlsCAFile = mongoCertPath;
+  mongooseOptions.ssl = true;
+}
+
 /**
  * Connect to mongo db
  *
@@ -24,13 +50,7 @@ if (env === 'development') {
  */
 exports.connect = () => {
   mongoose
-    .connect(mongo.uri, {
-      useCreateIndex: true,
-      keepAlive: 1,
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-    })
+    .connect(mongo.uri, mongooseOptions)
     .then(() => console.log('mongoDB connected...'));
 
   return mongoose.connection;
