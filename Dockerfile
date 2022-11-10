@@ -11,6 +11,6 @@ ADD package.json yarn.lock /app/
 RUN yarn --pure-lockfile
 ADD . /app
 
-RUN sed -i 's/pidusage(pids, function retPidUsage(err, statistics) {/pidusage(pids, { usePs: true }, function retPidUsage(err, statistics) {/' /app/node_modules/pm2/lib/God/ActionMethods.js
+RUN apk --no-cache add procps
 
 CMD ["yarn", "docker:start"]
