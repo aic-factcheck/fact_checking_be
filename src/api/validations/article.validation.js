@@ -16,7 +16,7 @@ module.exports = {
     body: {
       title: Joi.string().min(6).max(512),
       text: Joi.string().min(6).max(16448).required(),
-      sourceUrl: Joi.string().max(256),
+      sourceUrl: Joi.string().max(128),
       sourceType: Joi.string().valid(Article.articleTypes).required(),
       language: Joi.string().valid(Article.languages).required(),
     },
@@ -26,7 +26,7 @@ module.exports = {
   replaceArticle: {
     body: {
       text: Joi.string().min(6).max(16448).required(),
-      sourceUrl: Joi.string().max(256),
+      sourceUrl: Joi.string().max(128),
       sourceType: Joi.string().valid(Article.articleTypes).required(),
       language: Joi.string().valid(Article.languages).required(),
     },
