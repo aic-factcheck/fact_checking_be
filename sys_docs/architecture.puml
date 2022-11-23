@@ -1,0 +1,28 @@
+@startuml Architecure overview
+
+package "User" {
+  [FrontEnd web app] as fe
+}
+
+package "Digital Ocean cloud" {
+
+  cloud {
+    [APP services with LoadBalancer\nPossibly Kubernetes cluster in future] as be
+  }
+
+  database "MongoDB Cluster" {
+    [Mongo] as mongo
+  }
+
+  component "Papertrail \nLog analysis" as log
+
+  component "ElasticSearch in future\nfor efficient text searches" as elastic
+  component "Redis in future\n for session management" as redis
+}
+
+
+[fe] --> [be]
+[be] --> [mongo]
+[be] --> [log]
+' [be] --> [elastic]
+@enduml

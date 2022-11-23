@@ -21,7 +21,7 @@ router.use('/docs', express.static('docs'));
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
 
-// includes nested claims and review routes
+// include nested claims and review routes
 router.use('/articles', articleRoutes);
 router.use('/search', searchRoutes);
 router.use('/vote', ratingRoutes);
