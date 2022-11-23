@@ -57,10 +57,10 @@ exports.create = async (req, res, next) => {
     const claim = Object.assign(req.locals.claim);
 
     // based on vote type, update claim's votes
-    if (req.body.vote === 'positive') {
+    if (req.body.vode === 'positive') {
       claim.nPositiveVotes += 1;
       claim.positiveVotes = [...claim.positiveVotes, req.user.id];
-    } else if (req.body.vote === 'neutral') {
+    } else if (req.body.vode === 'neutral') {
       claim.nNeutralVotes += 1;
       claim.neutralVotes = [...claim.neutralVotes, req.user.id];
     } else if (req.body.vode === 'negative') {
