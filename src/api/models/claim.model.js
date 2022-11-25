@@ -125,6 +125,24 @@ claimSchema.statics = {
       status: httpStatus.NOT_FOUND,
     });
   },
+
+  /**
+   * List user's claims in descending order of 'createdAt' timestamp.
+   *
+   * @param {number} skip - Number of articles to be skipped.
+   * @param {number} limit - Limit number of articles to be returned.
+   * @param {ObjectId} userId - UserId of user who created resource
+   * @returns {Promise<Article[]>}
+   */
+  userClaimsList({
+    page = 1, perPage = 30, addedBy,
+  }) {
+    return this.find({ addedBy })
+      .sort({ createdAt: -1 })
+      .skip(perPage * (page - 1))
+      .limit(perPage)
+      .exec();
+  },
 };
 
 // claimSchema.index({ text: 'text' });

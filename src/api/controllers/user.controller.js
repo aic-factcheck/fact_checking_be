@@ -122,7 +122,8 @@ exports.remove = (req, res, next) => {
  */
 exports.getUsersArticles = async (req, res, next) => {
   try {
-    const articles = await Article.list(req.query);
+    req.query.addedBy = req.user.id; // add current userId to req.query to be parsed in db query
+    const articles = await Article.userArticlesList(req.query);
     const transformedArticles = articles.map((x) => x.transform());
     res.json(transformedArticles);
   } catch (e) {
@@ -136,7 +137,8 @@ exports.getUsersArticles = async (req, res, next) => {
  */
 exports.getUsersClaims = async (req, res, next) => {
   try {
-    const claims = await Claim.list(req.query);
+    req.query.addedBy = req.user.id; // add current userId to req.query to be parsed in db query
+    const claims = await Claim.userClaimsList(req.query);
     const transformedClaims = claims.map((x) => x.transform());
     res.json(transformedClaims);
   } catch (e) {
