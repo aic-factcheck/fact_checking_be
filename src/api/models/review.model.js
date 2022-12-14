@@ -48,11 +48,23 @@ const reviewSchema = new mongoose.Schema({
 reviewSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'userId', 'claimId', 'articleId', 'text', 'createdAt', 'vote'];
+    const fields = ['_id', 'claimId', 'articleId', 'text', 'createdAt', 'vote'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
     });
+
+    // remove unwanted fields from populated User object
+    const user = this.userId;
+    const transformedUser = {};
+    const userFields = ['_id', 'firstName', 'lastName', 'email'];
+
+    if (this.userId) {
+      userFields.forEach((field) => {
+        transformedUser[field] = user[field];
+      });
+    }
+    transformed.addedBy = transformedUser;
 
     return transformed;
   },
@@ -72,13 +84,13 @@ reviewSchema.statics = {
    * @returns {Promise<Review, APIError>}
    */
   async get(id) {
-    let inv;
+    let review;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      inv = await this.findById(id).exec();
+      review = await this.findById(id).populate('userId').exec();
     }
-    if (inv) {
-      return inv;
+    if (review) {
+      return review;
     }
 
     throw new APIError({

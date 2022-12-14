@@ -59,7 +59,7 @@ describe('Article API', async () => {
         .then((res) => {
           expect(res.body).to.have.a.property('_id');
           expect(res.body).to.have.a.property('createdAt');
-          expect(res.body.addedBy).to.be.equal(user._id);
+          expect(res.body.addedBy._id).to.be.equal(user._id);
           expect(res.body.text).to.be.equal(article1.text);
           expect(res.body.sourceUrl).to.be.equal(article1.sourceUrl);
           expect(res.body.sourceType).to.be.equal(article1.sourceType);
@@ -76,7 +76,7 @@ describe('Article API', async () => {
         .then((res) => {
           expect(res.body).to.have.a.property('_id');
           expect(res.body).to.have.a.property('createdAt');
-          expect(res.body.addedBy).to.be.equal(user._id);
+          expect(res.body.addedBy._id).to.be.equal(user._id);
           expect(res.body.text).to.be.equal(article2.text);
           expect(res.body.sourceUrl).to.be.equal(article2.sourceUrl);
           expect(res.body.sourceType).to.be.equal(article2.sourceType);

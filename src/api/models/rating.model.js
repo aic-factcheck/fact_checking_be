@@ -54,11 +54,23 @@ const ratingSchema = new mongoose.Schema({
 ratingSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'ratedBy', 'userId', 'articleId', 'claimId', 'reviewId', 'rating', 'text', 'createdAt'];
+    const fields = ['_id', 'userId', 'articleId', 'claimId', 'reviewId', 'rating', 'text', 'createdAt'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
     });
+
+    // remove unwanted fields from populated User object
+    const user = this.ratedBy;
+    const transformedUser = {};
+    const userFields = ['_id', 'firstName', 'lastName', 'email'];
+
+    if (this.ratedBy) {
+      userFields.forEach((field) => {
+        transformedUser[field] = user[field];
+      });
+    }
+    transformed.addedBy = transformedUser;
 
     return transformed;
   },
@@ -79,7 +91,7 @@ ratingSchema.statics = {
     let rating;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      rating = await this.findById(id).exec();
+      rating = await this.findById(id).populate('ratedBy').exec();
     }
     if (rating) {
       return rating;

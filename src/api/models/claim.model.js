@@ -53,6 +53,18 @@ claimSchema.method({
       transformed[field] = this[field];
     });
 
+    // remove unwanted fields from populated User object
+    const user = this.addedBy;
+    const transformedUser = {};
+    const userFields = ['_id', 'firstName', 'lastName', 'email'];
+
+    if (this.addedBy) {
+      userFields.forEach((field) => {
+        transformedUser[field] = user[field];
+      });
+    }
+    transformed.addedBy = transformedUser;
+
     return transformed;
   },
 });
@@ -72,7 +84,7 @@ claimSchema.statics = {
     let claim;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      claim = await this.findById(id).exec();
+      claim = await this.findById(id).populate('addedBy').exec();
     }
     if (claim) {
       return claim;

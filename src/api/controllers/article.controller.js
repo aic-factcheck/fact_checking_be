@@ -78,7 +78,7 @@ exports.update = (req, res, next) => {
 exports.list = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
-    const articles = await Article.find().limit(perPage).skip(perPage * (page - 1));
+    const articles = await Article.find().populate('addedBy').limit(perPage).skip(perPage * (page - 1));
     const transformedArticles = articles.map((x) => x.transform());
     res.json(transformedArticles);
   } catch (error) {

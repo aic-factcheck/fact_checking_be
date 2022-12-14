@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const httpStatus = require('http-status');
-// const { omitBy, isNil } = require('lodash');
 const APIError = require('../errors/api-error');
 
 /**
@@ -67,11 +66,23 @@ const articleSchema = new mongoose.Schema({
 articleSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'addedBy', 'title', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims'];
+    const fields = ['_id', 'title', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
     });
+
+    // remove unwanted fields from populated User object
+    const user = this.addedBy;
+    const transformedUser = {};
+    const userFields = ['_id', 'firstName', 'lastName', 'email'];
+
+    if (this.addedBy) {
+      userFields.forEach((field) => {
+        transformedUser[field] = user[field];
+      });
+    }
+    transformed.addedBy = transformedUser;
 
     return transformed;
   },
@@ -95,8 +106,9 @@ articleSchema.statics = {
     let article;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      article = await this.findById(id).exec();
+      article = await this.findById(id).populate('addedBy').exec();
     }
+
     if (article) {
       return article;
     }
