@@ -26,6 +26,8 @@ describe('Article API', async () => {
       email: 'user1@gmail.com',
       password: '123456',
       name: 'Admin User',
+      firstName: 'Meno',
+      lastName: 'Priezvisko',
       role: 'admin',
     };
 
@@ -133,6 +135,8 @@ describe('Article API', async () => {
       });
   });
 
+  let article1Id;
+
   describe('GET /v1/articles', () => {
     it('should list articles', () => {
       return request(app)
@@ -142,11 +146,34 @@ describe('Article API', async () => {
         .then(async (res) => {
           const includesArticle1 = some(res.body, article1);
           const includesArticle2 = some(res.body, article2);
+          article1Id = res.body[0]._id;
 
           expect(res.body).to.be.an('array');
           expect(res.body).to.have.lengthOf(2);
           expect(includesArticle1).to.be.true;
           expect(includesArticle2).to.be.true;
+
+          expect(res.body[0].addedBy).to.have.a.property('firstName');
+          expect(res.body[0].addedBy).to.have.a.property('lastName');
+          expect(res.body[0].addedBy).to.have.a.property('email');
+          expect(res.body[0].addedBy).to.have.a.property('_id');
+        });
+    });
+  });
+
+  describe('GET /v1/articles/:articleId', () => {
+    it('should get selected article', () => {
+      return request(app)
+        .get(`/v1/articles/${article1Id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.OK)
+        .then(async (res) => {
+          expect(res.body).to.be.an('object');
+
+          expect(res.body.addedBy).to.have.a.property('firstName');
+          expect(res.body.addedBy).to.have.a.property('lastName');
+          expect(res.body.addedBy).to.have.a.property('email');
+          expect(res.body.addedBy).to.have.a.property('_id');
         });
     });
   });

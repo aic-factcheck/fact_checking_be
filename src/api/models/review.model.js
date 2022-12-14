@@ -38,6 +38,12 @@ const reviewSchema = new mongoose.Schema({
     type: String,
     enum: voteTypes,
   },
+  links: [
+    {
+      type: String,
+      maxlength: 512,
+    },
+  ],
 }, {
   timestamps: true,
 });
@@ -48,7 +54,7 @@ const reviewSchema = new mongoose.Schema({
 reviewSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'claimId', 'articleId', 'text', 'createdAt', 'vote'];
+    const fields = ['_id', 'claimId', 'articleId', 'text', 'createdAt', 'vote', 'links'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
