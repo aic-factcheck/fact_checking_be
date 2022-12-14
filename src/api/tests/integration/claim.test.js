@@ -4,7 +4,7 @@ const request = require('supertest');
 const httpStatus = require('http-status');
 const { expect } = require('chai');
 const { _ } = require('lodash');
-// const { some } = require('lodash');
+const { some } = require('lodash');
 const app = require('../../../index');
 const User = require('../../models/user.model');
 const Article = require('../../models/article.model');
@@ -16,14 +16,10 @@ describe('Article API', async () => {
   let article;
   let claim1;
   let claim2;
+  // let claimId;
+  let articleId;
 
   before(async () => {
-    await Claim.deleteMany({});
-    await Article.deleteMany({});
-    await User.deleteMany({});
-  });
-
-  beforeEach(async () => {
     user = {
       _id: '41224d776a326fb40f000001',
       email: 'user1@gmail.com',
@@ -51,9 +47,16 @@ describe('Article API', async () => {
       text: 'ADdqwd qwqw56d 6dqw56qw  aasaaaa hh nejaky nahodny text. Lorem ipsum alebo take daco hmm..',
     };
 
-    await User.deleteMany({});
-    await Article.deleteMany({});
     await Claim.deleteMany({});
+    await Article.deleteMany({});
+    await User.deleteMany({});
+  });
+
+  beforeEach(async () => {
+    articleId = '41224d776a326fb40f000002';
+    await Claim.deleteMany({});
+    await Article.deleteMany({});
+    await User.deleteMany({});
 
     await User.create(user);
     userAccessToken = (await User.findAndGenerateToken(user)).accessToken;
@@ -116,50 +119,55 @@ describe('Article API', async () => {
       .expect(httpStatus.UNAUTHORIZED);
   });
 
-  // let claimId;
+  describe('GET /v1/articles/:articleId/claims', async () => {
+    const xArticles = await Article.find();
+    articleId = xArticles[0]._id;
 
-  // describe('GET /v1/articles/:articleId/claims', () => {
-  //   it('should list claims for article', () => {
-  //     return request(app)
-  //       .get(`/v1/articles${article._id}/claims`)
-  //       .set('Authorization', `Bearer ${userAccessToken}`)
-  //       .expect(httpStatus.OK)
-  //       .then(async (res) => {
-  //         const includesClaim1 = some(res.body, article);
-  //         const includesClaim2 = some(res.body, article);
-  //         claimId = res.body[0]._id;
+    it('should list claims for article', () => {
+      return request(app)
+        .get(`/v1/articles${articleId}/claims`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.OK)
+        .then(async (res) => {
+          const includesClaim1 = some(res.body, article);
+          const includesClaim2 = some(res.body, article);
 
-  //         expect(res.body).to.be.an('array');
-  //         expect(res.body).to.have.lengthOf(2);
-  //         expect(includesClaim1).to.be.true;
-  //         expect(includesClaim2).to.be.true;
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.lengthOf(2);
+          expect(includesClaim1).to.be.true;
+          expect(includesClaim2).to.be.true;
 
-  //         expect(res.body[0]).to.have.a.property('_id');
-  //         expect(res.body[0]).to.have.a.property('text');
-  //         expect(res.body[0]).to.have.a.property('addedBy');
+          expect(res.body[0]).to.have.a.property('_id');
+          expect(res.body[0]).to.have.a.property('text');
+          expect(res.body[0]).to.have.a.property('addedBy');
 
-  //         expect(res.body[0].addedBy).to.have.a.property('firstName');
-  //         expect(res.body[0].addedBy).to.have.a.property('lastName');
-  //         expect(res.body[0].addedBy).to.have.a.property('email');
-  //         expect(res.body[0].addedBy).to.have.a.property('_id');
-  //       });
-  //   });
-  // });
+          expect(res.body[0].addedBy).to.have.a.property('firstName');
+          expect(res.body[0].addedBy).to.have.a.property('lastName');
+          expect(res.body[0].addedBy).to.have.a.property('email');
+          expect(res.body[0].addedBy).to.have.a.property('_id');
+        });
+    });
+  });
 
-  // describe('GET /v1/articles/:articleId/claims/:claimId', () => {
-  //   it('should get selected claim for article', () => {
-  //     return request(app)
-  //       .get(`/v1/articles${article._id}/claims/${claimId}`)
-  //       .set('Authorization', `Bearer ${userAccessToken}`)
-  //       .expect(httpStatus.OK)
-  //       .then(async (res) => {
-  //         expect(res.body).to.be.an('object');
+  describe('GET /v1/articles/:articleId/claims/:claimId', async () => {
+    const xArticles = await Article.find();
+    const xClaims = await Claim.find();
 
-  //         expect(res.body.addedBy).to.have.a.property('firstName');
-  //         expect(res.body.addedBy).to.have.a.property('lastName');
-  //         expect(res.body.addedBy).to.have.a.property('email');
-  //         expect(res.body.addedBy).to.have.a.property('_id');
-  //       });
-  //   });
-  // });
+    it('should get selected claim for article', () => {
+      return request(app)
+        .get(`/v1/articles${xArticles[0]._id}/claims/${xClaims[0]._id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.OK)
+        .then(async (res) => {
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.a.property('text');
+          expect(res.body).to.have.a.property('text');
+
+          expect(res.body.addedBy).to.have.a.property('firstName');
+          expect(res.body.addedBy).to.have.a.property('lastName');
+          expect(res.body.addedBy).to.have.a.property('email');
+          expect(res.body.addedBy).to.have.a.property('_id');
+        });
+    });
+  });
 });
