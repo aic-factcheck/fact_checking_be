@@ -4,13 +4,13 @@ const request = require('supertest');
 const httpStatus = require('http-status');
 const { expect } = require('chai');
 const { _ } = require('lodash');
-const { some } = require('lodash');
+// const { some } = require('lodash');
 const app = require('../../../index');
 const User = require('../../models/user.model');
 const Article = require('../../models/article.model');
-const Claim = require('../../models/claim.model');
+const Claim = require('../../models/article.model');
 
-describe('Claims API', async () => {
+describe('Article API', async () => {
   let userAccessToken;
   let user;
   let article;
@@ -51,10 +51,9 @@ describe('Claims API', async () => {
       text: 'ADdqwd qwqw56d 6dqw56qw  aasaaaa hh nejaky nahodny text. Lorem ipsum alebo take daco hmm..',
     };
 
-    // articleId = '41224d776a326fb40f000002';
-    await Claim.deleteMany({});
-    await Article.deleteMany({});
     await User.deleteMany({});
+    await Article.deleteMany({});
+    await Claim.deleteMany({});
 
     await User.create(user);
     userAccessToken = (await User.findAndGenerateToken(user)).accessToken;
@@ -63,7 +62,7 @@ describe('Claims API', async () => {
   });
 
   describe('POST /v1/articles/:articleId/claims', () => {
-    it('should create a new claim', () => {
+    it('should create a new article', () => {
       return request(app)
         .post(`/v1/articles/${article._id}/claims`)
         .set('Authorization', `Bearer ${userAccessToken}`)
@@ -78,7 +77,7 @@ describe('Claims API', async () => {
         });
     });
 
-    it('should create a new claim', () => {
+    it('should create a new article', () => {
       return request(app)
         .post(`/v1/articles/${article._id}/claims`)
         .set('Authorization', `Bearer ${userAccessToken}`)
@@ -95,7 +94,7 @@ describe('Claims API', async () => {
 
   it('should report error when text is not provided', () => {
     return request(app)
-      .post(`/v1/articles/${article._id}/claims`)
+      .post('/v1/articles')
       .set('Authorization', `Bearer ${userAccessToken}`)
       .send(_.omit(claim2, ['text']))
       .expect(httpStatus.BAD_REQUEST)
@@ -111,60 +110,56 @@ describe('Claims API', async () => {
 
   it('should report error when user has no auth', () => {
     return request(app)
-      .post(`/v1/articles/${article._id}/claims`)
+      .post('/v1/articles')
       .set('Authorization', 'Bearer ')
       .send(_.omit(claim2, ['language']))
       .expect(httpStatus.UNAUTHORIZED);
   });
 
-  describe('GET /v1/articles/:articleId/claims', async () => {
-    const xArticles = await Article.find();
+  // let claimId;
 
-    it('should list claims for article', () => {
-      return request(app)
-        .get(`/v1/articles${xArticles[0]._id}/claims`)
-        .set('Authorization', `Bearer ${userAccessToken}`)
-        .expect(httpStatus.OK)
-        .then(async (res) => {
-          const includesClaim1 = some(res.body, article);
-          const includesClaim2 = some(res.body, article);
+  // describe('GET /v1/articles/:articleId/claims', () => {
+  //   it('should list claims for article', () => {
+  //     return request(app)
+  //       .get(`/v1/articles${article._id}/claims`)
+  //       .set('Authorization', `Bearer ${userAccessToken}`)
+  //       .expect(httpStatus.OK)
+  //       .then(async (res) => {
+  //         const includesClaim1 = some(res.body, article);
+  //         const includesClaim2 = some(res.body, article);
+  //         claimId = res.body[0]._id;
 
-          expect(res.body).to.be.an('array');
-          expect(res.body).to.have.lengthOf(2);
-          expect(includesClaim1).to.be.true;
-          expect(includesClaim2).to.be.true;
+  //         expect(res.body).to.be.an('array');
+  //         expect(res.body).to.have.lengthOf(2);
+  //         expect(includesClaim1).to.be.true;
+  //         expect(includesClaim2).to.be.true;
 
-          expect(res.body[0]).to.have.a.property('_id');
-          expect(res.body[0]).to.have.a.property('text');
-          expect(res.body[0]).to.have.a.property('addedBy');
+  //         expect(res.body[0]).to.have.a.property('_id');
+  //         expect(res.body[0]).to.have.a.property('text');
+  //         expect(res.body[0]).to.have.a.property('addedBy');
 
-          expect(res.body[0].addedBy).to.have.a.property('firstName');
-          expect(res.body[0].addedBy).to.have.a.property('lastName');
-          expect(res.body[0].addedBy).to.have.a.property('email');
-          expect(res.body[0].addedBy).to.have.a.property('_id');
-        });
-    });
-  });
+  //         expect(res.body[0].addedBy).to.have.a.property('firstName');
+  //         expect(res.body[0].addedBy).to.have.a.property('lastName');
+  //         expect(res.body[0].addedBy).to.have.a.property('email');
+  //         expect(res.body[0].addedBy).to.have.a.property('_id');
+  //       });
+  //   });
+  // });
 
-  describe('GET /v1/articles/:articleId/claims/:claimId', async () => {
-    // const xArticles = await Article.find();
-    const xClaims = await Claim.find();
+  // describe('GET /v1/articles/:articleId/claims/:claimId', () => {
+  //   it('should get selected claim for article', () => {
+  //     return request(app)
+  //       .get(`/v1/articles${article._id}/claims/${claimId}`)
+  //       .set('Authorization', `Bearer ${userAccessToken}`)
+  //       .expect(httpStatus.OK)
+  //       .then(async (res) => {
+  //         expect(res.body).to.be.an('object');
 
-    it('should get selected claim for article', () => {
-      return request(app)
-        .get(`/v1/articles${article._id}/claims/${xClaims[0]._id}`)
-        .set('Authorization', `Bearer ${userAccessToken}`)
-        .expect(httpStatus.OK)
-        .then(async (res) => {
-          expect(res.body).to.be.an('object');
-          expect(res.body).to.have.a.property('text');
-          expect(res.body).to.have.a.property('text');
-
-          expect(res.body.addedBy).to.have.a.property('firstName');
-          expect(res.body.addedBy).to.have.a.property('lastName');
-          expect(res.body.addedBy).to.have.a.property('email');
-          expect(res.body.addedBy).to.have.a.property('_id');
-        });
-    });
-  });
+  //         expect(res.body.addedBy).to.have.a.property('firstName');
+  //         expect(res.body.addedBy).to.have.a.property('lastName');
+  //         expect(res.body.addedBy).to.have.a.property('email');
+  //         expect(res.body.addedBy).to.have.a.property('_id');
+  //       });
+  //   });
+  // });
 });
