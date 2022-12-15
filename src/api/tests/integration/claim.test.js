@@ -8,18 +8,22 @@ const { some } = require('lodash');
 const app = require('../../../index');
 const User = require('../../models/user.model');
 const Article = require('../../models/article.model');
-const Claim = require('../../models/article.model');
+const Claim = require('../../models/claim.model');
 
-describe('Article API', async () => {
+describe('Claims API', async () => {
   let userAccessToken;
   let user;
   let article;
   let claim1;
   let claim2;
-  // let claimId;
-  let articleId;
 
   before(async () => {
+    await Claim.deleteMany({});
+    await Article.deleteMany({});
+    await User.deleteMany({});
+  });
+
+  beforeEach(async () => {
     user = {
       _id: '41224d776a326fb40f000001',
       email: 'user1@gmail.com',
@@ -47,13 +51,7 @@ describe('Article API', async () => {
       text: 'ADdqwd qwqw56d 6dqw56qw  aasaaaa hh nejaky nahodny text. Lorem ipsum alebo take daco hmm..',
     };
 
-    await Claim.deleteMany({});
-    await Article.deleteMany({});
-    await User.deleteMany({});
-  });
-
-  beforeEach(async () => {
-    articleId = '41224d776a326fb40f000002';
+    // articleId = '41224d776a326fb40f000002';
     await Claim.deleteMany({});
     await Article.deleteMany({});
     await User.deleteMany({});
@@ -65,7 +63,7 @@ describe('Article API', async () => {
   });
 
   describe('POST /v1/articles/:articleId/claims', () => {
-    it('should create a new article', () => {
+    it('should create a new claim', () => {
       return request(app)
         .post(`/v1/articles/${article._id}/claims`)
         .set('Authorization', `Bearer ${userAccessToken}`)
@@ -80,7 +78,7 @@ describe('Article API', async () => {
         });
     });
 
-    it('should create a new article', () => {
+    it('should create a new claim', () => {
       return request(app)
         .post(`/v1/articles/${article._id}/claims`)
         .set('Authorization', `Bearer ${userAccessToken}`)
@@ -97,7 +95,7 @@ describe('Article API', async () => {
 
   it('should report error when text is not provided', () => {
     return request(app)
-      .post('/v1/articles')
+      .post(`/v1/articles/${article._id}/claims`)
       .set('Authorization', `Bearer ${userAccessToken}`)
       .send(_.omit(claim2, ['text']))
       .expect(httpStatus.BAD_REQUEST)
@@ -113,7 +111,7 @@ describe('Article API', async () => {
 
   it('should report error when user has no auth', () => {
     return request(app)
-      .post('/v1/articles')
+      .post(`/v1/articles/${article._id}/claims`)
       .set('Authorization', 'Bearer ')
       .send(_.omit(claim2, ['language']))
       .expect(httpStatus.UNAUTHORIZED);
@@ -121,11 +119,10 @@ describe('Article API', async () => {
 
   describe('GET /v1/articles/:articleId/claims', async () => {
     const xArticles = await Article.find();
-    articleId = xArticles[0]._id;
 
     it('should list claims for article', () => {
       return request(app)
-        .get(`/v1/articles${articleId}/claims`)
+        .get(`/v1/articles${xArticles[0]._id}/claims`)
         .set('Authorization', `Bearer ${userAccessToken}`)
         .expect(httpStatus.OK)
         .then(async (res) => {
@@ -150,12 +147,12 @@ describe('Article API', async () => {
   });
 
   describe('GET /v1/articles/:articleId/claims/:claimId', async () => {
-    const xArticles = await Article.find();
+    // const xArticles = await Article.find();
     const xClaims = await Claim.find();
 
     it('should get selected claim for article', () => {
       return request(app)
-        .get(`/v1/articles${xArticles[0]._id}/claims/${xClaims[0]._id}`)
+        .get(`/v1/articles${article._id}/claims/${xClaims[0]._id}`)
         .set('Authorization', `Bearer ${userAccessToken}`)
         .expect(httpStatus.OK)
         .then(async (res) => {
