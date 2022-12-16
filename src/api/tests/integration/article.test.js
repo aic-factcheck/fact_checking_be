@@ -381,7 +381,7 @@ describe('Article API', async () => {
         });
     });
 
-    it('should delete user', async () => {
+    it('should delete article', async () => {
       return request(app)
         .delete(`/v1/articles/${article1Id}`)
         .set('Authorization', `Bearer ${userAccessToken}`)

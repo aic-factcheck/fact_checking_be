@@ -31,8 +31,9 @@ module.exports = {
 
   // PUT /v1/articles/:id/claims/:claimId
   replaceClaim: {
-    // body: {
-    // },
+    body: {
+      text: Joi.string().min(6).max(512).required(),
+    },
     // params: {
     // },
   },
@@ -40,6 +41,7 @@ module.exports = {
   // PATCH /v1/articles/:id/claims/:claimId
   updateClaim: {
     // body: {
+    //   text: Joi.string().min(6).max(512).required(),
     // },
     // params: {
     // },
