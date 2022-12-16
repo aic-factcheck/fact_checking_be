@@ -48,6 +48,13 @@ exports.create = async (req, res, next) => {
   try {
     await checkCurrentUserReview(req.user.id, req.locals.claim._id, next);
 
+    if (req.user.id === req.locals.claim._id) {
+      throw new APIError({
+        status: httpStatus.BAD_REQUEST,
+        message: 'Owner of a claim cannot review it.',
+      });
+    }
+
     const review = new Review(_.assign(req.body, {
       userId: req.user.id,
       priority: 1,

@@ -11,9 +11,12 @@ const Article = require('../../models/article.model');
 
 describe('Article API', async () => {
   let userAccessToken;
+  let user2AccessToken;
   let user;
+  let user2;
   let article1;
   let article2;
+  let article1Id;
 
   before(async () => {
     await Article.deleteMany({});
@@ -31,7 +34,18 @@ describe('Article API', async () => {
       role: 'admin',
     };
 
+    user2 = {
+      _id: '41224d776a326fb40f000010',
+      email: 'usertest@gmail.com',
+      password: '123456',
+      name: 'Xddd',
+      firstName: 'ddddd',
+      lastName: 'Priezdvisko',
+      role: 'user',
+    };
+
     article1 = {
+      title: 'first title',
       text: 'Lorem Ipsum is simply dummg industry. Lorem Ipsum has been the industry',
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
@@ -39,6 +53,7 @@ describe('Article API', async () => {
     };
 
     article2 = {
+      title: 'SECOND title',
       text: 'Druhy clanok hh nejaky nahodny text. Nema to ziadny zmysel, ale vsak to nie je podsatatne..',
       sourceUrl: 'https://xyzabc.com',
       sourceType: 'article',
@@ -49,6 +64,8 @@ describe('Article API', async () => {
 
     await User.create(user);
     userAccessToken = (await User.findAndGenerateToken(user)).accessToken;
+    await User.create(user2);
+    user2AccessToken = (await User.findAndGenerateToken(user2)).accessToken;
   });
 
   describe('POST /v1/articles', () => {
@@ -135,8 +152,6 @@ describe('Article API', async () => {
       });
   });
 
-  let article1Id;
-
   describe('GET /v1/articles', () => {
     it('should list articles', () => {
       return request(app)
@@ -147,6 +162,7 @@ describe('Article API', async () => {
           const includesArticle1 = some(res.body, article1);
           const includesArticle2 = some(res.body, article2);
           article1Id = res.body[0]._id;
+          article1Id = res.body[1]._id;
 
           expect(res.body).to.be.an('array');
           expect(res.body).to.have.lengthOf(2);
@@ -169,11 +185,222 @@ describe('Article API', async () => {
         .expect(httpStatus.OK)
         .then(async (res) => {
           expect(res.body).to.be.an('object');
+          expect(res.body).to.have.a.property('title');
+          expect(res.body).to.have.a.property('claims');
+          expect(res.body).to.have.a.property('sourceUrl');
+          expect(res.body).to.have.a.property('sourceType');
+          expect(res.body).to.have.a.property('language');
 
           expect(res.body.addedBy).to.have.a.property('firstName');
           expect(res.body.addedBy).to.have.a.property('lastName');
           expect(res.body.addedBy).to.have.a.property('email');
           expect(res.body.addedBy).to.have.a.property('_id');
+        });
+    });
+  });
+
+  describe('PUT /v1/articles/:articleId', () => {
+    it('should replace article', async () => {
+      const updatedArticle = {
+        text: 'This is an updated article',
+        sourceUrl: 'https://www.update.com/',
+        sourceType: 'article',
+        language: 'cz',
+      };
+
+      return request(app)
+        .put(`/v1/articles/${article1Id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(updatedArticle)
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.include(updatedArticle);
+
+          expect(res.body._id).to.be.equal(article1Id);
+          expect(res.body.text).to.be.equal(updatedArticle.text);
+          expect(res.body.title).to.not.have.property('title');
+          expect(res.body.sourceUrl).to.be.equal(updatedArticle.sourceUrl);
+          expect(res.body.sourceType).to.be.equal(updatedArticle.sourceType);
+          expect(res.body.language).to.be.equal(updatedArticle.language);
+
+          expect(res.body.addedBy._id).to.be.equal(user._id);
+        });
+    });
+
+    it('should report error when text is not provided', async () => {
+      const updatedArticle = {
+        title: 'This is an updated article',
+        sourceUrl: 'https://www.update.com/',
+        sourceType: 'article',
+        language: 'cz',
+      };
+
+      return request(app)
+        .put(`/v1/articles/${article1Id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(updatedArticle)
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          const { field, location, messages } = res.body.errors[0];
+
+          expect(field).to.be.equal('text');
+          expect(location).to.be.equal('body');
+          expect(messages).to.include('"text" is required');
+        });
+    });
+
+    it('should report error when sourceUrl is longer than 256', async () => {
+      const updatedArticle = {
+        text: 'This is an updated article',
+        sourceUrl: 'https://www.update.com/asdbdadadsdasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadadadaasdbdadadsdasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadadadaasdbdadadsdasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadadada',
+        sourceType: 'article',
+        language: 'cz',
+      };
+
+      return request(app)
+        .put(`/v1/articles/${article1Id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(updatedArticle)
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          const { field, location, messages } = res.body.errors[0];
+
+          expect(field).to.be.equal('sourceUrl');
+          expect(location).to.be.equal('body');
+          expect(messages).to.include('"sourceUrl" length must be less than or equal to 256 characters long');
+        });
+    });
+
+    it('should report error "Article does not exist" when article does not exists', () => {
+      return request(app)
+        .put('/v1/articles/hhXddRandomSmth')
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.NOT_FOUND)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(404);
+          expect(res.body.message).to.be.equal('Article does not exist');
+        });
+    });
+
+    it('should report error when logged user is not the owner of article', async () => {
+      const updatedArticle = {
+        text: 'This is an updated article',
+        sourceUrl: 'https://www.update.com/',
+        sourceType: 'article',
+        language: 'cz',
+      };
+
+      return request(app)
+        .put(`/v1/articles/${article1Id}`)
+        .set('Authorization', `Bearer ${user2AccessToken}`)
+        .send(updatedArticle)
+        .expect(httpStatus.FORBIDDEN)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
+          expect(res.body.message).to.be.equal('Forbidden to perform this action over selected resource.');
+        });
+    });
+  });
+
+  describe('PATCH /v1/articles/:articleId', () => {
+    it('should update article', async () => {
+      const text = 'new text field';
+      const updatedArticle = {
+        text: 'This is an updated article',
+        sourceUrl: 'https://www.update.com/',
+        sourceType: 'article',
+        language: 'cz',
+      };
+
+      return request(app)
+        .patch(`/v1/articles/${article1Id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send({ text })
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body.text).to.be.equal(text);
+
+          expect(res.body._id).to.be.equal(article1Id);
+          expect(res.body.text).to.not.be.equal(updatedArticle.text);
+          expect(res.body.sourceUrl).to.be.equal(updatedArticle.sourceUrl);
+          expect(res.body.sourceType).to.be.equal(updatedArticle.sourceType);
+          expect(res.body.language).to.be.equal(updatedArticle.language);
+        });
+    });
+
+    it('should not update article when no parameters were given', async () => {
+      const updatedArticle = {
+        text: 'new text field',
+        sourceUrl: 'https://www.update.com/',
+        sourceType: 'article',
+        language: 'cz',
+      };
+
+      return request(app)
+        .patch(`/v1/articles/${article1Id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send()
+        .expect(httpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.include(updatedArticle);
+        });
+    });
+
+    it('should report error "Article does not exist" when article does not exists', () => {
+      return request(app)
+        .patch('/v1/articles/laspalmas')
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.NOT_FOUND)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(404);
+          expect(res.body.message).to.be.equal('Article does not exist');
+        });
+    });
+
+    it('should report error when logged user is not the same as the owner', async () => {
+      return request(app)
+        .patch(`/v1/articles/${article1Id}`)
+        .set('Authorization', `Bearer ${user2AccessToken}`)
+        .expect(httpStatus.FORBIDDEN)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
+          expect(res.body.message).to.be.equal('Forbidden to perform this action over selected resource.');
+        });
+    });
+  });
+
+  describe('DELETE /v1/articles', () => {
+    it('should report error when logged user is not the same as the owner', async () => {
+      return request(app)
+        .delete(`/v1/articles/${article1Id}`)
+        .set('Authorization', `Bearer ${user2AccessToken}`)
+        .expect(httpStatus.FORBIDDEN)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(httpStatus.FORBIDDEN);
+          expect(res.body.message).to.be.equal('Forbidden to perform this action over selected resource.');
+        });
+    });
+
+    it('should delete user', async () => {
+      return request(app)
+        .delete(`/v1/articles/${article1Id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.NO_CONTENT)
+        .then(() => request(app).get('/v1/articles'))
+        .then(async () => {
+          const articles = await Article.find({});
+          expect(articles).to.have.lengthOf(1);
+        });
+    });
+
+    it('should report error "Article does not exist" when article does not exists', () => {
+      return request(app)
+        .delete('/v1/articles/laspalmas')
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .expect(httpStatus.NOT_FOUND)
+        .then((res) => {
+          expect(res.body.code).to.be.equal(404);
+          expect(res.body.message).to.be.equal('Article does not exist');
         });
     });
   });

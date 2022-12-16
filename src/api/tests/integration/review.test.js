@@ -54,7 +54,11 @@ describe('Review API', async () => {
 
     review1 = {
       vote: 'positive',
-      links: [],
+      links: [
+        'https://trello.com/b/h9RX9y5p/factcheck',
+        'https://moodle.fel.cvut.cz/?redirect=0',
+        'https://www.youtube.com/watch?v=hyNVtwQrP20&list=RD',
+      ],
       text: 'Prvy claim hh nejaky nahodny text. Nema to ziadny zmysel, ale vsak to nie je podsatatne..',
     };
 
@@ -89,10 +93,10 @@ describe('Review API', async () => {
         .then((res) => {
           expect(res.body).to.have.a.property('_id');
           expect(res.body).to.have.a.property('createdAt');
+          expect(res.body).to.have.a.property('links');
           expect(res.body.addedBy._id).to.be.equal(user._id);
           expect(res.body.text).to.be.equal(review1.text);
           expect(res.body.vote).to.be.equal(review1.vote);
-          // expect(res.body.links).to.be.equal(review1.links);
         });
     });
 
@@ -130,25 +134,18 @@ describe('Review API', async () => {
   });
 
   describe('GET /v1/articles/:articleId/claims/:claimId/reviews', async () => {
-    // const xArticles = await Article.find();
-    // articleId = xArticles[0]._id;
     it('should list reviews for claim', () => {
       return request(app)
         .get(`/v1/articles/${article._id}/claims/${claim._id}/reviews`)
         .set('Authorization', `Bearer ${userAccessToken}`)
         .expect(httpStatus.OK)
         .then(async (res) => {
-          // const includesClaim1 = some(res.body, article);
-
           expect(res.body).to.be.an('array');
           expect(res.body).to.have.lengthOf(1);
-          console.log(res.body);
-          // expect(includesClaim1).to.be.true;
 
           expect(res.body[0]).to.have.a.property('_id');
           expect(res.body[0]).to.have.a.property('text');
           expect(res.body[0]).to.have.a.property('addedBy');
-          // expect(res.body[0]).to.have.a.property('articleId');
           expect(res.body[0]).to.have.a.property('vote');
           expect(res.body[0]).to.have.a.property('links');
 
@@ -174,7 +171,6 @@ describe('Review API', async () => {
           expect(res.body).to.have.a.property('_id');
           expect(res.body).to.have.a.property('text');
           expect(res.body).to.have.a.property('addedBy');
-          // expect(res.body).to.have.a.property('articleId');
           expect(res.body).to.have.a.property('vote');
           expect(res.body).to.have.a.property('links');
 

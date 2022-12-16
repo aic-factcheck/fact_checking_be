@@ -10,7 +10,7 @@ const User = require('../../models/user.model');
 const Article = require('../../models/article.model');
 const Claim = require('../../models/article.model');
 
-describe('Article API', async () => {
+describe('Claim API', async () => {
   let userAccessToken;
   let user;
   let article;
@@ -90,30 +90,30 @@ describe('Article API', async () => {
           expect(res.body.text).to.be.equal(claim2.text);
         });
     });
-  });
 
-  it('should report error when text is not provided', () => {
-    return request(app)
-      .post('/v1/articles')
-      .set('Authorization', `Bearer ${userAccessToken}`)
-      .send(_.omit(claim2, ['text']))
-      .expect(httpStatus.BAD_REQUEST)
-      .then((res) => {
-        const { field } = res.body.errors[0];
-        const { location } = res.body.errors[0];
-        const { messages } = res.body.errors[0];
-        expect(field).to.be.equal('text');
-        expect(location).to.be.equal('body');
-        expect(messages).to.include('"text" is required');
-      });
-  });
+    it('should report error when text is not provided', () => {
+      return request(app)
+        .post('/v1/articles')
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(_.omit(claim2, ['text']))
+        .expect(httpStatus.BAD_REQUEST)
+        .then((res) => {
+          const { field } = res.body.errors[0];
+          const { location } = res.body.errors[0];
+          const { messages } = res.body.errors[0];
+          expect(field).to.be.equal('text');
+          expect(location).to.be.equal('body');
+          expect(messages).to.include('"text" is required');
+        });
+    });
 
-  it('should report error when user has no auth', () => {
-    return request(app)
-      .post('/v1/articles')
-      .set('Authorization', 'Bearer ')
-      .send(_.omit(claim2, ['language']))
-      .expect(httpStatus.UNAUTHORIZED);
+    it('should report error when user has no auth', () => {
+      return request(app)
+        .post('/v1/articles')
+        .set('Authorization', 'Bearer ')
+        .send(_.omit(claim2, ['language']))
+        .expect(httpStatus.UNAUTHORIZED);
+    });
   });
 
   // let claimId;
@@ -127,7 +127,7 @@ describe('Article API', async () => {
   //       .then(async (res) => {
   //         const includesClaim1 = some(res.body, article);
   //         const includesClaim2 = some(res.body, article);
-  //         claimId = res.body[0]._id;
+  //         // claimId = res.body[0]._id;
 
   //         expect(res.body).to.be.an('array');
   //         expect(res.body).to.have.lengthOf(2);
