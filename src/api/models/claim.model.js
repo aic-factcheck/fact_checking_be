@@ -47,7 +47,7 @@ const claimSchema = new mongoose.Schema({
 claimSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'priority', 'addedBy', 'text', 'createdAt', 'articles'];
+    const fields = ['_id', 'priority', 'addedBy', 'articleId', 'text', 'createdAt', 'articles'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
