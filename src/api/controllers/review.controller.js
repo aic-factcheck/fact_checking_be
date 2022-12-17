@@ -122,7 +122,7 @@ exports.update = (req, res, next) => {
 exports.list = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
-    const reviews = await Review.find().populate('userId').limit(perPage).skip(perPage * (page - 1));
+    const reviews = await Review.find({ claimId: req.locals.claim._id }).populate('userId').limit(perPage).skip(perPage * (page - 1));
     const transformedReviews = reviews.map((x) => x.transform());
     res.json(transformedReviews);
   } catch (error) {

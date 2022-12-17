@@ -172,7 +172,7 @@ exports.list = async (req, res, next) => {
     const { page, perPage } = req.query;
     const userReviews = await Review.find({ userId: req.user.id }).lean();
 
-    const claims = await Claim.find().populate('addedBy').limit(perPage).skip(perPage * (page - 1));
+    const claims = await Claim.find({ articleId: req.locals.article._id }).populate('addedBy').limit(perPage).skip(perPage * (page - 1));
     const transformedClaims = claims.map((x) => x.transform());
 
     const mergedClaims = await mergeClaimsWithReviews(transformedClaims, userReviews);
