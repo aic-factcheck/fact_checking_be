@@ -78,7 +78,7 @@ router
    * @apiSuccess {String}  text         Claim's text
    * @apiSuccess {String}  priority     Claim's priority
    * @apiSuccess {Object}  addedBy      User object  who added
-   * @apiSuccess {String}  articleId    Claim id
+   * @apiSuccess {Object}  article    Associated article (creation)
    * @apiSuccess {String[]}  links    Array of links
    * @apiSuccess {String}  language       Language of article
    * @apiSuccess {Date}    createdAt    Timestamp

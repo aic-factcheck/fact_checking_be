@@ -17,6 +17,7 @@ describe('Article API', async () => {
   let article1;
   let article2;
   let article1Id;
+  // let article2Id;
 
   before(async () => {
     await Article.deleteMany({});
@@ -89,13 +90,13 @@ describe('Article API', async () => {
     it('should create a new article', () => {
       return request(app)
         .post('/v1/articles')
-        .set('Authorization', `Bearer ${userAccessToken}`)
+        .set('Authorization', `Bearer ${user2AccessToken}`)
         .send(article2)
         .expect(httpStatus.CREATED)
         .then((res) => {
           expect(res.body).to.have.a.property('_id');
           expect(res.body).to.have.a.property('createdAt');
-          expect(res.body.addedBy._id).to.be.equal(user._id);
+          expect(res.body.addedBy._id).to.be.equal(user2._id);
           expect(res.body.text).to.be.equal(article2.text);
           expect(res.body.sourceUrl).to.be.equal(article2.sourceUrl);
           expect(res.body.sourceType).to.be.equal(article2.sourceType);
@@ -162,7 +163,7 @@ describe('Article API', async () => {
           const includesArticle1 = some(res.body, article1);
           const includesArticle2 = some(res.body, article2);
           article1Id = res.body[0]._id;
-          article1Id = res.body[1]._id;
+          // article2Id = res.body[1]._id;
 
           expect(res.body).to.be.an('array');
           expect(res.body).to.have.lengthOf(2);
@@ -402,6 +403,31 @@ describe('Article API', async () => {
           expect(res.body.code).to.be.equal(404);
           expect(res.body.message).to.be.equal('Article does not exist');
         });
+    });
+  });
+
+  describe('GET /v1/users/:userId/articles', () => {
+    it('should list articles of user', () => {
+      return request(app)
+        .get(`/v1/users/${user2._id}/articles`)
+        .set('Authorization', `Bearer ${user2AccessToken}`)
+        .expect(httpStatus.OK)
+        .then(async (res) => {
+          const includesArticle2 = some(res.body, article2);
+
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.lengthOf(1);
+          expect(includesArticle2).to.be.true;
+
+          expect(res.body[0].addedBy._id).to.be.equal(user2._id);
+        });
+    });
+
+    it('should return forbidden for listing other users article', () => {
+      return request(app)
+        .get(`/v1/users/${user._id}/articles`)
+        .set('Authorization', `Bearer ${user2AccessToken}`)
+        .expect(httpStatus.FORBIDDEN);
     });
   });
 });

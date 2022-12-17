@@ -1,4 +1,4 @@
-@startuml
+@startuml Entity relations
 ' hide the spot
 hide circle
 
@@ -77,7 +77,7 @@ entity "Review" as review {
   *claimId: text <<FK>>
   *articleId: text <<FK>>
   *text: text
-  *vote: enum {pos, neg, neut}
+  *vote: enum {pos, neg, neut, no_info}
 }
 
 entity "Claim review comment" as claimReviewComment {

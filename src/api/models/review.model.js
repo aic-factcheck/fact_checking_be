@@ -6,7 +6,7 @@ const APIError = require('../errors/api-error');
 /**
 * Vote types
 */
-const voteTypes = ['positive', 'negative', 'neutral'];
+const voteTypes = ['positive', 'negative', 'neutral', 'no_info'];
 
 /**
  * Review Schema

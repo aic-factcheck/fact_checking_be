@@ -27,7 +27,7 @@ router
    * @apiParam  {String}             [text]            Text of the rating
    *
    * @apiSuccess {String}  _id       Claim id
-   * @apiSuccess {String}  articleId/claimId/userId    Id of rated object
+   * @apiSuccess {String}  articleId/claimId/reviewId/userId    Id of rated object
    * @apiSuccess {Date}    createdAt     Timestamp
    *
    */

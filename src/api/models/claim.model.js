@@ -47,7 +47,7 @@ const claimSchema = new mongoose.Schema({
 claimSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'priority', 'addedBy', 'articleId', 'text', 'createdAt', 'articles'];
+    const fields = ['_id', 'priority', 'addedBy', 'text', 'createdAt', 'articles'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -64,6 +64,18 @@ claimSchema.method({
       });
     }
     transformed.addedBy = transformedUser;
+
+    // remove unwanted fields from populated ArticleId and append as article
+    const article = this.articleId;
+    const transformedArticle = {};
+    const articleFields = ['_id', 'sourceType', 'language', 'title', 'sourceUrl', 'createdAt'];
+
+    if (this.addedBy) {
+      articleFields.forEach((field) => {
+        transformedArticle[field] = article[field];
+      });
+    }
+    transformed.article = transformedArticle;
 
     return transformed;
   },
@@ -84,7 +96,8 @@ claimSchema.statics = {
     let claim;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      claim = await this.findById(id).populate('addedBy').exec();
+      claim = await this.findById(id)
+        .populate('articleId').populate('addedBy').exec();
     }
     if (claim) {
       return claim;

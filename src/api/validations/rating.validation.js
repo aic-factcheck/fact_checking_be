@@ -7,6 +7,7 @@ module.exports = {
     query: {
       articleId: Joi.string().hex().length(24),
       claimId: Joi.string().hex().length(24),
+      reviewId: Joi.string().hex().length(24),
       userId: Joi.string().hex().length(24),
     },
     body: {

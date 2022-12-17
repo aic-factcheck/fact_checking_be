@@ -100,13 +100,13 @@ describe('Claim API', async () => {
     it('should create a new article', () => {
       return request(app)
         .post(`/v1/articles/${article._id}/claims`)
-        .set('Authorization', `Bearer ${userAccessToken}`)
+        .set('Authorization', `Bearer ${user2AccessToken}`)
         .send(claim2)
         .expect(httpStatus.CREATED)
         .then((res) => {
           expect(res.body).to.have.a.property('_id');
           expect(res.body).to.have.a.property('createdAt');
-          expect(res.body.addedBy._id).to.be.equal(user._id);
+          expect(res.body.addedBy._id).to.be.equal(user2._id);
           expect(res.body.text).to.be.equal(claim2.text);
         });
     });
@@ -181,6 +181,10 @@ describe('Claim API', async () => {
           expect(res.body.addedBy).to.have.a.property('lastName');
           expect(res.body.addedBy).to.have.a.property('email');
           expect(res.body.addedBy).to.have.a.property('_id');
+
+          expect(res.body).to.not.have.a.property('articleId');
+          expect(res.body.article).to.have.a.property('_id');
+          expect(res.body.article._id).to.be.equal(xArticles[0]._id);
         });
     });
   });
@@ -199,7 +203,7 @@ describe('Claim API', async () => {
 
           expect(res.body._id).to.be.equal(claim1Id);
           expect(res.body.text).to.be.equal(claim1Updated.text);
-          expect(res.body.articleId).to.be.equal(xArticles[0]._id.toString());
+          expect(res.body.article._id).to.be.equal(xArticles[0]._id.toString());
           expect(res.body.articles).to.include(xArticles[0]._id.toString());
 
           expect(res.body.addedBy._id).to.be.equal(user._id);
@@ -290,7 +294,7 @@ describe('Claim API', async () => {
           expect(res.body._id).to.be.equal(claim1Id);
 
           expect(res.body.text).to.be.equal(text);
-          expect(res.body.articleId).to.be.equal(xArticles[0]._id.toString());
+          expect(res.body.article._id).to.be.equal(xArticles[0]._id.toString());
           expect(res.body.articles).to.include(xArticles[0]._id.toString());
 
           expect(res.body.addedBy._id).to.be.equal(user._id);
@@ -379,6 +383,31 @@ describe('Claim API', async () => {
           expect(res.body.code).to.be.equal(404);
           expect(res.body.message).to.be.equal('Claim does not exist');
         });
+    });
+  });
+
+  describe('GET /v1/users/:userId/claims', () => {
+    it('should list claims of user', () => {
+      return request(app)
+        .get(`/v1/users/${user2._id}/claims`)
+        .set('Authorization', `Bearer ${user2AccessToken}`)
+        .expect(httpStatus.OK)
+        .then(async (res) => {
+          const includesArticle2 = some(res.body, claim2);
+
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.lengthOf(1);
+          expect(includesArticle2).to.be.true;
+
+          expect(res.body[0].addedBy._id).to.be.equal(user2._id);
+        });
+    });
+
+    it('should return forbidden for listing other users claims', () => {
+      return request(app)
+        .get(`/v1/users/${user._id}/claims`)
+        .set('Authorization', `Bearer ${user2AccessToken}`)
+        .expect(httpStatus.FORBIDDEN);
     });
   });
 });
