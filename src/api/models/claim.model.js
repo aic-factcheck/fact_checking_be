@@ -76,6 +76,7 @@ claimSchema.method({
       });
     }
     transformed.article = transformedArticle;
+    transformed.articleId = this.articleId._id;
 
     return transformed;
   },

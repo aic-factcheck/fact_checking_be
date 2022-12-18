@@ -33,12 +33,12 @@ describe('Review API', async () => {
       name: 'Admin User',
       firstName: 'Meno',
       lastName: 'Priezvisko',
-      role: 'admin',
     };
 
     article = {
       _id: '41224d776a326fb40f000002',
       addedBy: user._id,
+      title: 'Lorem Ipsum title',
       text: 'Lorem Ipsum is simply dummg industry. Lorem Ipsum has been the industry',
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',

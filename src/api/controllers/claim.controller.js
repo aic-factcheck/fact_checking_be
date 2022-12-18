@@ -102,7 +102,7 @@ exports.replace = async (req, res, next) => {
   try {
     const { claim } = req.locals;
 
-    await checkIsOwnerOfResurce(claim.addedBy, req);
+    await checkIsOwnerOfResurce(claim.addedBy._id, req);
 
     const newClaim = new Claim(_.assign(req.body, {
       addedBy: req.user.id,
@@ -130,7 +130,7 @@ exports.update = async (req, res, next) => {
   try {
     const { claim } = req.locals;
 
-    await checkIsOwnerOfResurce(claim.addedBy, req);
+    await checkIsOwnerOfResurce(claim.addedBy._id, req);
 
     const newClaim = Object.assign(claim);
     if (req.body.text) newClaim.text = req.body.text;
@@ -192,7 +192,7 @@ exports.remove = async (req, res, next) => {
   try {
     const { claim } = req.locals;
 
-    await checkIsOwnerOfResurce(claim.addedBy, req);
+    await checkIsOwnerOfResurce(claim.addedBy._id, req);
 
     claim.remove()
       .then(() => res.status(httpStatus.NO_CONTENT).end())

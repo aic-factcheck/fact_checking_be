@@ -32,7 +32,6 @@ describe('Article API', async () => {
       name: 'Admin User',
       firstName: 'Meno',
       lastName: 'Priezvisko',
-      role: 'admin',
     };
 
     user2 = {
@@ -42,7 +41,6 @@ describe('Article API', async () => {
       name: 'Xddd',
       firstName: 'ddddd',
       lastName: 'Priezdvisko',
-      role: 'user',
     };
 
     article1 = {

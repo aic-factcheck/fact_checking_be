@@ -47,7 +47,7 @@ exports.replace = async (req, res, next) => {
     const { article } = req.locals;
     const newArticle = new Article(req.body);
 
-    await checkIsOwnerOfResurce(article.addedBy, req);
+    await checkIsOwnerOfResurce(article.addedBy._id, req);
 
     const newArticleObject = _.omit(newArticle.toObject(), ['_id']);
     await article.updateOne(newArticleObject, { override: true, upsert: true });
@@ -66,7 +66,7 @@ exports.replace = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const { article } = req.locals;
-    await checkIsOwnerOfResurce(article.addedBy, req);
+    await checkIsOwnerOfResurce(article.addedBy._id, req);
 
     const newArticle = Object.assign(req.locals.article, req.body);
 
@@ -101,7 +101,7 @@ exports.list = async (req, res, next) => {
 exports.remove = async (req, res, next) => {
   try {
     const { article } = req.locals;
-    await checkIsOwnerOfResurce(article.addedBy, req);
+    await checkIsOwnerOfResurce(article.addedBy._id, req);
 
     article.remove()
       .then(() => res.status(httpStatus.NO_CONTENT).end())

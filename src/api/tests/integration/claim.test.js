@@ -35,7 +35,6 @@ describe('Claim API', async () => {
       name: 'Admin User',
       firstName: 'Meno',
       lastName: 'Priezvisko',
-      role: 'admin',
     };
 
     user2 = {
@@ -45,7 +44,6 @@ describe('Claim API', async () => {
       name: 'Xddd',
       firstName: 'ddddd',
       lastName: 'Priezdvisko',
-      role: 'user',
     };
 
     await Article.deleteMany({});
@@ -54,6 +52,7 @@ describe('Claim API', async () => {
     article = {
       _id: '41224d776a326fb40f000002',
       addedBy: user._id,
+      title: 'Lorem Ipsum title',
       text: 'Lorem Ipsum is simply dummg industry. Lorem Ipsum has been the industry',
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
@@ -113,7 +112,7 @@ describe('Claim API', async () => {
 
     it('should report error when text is not provided', () => {
       return request(app)
-        .post('/v1/articles')
+        .post(`/v1/articles/${article._id}/claims`)
         .set('Authorization', `Bearer ${userAccessToken}`)
         .send(_.omit(claim2, ['text']))
         .expect(httpStatus.BAD_REQUEST)
