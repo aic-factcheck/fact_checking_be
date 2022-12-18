@@ -97,6 +97,7 @@ describe('Review API', async () => {
           expect(res.body.addedBy._id).to.be.equal(user._id);
           expect(res.body.text).to.be.equal(review1.text);
           expect(res.body.vote).to.be.equal(review1.vote);
+          expect(res.body.nBeenVoted).to.be.equal(0);
         });
     });
 
@@ -153,6 +154,7 @@ describe('Review API', async () => {
           expect(res.body[0].addedBy).to.have.a.property('lastName');
           expect(res.body[0].addedBy).to.have.a.property('email');
           expect(res.body[0].addedBy).to.have.a.property('_id');
+          expect(res.body[0].nBeenVoted).to.be.equal(0);
         });
     });
   });
@@ -178,6 +180,7 @@ describe('Review API', async () => {
           expect(res.body.addedBy).to.have.a.property('lastName');
           expect(res.body.addedBy).to.have.a.property('email');
           expect(res.body.addedBy).to.have.a.property('_id');
+          expect(res.body.nBeenVoted).to.be.equal(0);
         });
     });
   });

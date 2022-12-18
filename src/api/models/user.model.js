@@ -70,6 +70,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  nBeenVoted: {
+    type: Number,
+    default: 0,
+  },
 }, {
   timestamps: true,
 });
@@ -101,7 +105,7 @@ userSchema.pre('save', async function save(next) {
 userSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt', 'firstName', 'lastName', 'invitedBy', 'nReviews'];
+    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt', 'firstName', 'lastName', 'invitedBy', 'nReviews', 'nBeenVoted'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

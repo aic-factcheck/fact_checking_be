@@ -31,10 +31,10 @@ entity "Invitation" as inv {
   - TTL 48 hours
 }
 
-entity "Rating" as rating {
+entity "Vote" as vote {
   *_id : string <<generated>>
   --
-  *ratedBy : text <<FK>>
+  *addedBy : text <<FK>>
   --
   One of following is required
   --
@@ -92,12 +92,12 @@ entity "Claim review comment" as claimReviewComment {
 user ||..o{ article
 user ||..o{ inv
 article }o..o{ claim
-article ||..o{ rating
+article ||..o{ vote
 user ||..o{ review
-user ||..o{ rating
+user ||..o{ vote
 claim ||..o{ review
 claim }o..|| user
-claim ||..o{ rating
+claim ||..o{ vote
 review ||..o{ claimReviewComment
-review ||..o{ rating
+review ||..o{ vote
 @enduml

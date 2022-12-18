@@ -37,6 +37,10 @@ const claimSchema = new mongoose.Schema({
     maxlength: 512,
     index: 'text',
   },
+  nBeenVoted: {
+    type: Number,
+    default: 0,
+  },
 }, {
   timestamps: true,
 });
@@ -47,7 +51,7 @@ const claimSchema = new mongoose.Schema({
 claimSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'priority', 'addedBy', 'articleId', 'text', 'createdAt', 'articles'];
+    const fields = ['_id', 'priority', 'addedBy', 'articleId', 'text', 'createdAt', 'articles', 'nBeenVoted'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

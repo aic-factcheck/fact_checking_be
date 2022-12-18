@@ -82,6 +82,7 @@ describe('Article API', async () => {
           expect(res.body.sourceUrl).to.be.equal(article1.sourceUrl);
           expect(res.body.sourceType).to.be.equal(article1.sourceType);
           expect(res.body.language).to.be.equal(article1.language);
+          expect(res.body.nBeenVoted).to.be.equal(0);
         });
     });
 
@@ -99,6 +100,7 @@ describe('Article API', async () => {
           expect(res.body.sourceUrl).to.be.equal(article2.sourceUrl);
           expect(res.body.sourceType).to.be.equal(article2.sourceType);
           expect(res.body.language).to.be.equal(article2.language);
+          expect(res.body.nBeenVoted).to.be.equal(0);
         });
     });
   });
@@ -168,6 +170,8 @@ describe('Article API', async () => {
           expect(includesArticle1).to.be.true;
           expect(includesArticle2).to.be.true;
 
+          expect(res.body[0].nBeenVoted).to.be.equal(0);
+
           expect(res.body[0].addedBy).to.have.a.property('firstName');
           expect(res.body[0].addedBy).to.have.a.property('lastName');
           expect(res.body[0].addedBy).to.have.a.property('email');
@@ -189,6 +193,7 @@ describe('Article API', async () => {
           expect(res.body).to.have.a.property('sourceUrl');
           expect(res.body).to.have.a.property('sourceType');
           expect(res.body).to.have.a.property('language');
+          expect(res.body.nBeenVoted).to.be.equal(0);
 
           expect(res.body.addedBy).to.have.a.property('firstName');
           expect(res.body.addedBy).to.have.a.property('lastName');

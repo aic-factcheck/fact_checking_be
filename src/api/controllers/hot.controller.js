@@ -1,8 +1,9 @@
 // const { _ } = require('lodash');
+const { _ } = require('lodash');
 const User = require('../models/user.model');
 const Article = require('../models/article.model');
 const Claim = require('../models/claim.model');
-const Rating = require('../models/rating.model');
+const Vote = require('../models/vote.model');
 // const APIError = require('../errors/api-error');
 
 /**
@@ -20,7 +21,7 @@ exports.hottestUsers = async (req, res, next) => {
       perPage = req.perPage;
     }
 
-    const ratings = await Rating
+    const votes = await Vote
       .aggregate()
       .group({ _id: '$userId', count: { $sum: 1 } })
       .unwind('_id')
@@ -28,7 +29,7 @@ exports.hottestUsers = async (req, res, next) => {
       .limit(perPage)
       .sort({ count: 'desc' });
 
-    const users = await User.find().where('_id').in(ratings).exec();
+    const users = await User.find().where('_id').in(votes).exec();
     res.json(users);
   } catch (error) {
     next(error);
@@ -50,28 +51,39 @@ exports.hottestArticles = async (req, res, next) => {
       perPage = req.perPage;
     }
 
-    const ratings = await Rating
+    const votes = await Vote
       .aggregate()
       .group({ _id: '$articleId', count: { $sum: 1 } })
       .unwind('_id')
       .skip(perPage * (page - 1))
       .limit(perPage)
       .sort({ count: 'desc' });
+    console.log(votes);
 
-    const articles = await Article.find().where('_id').in(ratings).exec();
+    const articles = await Article.find()
+      .where('_id').in(votes).lean()
+      .exec();
+
+    const articleWithVotes = articles.map((it) => {
+      const vote = votes.find((x) => _.isEqual(x._id, it._id));
+      return _.assign({ votes: vote.count }, it);
+    });
 
     let addedArticles;
     // always return at lest 'pegPage' articles .. even when there are no votes
-    if (ratings.length < perPage) {
+    if (votes.length < perPage) {
       addedArticles = await Article.find({
         _id: {
-          $nin: ratings.map((it) => it._id),
+          $nin: votes.map((it) => it._id),
         },
       }).skip(perPage * (page - 1))
-        .limit(perPage - ratings.length).exec();
+        .lean()
+        .limit(perPage - votes.length)
+        .exec();
+      addedArticles = addedArticles.map((it) => _.assign({ votes: 0 }, it));
     }
 
-    res.json(articles.concat(addedArticles)); // merge the arrays
+    res.json(articleWithVotes.concat(addedArticles)); // merge the arrays
   } catch (error) {
     next(error);
   }
@@ -92,27 +104,16 @@ exports.hottestClaims = async (req, res, next) => {
       perPage = req.perPage;
     }
 
-    const ratings = await Rating
-      .aggregate()
-      .group({ _id: '$claimId', count: { $sum: 1 } })
-      .unwind('_id')
+    const claims = await Claim.find()
       .skip(perPage * (page - 1))
+      .populate('addedBy')
+      .populate('articleId')
       .limit(perPage)
-      .sort({ count: 'desc' });
+      .sort({ nBeenVoted: 'desc' })
+      .exec();
 
-    const claims = await Claim.find().where('_id').in(ratings).exec();
-
-    let addedClaims;
-    // always return at lest 'pegPage' claims .. even when there are no votes
-    if (ratings.length < perPage) {
-      addedClaims = await Claim.find({
-        _id: {
-          $nin: ratings.map((it) => it._id),
-        },
-      }).skip(perPage * (page - 1))
-        .limit(perPage - ratings.length).exec();
-    }
-    res.json(claims.concat(addedClaims));
+    const transClaims = claims.map((x) => x.transform());
+    res.json(transClaims);
   } catch (error) {
     next(error);
   }

@@ -57,6 +57,10 @@ const articleSchema = new mongoose.Schema({
     enum: languages,
     default: 'cz',
   },
+  nBeenVoted: {
+    type: Number,
+    default: 0,
+  },
 }, {
   timestamps: true,
 });
@@ -67,7 +71,7 @@ const articleSchema = new mongoose.Schema({
 articleSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'title', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims'];
+    const fields = ['_id', 'title', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims', 'nBeenVoted'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
