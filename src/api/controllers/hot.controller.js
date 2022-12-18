@@ -101,7 +101,18 @@ exports.hottestClaims = async (req, res, next) => {
       .sort({ count: 'desc' });
 
     const claims = await Claim.find().where('_id').in(ratings).exec();
-    res.json(claims);
+
+    let addedClaims;
+    // always return at lest 'pegPage' claims .. even when there are no votes
+    if (ratings.length < perPage) {
+      addedClaims = await Claim.find({
+        _id: {
+          $nin: ratings.map((it) => it._id),
+        },
+      }).skip(perPage * (page - 1))
+        .limit(perPage - ratings.length).exec();
+    }
+    res.json(claims.concat(addedClaims));
   } catch (error) {
     next(error);
   }
