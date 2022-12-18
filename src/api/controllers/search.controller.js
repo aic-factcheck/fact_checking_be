@@ -34,7 +34,7 @@ exports.searchArticles = async (req, res, next) => {
       { score: { $meta: 'textScore' } },
     ).sort({ score: { $meta: 'textScore' } });
 
-    // console.log(articles1[0]);
+    console.log(articles1[0]);
 
     const articles = await Article.find({
       $text: {

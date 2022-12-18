@@ -13,7 +13,6 @@ const Review = require('../../models/review.model');
 const Vote = require('../../models/vote.model');
 
 describe('Hottest resources API', async () => {
-  let userAccessToken;
   let user2AccessToken;
   let user1;
   let user2;
@@ -92,7 +91,6 @@ describe('Hottest resources API', async () => {
     await User.deleteMany({});
 
     await User.create(user1);
-    userAccessToken = (await User.findAndGenerateToken(user1)).accessToken;
     await User.create(user2);
     user2AccessToken = (await User.findAndGenerateToken(user2)).accessToken;
 
