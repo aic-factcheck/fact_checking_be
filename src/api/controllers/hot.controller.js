@@ -59,7 +59,19 @@ exports.hottestArticles = async (req, res, next) => {
       .sort({ count: 'desc' });
 
     const articles = await Article.find().where('_id').in(ratings).exec();
-    res.json(articles);
+
+    let addedArticles;
+    // always return at lest 'pegPage' articles .. even when there are no votes
+    if (ratings.length < perPage) {
+      addedArticles = await Article.find({
+        _id: {
+          $nin: ratings.map((it) => it._id),
+        },
+      }).skip(perPage * (page - 1))
+        .limit(perPage - ratings.length).exec();
+    }
+
+    res.json(articles.concat(addedArticles)); // merge the arrays
   } catch (error) {
     next(error);
   }
