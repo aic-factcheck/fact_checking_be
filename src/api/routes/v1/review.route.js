@@ -80,9 +80,11 @@ router
    * @apiSuccess {String}  text          Review's text
    * @apiSuccess {String}  vote          Vote - decision of reviewer
    * @apiSuccess {String}  userId        Reviewer's id
+   * @apiSuccess {Object}  addedBy       User object who added the article
    * @apiSuccess {String}  claimId       Claim id
    * @apiSuccess {Number}  nUpvotes      Number of positive votes
    * @apiSuccess {array}    upvotes      List of user Ids who upvoted
+   * @apiSuccess {String}  language       Language of article
    * @apiSuccess {Number}  nDownvotes    Number of negative votes
    * @apiSuccess {array}    downvotes    List of user Ids who downvoted
    * @apiSuccess {Date}    createdAt     Timestamp

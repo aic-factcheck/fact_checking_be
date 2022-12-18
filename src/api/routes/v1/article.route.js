@@ -76,7 +76,7 @@ router
    * @apiHeader {String} Authorization   User's access token
    *
    * @apiSuccess {String}  _id            Article's id
-   * @apiSuccess {String}  addedBy        Id of user who added the article
+   * @apiSuccess {Object}  addedBy        User object who added the article
    * @apiSuccess {String}  text           Text of article
    * @apiSuccess {String}  sourceUrl      Source url of article
    * @apiSuccess {String}  sourceType     Source type of article

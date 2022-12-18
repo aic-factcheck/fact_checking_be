@@ -47,11 +47,11 @@ exports.replace = async (req, res, next) => {
     const { article } = req.locals;
     const newArticle = new Article(req.body);
 
-    await checkIsOwnerOfResurce(article.addedBy, req);
+    await checkIsOwnerOfResurce(article.addedBy._id, req);
 
     const newArticleObject = _.omit(newArticle.toObject(), ['_id']);
     await article.updateOne(newArticleObject, { override: true, upsert: true });
-    const savedArticle = await Article.findById(article._id);
+    const savedArticle = await Article.get(article._id);
 
     res.json(savedArticle.transform());
   } catch (error) {
@@ -63,12 +63,19 @@ exports.replace = async (req, res, next) => {
  * Update existing article
  * @public
  */
-exports.update = (req, res, next) => {
-  const article = Object.assign(req.locals.article, req.body);
+exports.update = async (req, res, next) => {
+  try {
+    const { article } = req.locals;
+    await checkIsOwnerOfResurce(article.addedBy._id, req);
 
-  article.save()
-    .then((savedArticle) => res.json(savedArticle.transform()))
-    .catch((e) => next(e));
+    const newArticle = Object.assign(req.locals.article, req.body);
+
+    newArticle.save()
+      .then((savedArticle) => res.json(savedArticle.transform()))
+      .catch((e) => next(e));
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -78,8 +85,9 @@ exports.update = (req, res, next) => {
 exports.list = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
-    const articles = await Article.find().limit(perPage).skip(perPage * (page - 1));
+    const articles = await Article.find().populate('addedBy').limit(perPage).skip(perPage * (page - 1));
     const transformedArticles = articles.map((x) => x.transform());
+
     res.json(transformedArticles);
   } catch (error) {
     next(error);
@@ -90,10 +98,15 @@ exports.list = async (req, res, next) => {
  * Delete article
  * @public
  */
-exports.remove = (req, res, next) => {
-  const { article } = req.locals;
+exports.remove = async (req, res, next) => {
+  try {
+    const { article } = req.locals;
+    await checkIsOwnerOfResurce(article.addedBy._id, req);
 
-  article.remove()
-    .then(() => res.status(httpStatus.NO_CONTENT).end())
-    .catch((e) => next(e));
+    article.remove()
+      .then(() => res.status(httpStatus.NO_CONTENT).end())
+      .catch((e) => next(e));
+  } catch (error) {
+    next(error);
+  }
 };

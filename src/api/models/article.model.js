@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const httpStatus = require('http-status');
-// const { omitBy, isNil } = require('lodash');
 const APIError = require('../errors/api-error');
 
 /**
@@ -28,6 +27,7 @@ const articleSchema = new mongoose.Schema({
     type: String,
     maxlength: 256,
     index: true,
+    required: true,
   },
   text: {
     type: String,
@@ -57,6 +57,10 @@ const articleSchema = new mongoose.Schema({
     enum: languages,
     default: 'cz',
   },
+  nBeenVoted: {
+    type: Number,
+    default: 0,
+  },
 }, {
   timestamps: true,
 });
@@ -67,11 +71,23 @@ const articleSchema = new mongoose.Schema({
 articleSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'addedBy', 'title', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims'];
+    const fields = ['_id', 'title', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims', 'nBeenVoted'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
     });
+
+    // remove unwanted fields from populated User object
+    const user = this.addedBy;
+    const transformedUser = {};
+    const userFields = ['_id', 'firstName', 'lastName', 'email'];
+
+    if (this.addedBy) {
+      userFields.forEach((field) => {
+        transformedUser[field] = user[field];
+      });
+    }
+    transformed.addedBy = transformedUser;
 
     return transformed;
   },
@@ -95,8 +111,9 @@ articleSchema.statics = {
     let article;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      article = await this.findById(id).exec();
+      article = await this.findById(id).populate('addedBy').exec();
     }
+
     if (article) {
       return article;
     }
@@ -143,6 +160,24 @@ articleSchema.statics = {
     page = 1, perPage = 30,
   }) {
     return this.find({})
+      .sort({ createdAt: -1 })
+      .skip(perPage * (page - 1))
+      .limit(perPage)
+      .exec();
+  },
+
+  /**
+   * List user's articles in descending order of 'createdAt' timestamp.
+   *
+   * @param {number} skip - Number of articles to be skipped.
+   * @param {number} limit - Limit number of articles to be returned.
+   * @param {ObjectId} userId - UserId of user who created resource
+   * @returns {Promise<Article[]>}
+   */
+  userArticlesList({
+    page = 1, perPage = 30, addedBy,
+  }) {
+    return this.find({ addedBy })
       .sort({ createdAt: -1 })
       .skip(perPage * (page - 1))
       .limit(perPage)

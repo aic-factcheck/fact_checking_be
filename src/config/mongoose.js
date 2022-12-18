@@ -28,22 +28,6 @@ const mongooseOptions = {
   useFindAndModify: false,
 };
 
-/*
- * SSL CA CERT filepath where cert will be stored
- * saved on flight into file from env.var since mongoose does not support env var ssl
- *
- * Add production params to MongoDB options
- * Add cert to mongo uri
- */
-// let finalMongoUri = mongo.uri;
-// if (env === 'production') {
-//   const mongoCertPath = '/app/SSL_CERTS/mongo-ca-cert.crt';
-//   fs.writeFileSync(mongoCertPath, mongo.cert);
-//   mongooseOptions.ssl = true;
-//   mongooseOptions.tlsCAFile = mongoCertPath;
-//   finalMongoUri += `&tlsCAFile=${mongoCertPath}`;
-// }
-
 /**
  * Connect to mongo db
  *

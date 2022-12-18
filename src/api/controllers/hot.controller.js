@@ -2,8 +2,6 @@
 const User = require('../models/user.model');
 const Article = require('../models/article.model');
 const Claim = require('../models/claim.model');
-const Rating = require('../models/rating.model');
-// const APIError = require('../errors/api-error');
 
 /**
  * Get list of hottest users
@@ -20,16 +18,14 @@ exports.hottestUsers = async (req, res, next) => {
       perPage = req.perPage;
     }
 
-    const ratings = await Rating
-      .aggregate()
-      .group({ _id: '$userId', count: { $sum: 1 } })
-      .unwind('_id')
+    const users = await User.find()
       .skip(perPage * (page - 1))
       .limit(perPage)
-      .sort({ count: 'desc' });
+      .sort({ nBeenVoted: 'desc' })
+      .exec();
 
-    const users = await User.find().where('_id').in(ratings).exec();
-    res.json(users);
+    const transUsers = users.map((x) => x.transform());
+    res.json(transUsers);
   } catch (error) {
     next(error);
   }
@@ -50,16 +46,15 @@ exports.hottestArticles = async (req, res, next) => {
       perPage = req.perPage;
     }
 
-    const ratings = await Rating
-      .aggregate()
-      .group({ _id: '$articleId', count: { $sum: 1 } })
-      .unwind('_id')
+    const articles = await Article.find()
       .skip(perPage * (page - 1))
+      .populate('addedBy')
       .limit(perPage)
-      .sort({ count: 'desc' });
+      .sort({ nBeenVoted: 'desc' })
+      .exec();
 
-    const articles = await Article.find().where('_id').in(ratings).exec();
-    res.json(articles);
+    const transArticles = articles.map((x) => x.transform());
+    res.json(transArticles);
   } catch (error) {
     next(error);
   }
@@ -80,16 +75,16 @@ exports.hottestClaims = async (req, res, next) => {
       perPage = req.perPage;
     }
 
-    const ratings = await Rating
-      .aggregate()
-      .group({ _id: '$claimId', count: { $sum: 1 } })
-      .unwind('_id')
+    const claims = await Claim.find()
       .skip(perPage * (page - 1))
+      .populate('addedBy')
+      .populate('articleId')
       .limit(perPage)
-      .sort({ count: 'desc' });
+      .sort({ nBeenVoted: 'desc' })
+      .exec();
 
-    const claims = await Claim.find().where('_id').in(ratings).exec();
-    res.json(claims);
+    const transClaims = claims.map((x) => x.transform());
+    res.json(transClaims);
   } catch (error) {
     next(error);
   }

@@ -48,6 +48,13 @@ exports.create = async (req, res, next) => {
   try {
     await checkCurrentUserReview(req.user.id, req.locals.claim._id, next);
 
+    if (req.user.id === req.locals.claim._id) {
+      throw new APIError({
+        status: httpStatus.BAD_REQUEST,
+        message: 'Owner of a claim cannot review it.',
+      });
+    }
+
     const review = new Review(_.assign(req.body, {
       userId: req.user.id,
       priority: 1,
@@ -115,7 +122,7 @@ exports.update = (req, res, next) => {
 exports.list = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
-    const reviews = await Review.find().limit(perPage).skip(perPage * (page - 1));
+    const reviews = await Review.find({ claimId: req.locals.claim._id }).populate('userId').limit(perPage).skip(perPage * (page - 1));
     const transformedReviews = reviews.map((x) => x.transform());
     res.json(transformedReviews);
   } catch (error) {

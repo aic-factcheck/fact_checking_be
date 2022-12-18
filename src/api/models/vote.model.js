@@ -4,11 +4,11 @@ const httpStatus = require('http-status');
 const APIError = require('../errors/api-error');
 
 /**
- * Rating Schema
+ * Vote Schema
  * @private
  */
-const ratingSchema = new mongoose.Schema({
-  ratedBy: {
+const voteSchema = new mongoose.Schema({
+  addedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
@@ -51,14 +51,26 @@ const ratingSchema = new mongoose.Schema({
 /**
  * Methods
  */
-ratingSchema.method({
+voteSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'ratedBy', 'userId', 'articleId', 'claimId', 'reviewId', 'rating', 'text', 'createdAt'];
+    const fields = ['_id', 'userId', 'articleId', 'claimId', 'reviewId', 'rating', 'text', 'createdAt', 'addedBy'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
     });
+
+    // remove unwanted fields from populated User object
+    const user = this.addedBy;
+    const transformedUser = {};
+    const userFields = ['_id', 'firstName', 'lastName', 'email'];
+
+    if (this.addedBy) {
+      userFields.forEach((field) => {
+        transformedUser[field] = user[field];
+      });
+    }
+    transformed.addedBy = transformedUser;
 
     return transformed;
   },
@@ -67,37 +79,37 @@ ratingSchema.method({
 /**
  * Statics
  */
-ratingSchema.statics = {
+voteSchema.statics = {
 
   /**
-   * Get Rating
+   * Get Vote
    *
-   * @param {ObjectId} id - The objectId of Rating.
-   * @returns {Promise<Rating, APIError>}
+   * @param {ObjectId} id - The objectId of Vote.
+   * @returns {Promise<Vote, APIError>}
    */
   async get(id) {
-    let rating;
+    let vote;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      rating = await this.findById(id).exec();
+      vote = await this.findById(id).populate('addedBy').exec();
     }
-    if (rating) {
-      return rating;
+    if (vote) {
+      return vote;
     }
 
     throw new APIError({
-      message: 'Rating does not exist',
+      message: 'Vote does not exist',
       status: httpStatus.NOT_FOUND,
     });
   },
 };
 
-ratingSchema.index({ ratedBy: 1, userId: 1 }, { unique: true });
-ratingSchema.index({ ratedBy: 1, articleId: 1 }, { unique: true });
-ratingSchema.index({ ratedBy: 1, claimId: 1 }, { unique: true });
-ratingSchema.index({ ratedBy: 1, reviewId: 1 }, { unique: true });
+// voteSchema.index({ addedBy: 1, userId: 1 }, { unique: true });
+// voteSchema.index({ addedBy: 1, articleId: 1 }, { unique: true });
+// voteSchema.index({ addedBy: 1, claimId: 1 }, { unique: true });
+// voteSchema.index({ addedBy: 1, reviewId: 1 }, { unique: true });
 
 /**
- * @typedef Rating
+ * @typedef Vote
  */
-module.exports = mongoose.model('Rating', ratingSchema);
+module.exports = mongoose.model('Vote', voteSchema);

@@ -3,6 +3,7 @@ const { _ } = require('lodash');
 const Claim = require('../models/claim.model');
 const Article = require('../models/article.model');
 const Review = require('../models/review.model');
+const { checkIsOwnerOfResurce } = require('../utils/helpers/resourceOwner');
 
 /**
  * Load claim and append to req.
@@ -100,10 +101,20 @@ exports.addExistingClaim = async (req, res, next) => {
 exports.replace = async (req, res, next) => {
   try {
     const { claim } = req.locals;
-    const newClaim = new Claim(req.body);
 
-    await claim.updateOne(newClaim, { override: true, upsert: true });
-    const savedClaim = await Claim.findById(claim._id);
+    await checkIsOwnerOfResurce(claim.addedBy._id, req);
+
+    const newClaim = new Claim(_.assign(req.body, {
+      addedBy: req.user.id,
+      priority: 1,
+      articleId: req.locals.article._id,
+      articles: [req.locals.article._id],
+    }));
+
+    const newClaimObject = _.omit(newClaim.toObject(), ['_id']);
+
+    await claim.updateOne(newClaimObject, { override: true, upsert: true });
+    const savedClaim = await Claim.get(claim._id);
 
     res.json(savedClaim.transform());
   } catch (error) {
@@ -115,12 +126,21 @@ exports.replace = async (req, res, next) => {
  * Update existing claim
  * @public
  */
-exports.update = (req, res, next) => {
-  const claim = Object.assign(req.locals.claim, req.body);
+exports.update = async (req, res, next) => {
+  try {
+    const { claim } = req.locals;
 
-  claim.save()
-    .then((savedClaim) => res.json(savedClaim.transform()))
-    .catch((e) => next(e));
+    await checkIsOwnerOfResurce(claim.addedBy._id, req);
+
+    const newClaim = Object.assign(claim);
+    if (req.body.text) newClaim.text = req.body.text;
+
+    newClaim.save()
+      .then((savedClaim) => res.json(savedClaim.transform()))
+      .catch((e) => next(e));
+  } catch (error) {
+    next(error);
+  }
 };
 
 /*
@@ -152,7 +172,9 @@ exports.list = async (req, res, next) => {
     const { page, perPage } = req.query;
     const userReviews = await Review.find({ userId: req.user.id }).lean();
 
-    const claims = await Claim.find().limit(perPage).skip(perPage * (page - 1));
+    const claims = await Claim.find({ articleId: req.locals.article._id })
+      .populate('articleId').populate('addedBy').limit(perPage)
+      .skip(perPage * (page - 1));
     const transformedClaims = claims.map((x) => x.transform());
 
     const mergedClaims = await mergeClaimsWithReviews(transformedClaims, userReviews);
@@ -166,10 +188,16 @@ exports.list = async (req, res, next) => {
  * Delete claim
  * @public
  */
-exports.remove = (req, res, next) => {
-  const { claim } = req.locals;
+exports.remove = async (req, res, next) => {
+  try {
+    const { claim } = req.locals;
 
-  claim.remove()
-    .then(() => res.status(httpStatus.NO_CONTENT).end())
-    .catch((e) => next(e));
+    await checkIsOwnerOfResurce(claim.addedBy._id, req);
+
+    claim.remove()
+      .then(() => res.status(httpStatus.NO_CONTENT).end())
+      .catch((e) => next(e));
+  } catch (error) {
+    next(error);
+  }
 };

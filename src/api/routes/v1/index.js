@@ -3,7 +3,7 @@ const userRoutes = require('./user.route');
 const authRoutes = require('./auth.route');
 const articleRoutes = require('./article.route');
 const searchRoutes = require('./search.route');
-const ratingRoutes = require('./rating.route');
+const voteRoutes = require('./vote.route');
 const hotRoutes = require('./hot.route');
 
 const router = express.Router();
@@ -21,10 +21,10 @@ router.use('/docs', express.static('docs'));
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
 
-// includes nested claims and review routes
+// include nested claims and review routes
 router.use('/articles', articleRoutes);
 router.use('/search', searchRoutes);
-router.use('/vote', ratingRoutes);
+router.use('/vote', voteRoutes);
 router.use('/hot', hotRoutes);
 
 module.exports = router;
