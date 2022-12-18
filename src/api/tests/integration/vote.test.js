@@ -3,8 +3,6 @@
 const request = require('supertest');
 const httpStatus = require('http-status');
 const { expect } = require('chai');
-const { _ } = require('lodash');
-const { some } = require('lodash');
 const app = require('../../../index');
 const User = require('../../models/user.model');
 const Article = require('../../models/article.model');

@@ -1,10 +1,7 @@
 // const { _ } = require('lodash');
-const { _ } = require('lodash');
 const User = require('../models/user.model');
 const Article = require('../models/article.model');
 const Claim = require('../models/claim.model');
-const Vote = require('../models/vote.model');
-// const APIError = require('../errors/api-error');
 
 /**
  * Get list of hottest users
@@ -21,16 +18,14 @@ exports.hottestUsers = async (req, res, next) => {
       perPage = req.perPage;
     }
 
-    const votes = await Vote
-      .aggregate()
-      .group({ _id: '$userId', count: { $sum: 1 } })
-      .unwind('_id')
+    const users = await User.find()
       .skip(perPage * (page - 1))
       .limit(perPage)
-      .sort({ count: 'desc' });
+      .sort({ nBeenVoted: 'desc' })
+      .exec();
 
-    const users = await User.find().where('_id').in(votes).exec();
-    res.json(users);
+    const transUsers = users.map((x) => x.transform());
+    res.json(transUsers);
   } catch (error) {
     next(error);
   }
@@ -51,39 +46,15 @@ exports.hottestArticles = async (req, res, next) => {
       perPage = req.perPage;
     }
 
-    const votes = await Vote
-      .aggregate()
-      .group({ _id: '$articleId', count: { $sum: 1 } })
-      .unwind('_id')
-      .skip(perPage * (page - 1))
-      .limit(perPage)
-      .sort({ count: 'desc' });
-    console.log(votes);
-
     const articles = await Article.find()
-      .where('_id').in(votes).lean()
+      .skip(perPage * (page - 1))
+      .populate('addedBy')
+      .limit(perPage)
+      .sort({ nBeenVoted: 'desc' })
       .exec();
 
-    const articleWithVotes = articles.map((it) => {
-      const vote = votes.find((x) => _.isEqual(x._id, it._id));
-      return _.assign({ votes: vote.count }, it);
-    });
-
-    let addedArticles;
-    // always return at lest 'pegPage' articles .. even when there are no votes
-    if (votes.length < perPage) {
-      addedArticles = await Article.find({
-        _id: {
-          $nin: votes.map((it) => it._id),
-        },
-      }).skip(perPage * (page - 1))
-        .lean()
-        .limit(perPage - votes.length)
-        .exec();
-      addedArticles = addedArticles.map((it) => _.assign({ votes: 0 }, it));
-    }
-
-    res.json(articleWithVotes.concat(addedArticles)); // merge the arrays
+    const transArticles = articles.map((x) => x.transform());
+    res.json(transArticles);
   } catch (error) {
     next(error);
   }
