@@ -17,6 +17,7 @@ entity "User" as user {
   *picture : text
   *invitedBy: text <<FK>>
   *nReviews: number
+  *nBeenVoted: Number
 }
 
 entity "Invitation" as inv {
@@ -58,16 +59,18 @@ entity "Article" as article {
   *sourceUrl: text
   *sourceType : enum
   *language : text
+  *nBeenVoted: Number
 }
 
 entity "Claim" as claim {
   *_id : text <<generated>>
   --
-  *articles: [<<FK>>,...]
-  *priority: number
   *addedBy: text <<FK>>
+  *priority: number
   *articleId : text <<FK>>
+  *articles: [<<FK>>,...]
   *text : text
+  *nBeenVoted: Number
 }
 
 entity "Review" as review {
@@ -78,15 +81,18 @@ entity "Review" as review {
   *articleId: text <<FK>>
   *text: text
   *vote: enum {pos, neg, neut, no_info}
+  *links: [String]
+  *nBeenVoted: Number
 }
 
-entity "Claim review comment" as claimReviewComment {
+entity "Review comment" as reviewComment {
   *_id : text <<generated>>
   --
-  *userId : text <<FK>>
+  *addedBy : text <<FK>>
   *reviewId: text <<FK>>
   *text: text
   *proofUrls: array [text] 
+  *nBeenVoted: Number
 }
 
 user ||..o{ article
@@ -98,6 +104,6 @@ user ||..o{ vote
 claim ||..o{ review
 claim }o..|| user
 claim ||..o{ vote
-review ||..o{ claimReviewComment
+review ||..o{ reviewComment
 review ||..o{ vote
 @enduml
