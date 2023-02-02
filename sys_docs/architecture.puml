@@ -4,10 +4,14 @@ package "User" {
   [FrontEnd web app] as fe
 }
 
-package "Digital Ocean cloud" {
+package "Backend deployment" {
 
   cloud {
-    [APP services with LoadBalancer\nPossibly Kubernetes cluster in future] as be
+    [APP services with LoadBalancer] as be
+  }
+
+  cloud {
+    [WebScrapping Flask service] as scrapping_se
   }
 
   database "MongoDB Cluster" {
@@ -16,13 +20,15 @@ package "Digital Ocean cloud" {
 
   component "Papertrail \nLog analysis" as log
 
-  component "ElasticSearch in future\nfor efficient text searches" as elastic
-  component "Redis in future\n for session management" as redis
+  ' component "ElasticSearch in future\nfor efficient text searches" as elastic
+  ' component "Redis in future\n for session management" as redis
 }
 
 
 [fe] --> [be]
+[fe] --> [scrapping_se]
 [be] --> [mongo]
 [be] --> [log]
+[scrapping_se] --> [log]
 ' [be] --> [elastic]
 @enduml

@@ -4,11 +4,11 @@ const httpStatus = require('http-status');
 const APIError = require('../errors/api-error');
 
 /**
- * ClaimReviewComment Schema
+ * ReviewComment Schema
  * @private
  */
 const commentSchema = new mongoose.Schema({
-  userId: {
+  addedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
@@ -38,7 +38,7 @@ const commentSchema = new mongoose.Schema({
 commentSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'userId', 'reviewId', 'text', 'proofUrls', 'createdAt'];
+    const fields = ['_id', 'addedBy', 'reviewId', 'text', 'proofUrls', 'createdAt'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -54,10 +54,10 @@ commentSchema.method({
 commentSchema.statics = {
 
   /**
-   * Get ClaimReviewComment
+   * Get ReviewComment
    *
-   * @param {ObjectId} id - The objectId of ClaimReviewComment.
-   * @returns {Promise<ClaimReviewComment, APIError>}
+   * @param {ObjectId} id - The objectId of ReviewComment.
+   * @returns {Promise<ReviewComment, APIError>}
    */
   async get(id) {
     let review;
@@ -70,13 +70,13 @@ commentSchema.statics = {
     }
 
     throw new APIError({
-      message: 'ClaimReviewComment does not exist',
+      message: 'ReviewComment does not exist',
       status: httpStatus.NOT_FOUND,
     });
   },
 };
 
 /**
- * @typedef ClaimReviewComment
+ * @typedef ReviewComment
  */
-module.exports = mongoose.model('ClaimReviewComment', commentSchema);
+module.exports = mongoose.model('ReviewComment', commentSchema);

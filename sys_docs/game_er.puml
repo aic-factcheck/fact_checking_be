@@ -1,0 +1,35 @@
+@startuml Gamification - Entity relations
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "GameUser" as user {
+  *_id: string <<generated>>
+  userId: string (UserService->userId)
+  --
+  *level: number (default 1)
+  *exp: number (default 20)
+}
+
+entity "UserLogin" as userLogin {
+  *_id : string <<generated>>
+  --
+  *userId: string <<FK>>
+  *createdAt: date (logged_at)
+}
+
+entity "ProfileQuestion" as profileQuestion {
+  *_id : string <<generated>>
+  --
+  *userId: string <<FK>>
+  *questionId: number
+  *createdAt: date
+}
+
+
+user ||..o{ userLogin
+user ||..o{ profileQuestion
+
+@enduml
