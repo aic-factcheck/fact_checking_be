@@ -37,10 +37,10 @@
     "docker:test": "docker-compose -f docker-compose.yml -f docker-compose.test.yml up --abort-on-container-exit"
   },
   "dependencies": {
-    "pm2": "^5.1.0"
+    "pm2": "^5.1.0",
+    "cross-env": "^7.0.3"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
     "postinstall-postinstall": "^2.1.0",
     "patch-package": "^6.5.0",
     "apidoc": "^0.28.1",
