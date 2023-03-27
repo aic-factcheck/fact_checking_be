@@ -23,8 +23,13 @@ env:
 
 
 jobs:
-  tests:
+  users_service-tests:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./users_service
+    defaults:
+      run:
+        working-directory: ${{ env.working-directory }}
 
     strategy:
       matrix:
@@ -45,8 +50,8 @@ jobs:
       - name: Build App
         run: yarn
 
-      - name: Install all dependencies recursively
-        run: yarn install:all
+      # - name: Install all dependencies recursively
+      #   run: yarn install:all
           
       - name: Cache node modules
         uses: actions/cache@v3
@@ -60,7 +65,7 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
-      - name: Run tests for users_service
-        working-directory: ./users_service
-        run: yarn test
+      # - name: Run tests for users_service
+      #   working-directory: ./users_service
+        run: yarn validate
 
