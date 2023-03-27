@@ -62,5 +62,5 @@ jobs:
 
       - name: Run tests for users_service
         working-directory: ./users_service
-        run: ./node_modules/.bin/cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --timeout 20000 --exit --recursive ./src/api/tests
+        run: yarn test
 
