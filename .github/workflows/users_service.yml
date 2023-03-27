@@ -65,7 +65,6 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
-      # - name: Run tests for users_service
-      #   working-directory: ./users_service
+      - name: Run tests for users_service
         run: yarn validate
 
