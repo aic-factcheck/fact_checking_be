@@ -42,8 +42,9 @@ jobs:
 
       - run: npm install yarn -g
 
-      - name: Build App
+      - name: Build App And install all dependencies
         run: yarn
+        run: yarn install:all
           
       - name: Cache node modules
         uses: actions/cache@v3
@@ -57,5 +58,5 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
-      - run: eslint ./users_service/src/ --ignore-path .gitignore --ignore-pattern internals/scripts
+      - run: cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --timeout 20000 --exit --recursive ./users_service/src/api/tests"
 
