@@ -42,8 +42,6 @@ jobs:
 
       - run: npm install yarn -g
 
-      - run: yarn global add cross-env
-
       - name: Build App
         run: yarn
 
@@ -62,5 +60,7 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
-      - run: ./node_modules/.bin/cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --timeout 20000 --exit --recursive ./users_service/src/api/tests
+      - name: Run tests for users_service
+        working-directory: ./users_service
+        run: cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --timeout 20000 --exit --recursive ./src/api/tests
 
