@@ -11,6 +11,7 @@
     "yarn": "*"
   },
   "scripts": {
+    "install:all": "for i in */; do yarn --cwd \"${i}\"; done",
     "postinstall": "patch-package",
     "precommit": "yarn lint",
     "prestart": "yarn docs",
@@ -34,5 +35,23 @@
     "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up",
     "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
     "docker:test": "docker-compose -f docker-compose.yml -f docker-compose.test.yml up --abort-on-container-exit"
+  },
+  "devDependencies": {
+    "patch-package": "^6.5.0",
+    "apidoc": "^0.28.1",
+    "chai": "^4.1.0",
+    "chai-as-promised": "^7.1.1",
+    "coveralls": "^3.0.0",
+    "eslint": "^7.29.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.2.0",
+    "husky": "^3.0.7",
+    "mocha": "^6.2.2",
+    "nodemon": "^2.0.1",
+    "nyc": "^15.1.0",
+    "opn-cli": "^5.0.0",
+    "sinon": "^7.5.0",
+    "sinon-chai": "^3.0.0",
+    "supertest": "^6.1.3"
   }
 }

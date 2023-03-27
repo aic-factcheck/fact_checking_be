@@ -31,7 +31,13 @@
 
 ## Getting Started
 
-#### Install dependencies:
+#### Install dependencies for all subdirectories/services:
+
+```bash
+install:all
+```
+
+Or install dependencies only in root dir
 
 ```bash
 yarn
