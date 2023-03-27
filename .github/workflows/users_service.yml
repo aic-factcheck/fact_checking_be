@@ -42,6 +42,8 @@ jobs:
 
       - run: npm install yarn -g
 
+      - run: yarn global add cross-env
+
       - name: Build App
         run: yarn
 
