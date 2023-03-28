@@ -1,4 +1,4 @@
-name: users_service CI 
+name: Game Service CI 
 
 on:
   push:
