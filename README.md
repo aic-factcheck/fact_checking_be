@@ -26,18 +26,12 @@
 
 ## Requirements
 
- - [Node v7.6+](https://nodejs.org/en/download/current/) or [Docker](https://www.docker.com/)
+ - [Node v16.13.1+](https://nodejs.org/en/download/current/) or [Docker](https://www.docker.com/)
  - [Yarn](https://yarnpkg.com/en/docs/install)
 
 ## Getting Started
 
-#### Install dependencies for all subdirectories/services:
-
-```bash
-install:all
-```
-
-Or install dependencies only in root dir
+#### Install dependencies 
 
 ```bash
 yarn
