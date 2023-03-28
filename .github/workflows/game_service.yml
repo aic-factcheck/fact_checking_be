@@ -22,8 +22,13 @@ env:
 
 
 jobs:
-  tests:
+  game_service-tests:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./game_service
+    defaults:
+      run:
+        working-directory: ${{ env.working-directory }}
 
     strategy:
       matrix:
