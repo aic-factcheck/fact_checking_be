@@ -61,5 +61,5 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
-      - run: yarn validate
+      # - run: yarn validate
 

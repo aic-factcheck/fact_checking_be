@@ -13,10 +13,12 @@
   },
   "scripts": {
     "install:all": "for i in */; do yarn --cwd \"${i}\"; done",
+    "precommit": "yarn user_service:lint",
     "postinstall": "patch-package",
     "prestart": "yarn docs",
     "start": "cross-env NODE_ENV=production pm2 start ./users_service/src/index.js",
     "dev": "nodemon ./users_service/src/index.js",
+    "user_service:lint": "./users_service/node_modules/.bin/eslint ./users_service/src/ --ignore-path .gitignore --ignore-pattern internals/scripts",
     "lint": "eslint ./users_service/src/ --ignore-path .gitignore --ignore-pattern internals/scripts",
     "lint:fix": "yarn lint --fix",
     "lint:watch": "yarn lint --watch",
