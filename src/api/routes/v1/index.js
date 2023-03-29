@@ -4,6 +4,7 @@ const authRoutes = require('./auth.route');
 const articleRoutes = require('./article.route');
 const searchRoutes = require('./search.route');
 const voteRoutes = require('./vote.route');
+const saveRoutes = require('./save.route');
 const hotRoutes = require('./hot.route');
 
 const router = express.Router();
@@ -26,5 +27,6 @@ router.use('/articles', articleRoutes);
 router.use('/search', searchRoutes);
 router.use('/vote', voteRoutes);
 router.use('/hot', hotRoutes);
+router.use('/save', saveRoutes);
 
 module.exports = router;

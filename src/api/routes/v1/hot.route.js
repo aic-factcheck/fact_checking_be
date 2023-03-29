@@ -1,7 +1,6 @@
 const express = require('express');
 const validate = require('express-validation');
 const controller = require('../../controllers/hot.controller');
-const { authorize } = require('../../middlewares/auth');
 const {
   listHotUsers,
   listHotArticles,
@@ -20,8 +19,6 @@ router
    * @apiGroup Hot
    * @apiPermission user
    *
-   * @apiHeader {String} Authorization   User's access token
-   *
    * @apiParam  {Number{1-}}         [page=1]     List page
    * @apiParam  {Number{1-100}}      [perPage=1]  Users per page
    *
@@ -29,7 +26,7 @@ router
    *
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
    */
-  .get(authorize(), validate(listHotUsers), controller.hottestUsers);
+  .get(validate(listHotUsers), controller.hottestUsers);
 
 router
   .route('/articles')
@@ -41,8 +38,6 @@ router
    * @apiGroup Hot
    * @apiPermission user
    *
-   * @apiHeader {String} Authorization   User's access token
-   *
    * @apiParam  {Number{1-}}         [page=1]     List page
    * @apiParam  {Number{1-100}}      [perPage=1]  Users per page
    *
@@ -50,7 +45,7 @@ router
    *
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
    */
-  .get(authorize(), validate(listHotArticles), controller.hottestArticles);
+  .get(validate(listHotArticles), controller.hottestArticles);
 
 router
   .route('/claims')
@@ -62,8 +57,6 @@ router
    * @apiGroup Hot
    * @apiPermission user
    *
-   * @apiHeader {String} Authorization   User's access token
-   *
    * @apiParam  {Number{1-}}         [page=1]     List page
    * @apiParam  {Number{1-100}}      [perPage=1]  Users per page
    *
@@ -71,6 +64,6 @@ router
    *
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
    */
-  .get(authorize(), validate(listHotClaims), controller.hottestClaims);
+  .get(validate(listHotClaims), controller.hottestClaims);
 
 module.exports = router;

@@ -12,7 +12,7 @@ router
   .route('/')
   /**
    * @api {post} v1/vote Create vote
-   * @apiDescription POST Create a new vote -> vote for user,article or claim
+   * @apiDescription POST Create a new vote -> vote for claim or review
    * @apiVersion 1.0.0
    * @apiName CreateVote
    * @apiGroup Vote
@@ -20,15 +20,18 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             [articleId]       Id
-   * @apiParam  {String}             [claimId]         Id
-   * @apiParam  {String}             [userId]          Id
-   * @apiParam  {Number{-1-10}}      [rating]          Value of the actual vote
-   * @apiParam  {String}             [text]            Text of the vote
+   * @apiParam  {String}             [articleId]     articleId to be voted for
+   * @apiQuery  {String}             [claimId]       claimId to be voted for
+   * @apiParam  {String}             [reviewId]      reviewId to be voted for
+   * @apiParam  {String}             [userId]        userId to be voted for
    *
-   * @apiSuccess {String}  _id       Claim id
-   * @apiSuccess {String}  articleId/claimId/reviewId/userId    Id of rated object
-   * @apiSuccess {Date}    createdAt     Timestamp
+   * @apiParam  {Number{-1, 0, 1}}   [rating]          Value of the actual vote
+   * @apiParam  {String}             [text]            Text of the vote - optional
+   *
+   * @apiSuccess {String}  _id                  Claim id
+   * @apiSuccess {String}  claimId/reviewId/articleId     Id of rated object
+   * @apiSuccess {String}  rating               Rating
+   * @apiSuccess {Date}    createdAt            Timestamp
    *
    */
   .post(authorize(), validate(voteRoute), controller.voteFor);

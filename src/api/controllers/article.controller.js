@@ -1,6 +1,8 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
 const Article = require('../models/article.model');
+const User = require('../models/user.model');
+const APIError = require('../errors/api-error');
 const { checkIsOwnerOfResurce } = require('../utils/helpers/resourceOwner');
 
 /**
@@ -86,9 +88,12 @@ exports.list = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
     const articles = await Article.find().populate('addedBy').limit(perPage).skip(perPage * (page - 1));
-    const transformedArticles = articles.map((x) => x.transform());
+    const trans = articles.map((x) => x.transform());
+    trans.forEach((x) => {
+      _.assign(x, { isSavedByUser: req.user.savedArticles.includes(x._id) });
+    });
 
-    res.json(transformedArticles);
+    res.json(trans);
   } catch (error) {
     next(error);
   }
@@ -106,6 +111,53 @@ exports.remove = async (req, res, next) => {
     article.remove()
       .then(() => res.status(httpStatus.NO_CONTENT).end())
       .catch((e) => next(e));
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.saveByUser = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { articleId } = req.query;
+
+    const articleCnt = await Article.findById(articleId).count();
+
+    if (req.user.savedArticles.includes(articleId)) {
+      throw new APIError({
+        status: httpStatus.BAD_REQUEST,
+        message: 'Article already saved',
+      });
+    }
+
+    if (articleCnt < 1) {
+      throw new APIError({
+        status: httpStatus.BAD_REQUEST,
+        message: 'ArticleId not valid',
+      });
+    }
+
+    await User.findOneAndUpdate({ _id: userId }, {
+      $push: { savedArticles: articleId },
+    }).exec();
+
+    const resUser = await User.findById(userId);
+    res.status(httpStatus.CREATED);
+    res.json(resUser.transform());
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.unsaveByUser = async (req, res, next) => {
+  try {
+    const { articleId } = req.query;
+
+    await User.findOneAndUpdate({ _id: req.user.id }, {
+      $pull: { savedArticles: articleId },
+    }).exec();
+
+    res.status(httpStatus.NO_CONTENT).end();
   } catch (error) {
     next(error);
   }

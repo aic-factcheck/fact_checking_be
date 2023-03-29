@@ -18,6 +18,7 @@ entity "User" as user {
   *invitedBy: text <<FK>>
   *nReviews: number
   *nBeenVoted: Number
+  *savedArticles: [<<FK>>]
 }
 
 entity "Invitation" as inv {
@@ -39,13 +40,13 @@ entity "Vote" as vote {
   --
   One of following is required
   --
-  *userId: text <<FK>>
-  *articleId: text <<FK>>
+  ' *userId: text <<FK>>
+  ' *articleId: text <<FK>>
   *claimId: text <<FK>>
   *reviewId: text <<FK>>
   --
-  *text: Text
-  *rating: Number {-1..10}
+  ' *text: Text
+  *rating: Number {-1,0,1}
   *createdAt: date
 }
 
@@ -71,6 +72,8 @@ entity "Claim" as claim {
   *articles: [<<FK>>,...]
   *text : text
   *nBeenVoted: Number
+  *nPositiveVotes: number
+  *nNegativeVotes: number
 }
 
 entity "Review" as review {
@@ -83,6 +86,9 @@ entity "Review" as review {
   *vote: enum {pos, neg, neut, no_info}
   *links: [String]
   *nBeenVoted: Number
+  *nPositiveVotes: number
+  *nNegativeVotes: number
+  *nNeutralVotes: number
 }
 
 entity "Review comment" as reviewComment {
@@ -98,9 +104,9 @@ entity "Review comment" as reviewComment {
 user ||..o{ article
 user ||..o{ inv
 article }o..o{ claim
-article ||..o{ vote
+' article ||..o{ vote
 user ||..o{ review
-user ||..o{ vote
+' user ||..o{ vote
 claim ||..o{ review
 claim }o..|| user
 claim ||..o{ vote
