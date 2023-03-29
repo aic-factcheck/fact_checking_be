@@ -162,3 +162,26 @@ exports.unsaveByUser = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Get saved article list
+ * @public
+ */
+exports.listSaved = async (req, res, next) => {
+  try {
+    const { page, perPage } = req.query;
+    const articles = await Article
+      .where('_id')
+      .in(req.user.savedArticles)
+      .populate('addedBy').limit(perPage)
+      .skip(perPage * (page - 1));
+    const trans = articles.map((x) => x.transform());
+    trans.forEach((x) => {
+      _.assign(x, { isSavedByUser: req.user.savedArticles.includes(x._id) });
+    });
+
+    res.json(trans);
+  } catch (error) {
+    next(error);
+  }
+};

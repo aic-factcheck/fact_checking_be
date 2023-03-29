@@ -22,8 +22,8 @@ const router = express.Router();
  * @apiGroup Auth
  * @apiPermission public
  *
- * @apiParam  {String}          email     User's email
- * @apiParam  {String{6..128}}  password  User's password
+ * @apiBody  {String}          email     User's email
+ * @apiBody  {String{6..128}}  password  User's password
  *
  * @apiSuccess (Created 201) {String}  token.tokenType     Access Token's type
  * @apiSuccess (Created 201) {String}  token.accessToken   Authorization Token
@@ -51,11 +51,11 @@ router.route('/register')
  * @apiGroup Auth
  * @apiPermission public
  *
- * @apiParam  {String}          email     User's email
- * @apiParam  {String{6..128}}  password  User's password
- * @apiParam  {Number{1000..9999}}  verificationCode  User's password
- * @apiParam  {String{6..128}}  firstName  User's first name
- * @apiParam  {String{6..128}}  lastName   User's last name
+ * @apiBody  {String}          email     User's email
+ * @apiBody  {String{6..128}}  password  User's password
+ * @apiBody  {Number{1000..9999}}  verificationCode  User's password
+ * @apiBody  {String{6..128}}  firstName  User's first name
+ * @apiBody  {String{6..128}}  lastName   User's last name
  *
  * @apiSuccess (Created 201) {String}  token.tokenType     Access Token's type
  * @apiSuccess (Created 201) {String}  token.accessToken   Authorization Token
@@ -87,8 +87,8 @@ router.route('/register-code')
  * @apiGroup Auth
  * @apiPermission public
  *
- * @apiParam  {String}         email     User's email
- * @apiParam  {String{..128}}  password  User's password
+ * @apiBody  {String}         email     User's email
+ * @apiBody  {String{..128}}  password  User's password
  *
  * @apiSuccess  {String}  token.tokenType     Access Token's type
  * @apiSuccess  {String}  token.accessToken   Authorization Token
@@ -117,8 +117,8 @@ router.route('/login')
  * @apiGroup Auth
  * @apiPermission public
  *
- * @apiParam  {String}  email         User's email
- * @apiParam  {String}  refreshToken  Refresh token aquired when user logged in
+ * @apiBody  {String}  email         User's email
+ * @apiBody  {String}  refreshToken  Refresh token aquired when user logged in
  *
  * @apiSuccess {String}  tokenType     Access Token's type
  * @apiSuccess {String}  accessToken   Authorization Token
@@ -145,7 +145,7 @@ router.route('/reset-password')
  * @apiGroup Auth
  * @apiPermission public
  *
- * @apiParam  {String}  access_token  Facebook's access_token
+ * @apiBody  {String}  access_token  Facebook's access_token
  *
  * @apiSuccess {String}  tokenType     Access Token's type
  * @apiSuccess {String}  accessToken   Authorization Token
@@ -166,7 +166,7 @@ router.route('/facebook')
  * @apiGroup Auth
  * @apiPermission public
  *
- * @apiParam  {String}  access_token  Google's access_token
+ * @apiBody  {String}  access_token  Google's access_token
  *
  * @apiSuccess {String}  tokenType     Access Token's type
  * @apiSuccess {String}  accessToken   Authorization Token

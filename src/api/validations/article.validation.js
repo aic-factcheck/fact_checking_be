@@ -11,6 +11,14 @@ module.exports = {
     },
   },
 
+  // GET /v1/articles/saved
+  listSavedArticles: {
+    query: {
+      page: Joi.number().min(1),
+      perPage: Joi.number().min(1).max(100),
+    },
+  },
+
   // POST /v1/articles
   createArticle: {
     body: {

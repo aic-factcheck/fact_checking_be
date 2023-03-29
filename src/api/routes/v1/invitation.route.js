@@ -26,7 +26,9 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  TODO
+   * @apiParam {String} userId   UsedId
+   *
+   * @apiBody  TODO
    *
    * @apiSuccess {Object[]} Invitations List of Invitations.
    *
@@ -43,7 +45,9 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}          invitedEmail     Invited user's email address
+   * @apiParam {String} userId   UsedId
+   *
+   * @apiBody  {String}          invitedEmail     Invited user's email address
    *
    *
    * @apiSuccess (Created 201) {String}  _id                  Invitation's id
@@ -70,6 +74,9 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
+   * @apiParam {String} userId   UsedId
+   * @apiParam {String} invitationId   InvitationId
+   *
    * @apiSuccess TODO
    *
    * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can access the data
@@ -85,6 +92,9 @@ router
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam {String} userId   UsedId
+   * @apiParam {String} invitationId   InvitationId
    *
    * @apiSuccess (No Content 204)  Successfully deleted
    *

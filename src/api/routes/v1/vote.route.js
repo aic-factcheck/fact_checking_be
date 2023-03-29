@@ -20,8 +20,9 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             [articleId]     articleId to be voted for
    * @apiQuery  {String}             [claimId]       claimId to be voted for
+   *
+   * @apiParam  {String}             [articleId]     articleId to be voted for
    * @apiParam  {String}             [reviewId]      reviewId to be voted for
    * @apiParam  {String}             [userId]        userId to be voted for
    *
