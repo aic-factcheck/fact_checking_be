@@ -13,7 +13,7 @@
   "scripts": {
     "postinstall": "patch-package",
     "precommit": "yarn lint",
-    "start": "cross-env NODE_ENV=production pm2 start ./src/index.js --no-daemon",
+    "start": "cross-env NODE_ENV=production pm2 start ./src/index.js",
     "dev": "nodemon ./src/index.js",
     "lint": "eslint ./src/ --ignore-path .gitignore --ignore-pattern internals/scripts",
     "lint:fix": "yarn lint --fix",
@@ -60,7 +60,7 @@
     "passport-http-bearer": "^1.0.1",
     "passport-jwt": "4.0.0",
     "patch-package": "^6.5.0",
-    "pm2": "^5.1.0",
+    "pm2": "^5.3.0",
     "postinstall-postinstall": "^2.1.0",
     "pug": "^3.0.1",
     "uuid": "^3.1.0",
