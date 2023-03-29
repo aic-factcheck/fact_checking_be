@@ -69,9 +69,34 @@ exports.voteFor = async (req, res, next) => {
     } else if (articleId) {
       await Article.findOneAndUpdate({ _id: articleId }, { $inc: { nBeenVoted: 1 } }).exec();
     } else if (claimId) {
-      await Claim.findOneAndUpdate({ _id: claimId }, { $inc: { nBeenVoted: 1 } }).exec();
+      if (savedVote.rating === -1) {
+        await Claim.findOneAndUpdate(
+          { _id: claimId },
+          { $inc: { nNegativeVotes: 1, nBeenVoted: 1 } },
+        ).exec();
+      } else if (savedVote.rating === 1) {
+        await Claim.findOneAndUpdate(
+          { _id: claimId },
+          { $inc: { nPositiveVotes: 1, nBeenVoted: 1 } },
+        ).exec();
+      }
     } else if (reviewId) {
-      await Review.findOneAndUpdate({ _id: reviewId }, { $inc: { nBeenVoted: 1 } }).exec();
+      if (savedVote.rating === -1) {
+        await Review.findOneAndUpdate(
+          { _id: reviewId },
+          { $inc: { nNegativeVotes: 1, nBeenVoted: 1 } },
+        ).exec();
+      } else if (savedVote.rating === 1) {
+        await Review.findOneAndUpdate(
+          { _id: reviewId },
+          { $inc: { nPositiveVotes: 1, nBeenVoted: 1 } },
+        ).exec();
+      } else if (savedVote.rating === 0) {
+        await Review.findOneAndUpdate(
+          { _id: reviewId },
+          { $inc: { nNeutralVotes: 1, nBeenVoted: 1 } },
+        ).exec();
+      }
     }
 
     res.status(httpStatus.CREATED);

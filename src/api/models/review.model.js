@@ -44,6 +44,18 @@ const reviewSchema = new mongoose.Schema({
       maxlength: 512,
     },
   ],
+  nPositiveVotes: {
+    type: Number,
+    default: 0,
+  },
+  nNeutralVotes: {
+    type: Number,
+    default: 0,
+  },
+  nNegativeVotes: {
+    type: Number,
+    default: 0,
+  },
   nBeenVoted: {
     type: Number,
     default: 0,
@@ -58,7 +70,7 @@ const reviewSchema = new mongoose.Schema({
 reviewSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'claimId', 'articleId', 'text', 'createdAt', 'vote', 'links', 'nBeenVoted'];
+    const fields = ['_id', 'claimId', 'articleId', 'text', 'createdAt', 'vote', 'links', 'nBeenVoted', 'nNeutralVotes', 'nPositiveVotes', 'nNegativeVotes'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

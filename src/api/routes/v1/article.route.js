@@ -34,7 +34,7 @@ router
    *
    * @apiSuccess {Object[]} articles List of articles.
    */
-  .get(validate(listArticles), controller.list)
+  .get(authorize(), validate(listArticles), controller.list)
   /**
    * @api {post} v1/articles Create Article
    * @apiDescription Create a new article
@@ -80,6 +80,7 @@ router
    * @apiSuccess {String}  text           Text of article
    * @apiSuccess {String}  sourceUrl      Source url of article
    * @apiSuccess {String}  sourceType     Source type of article
+   * @apiSuccess {Boolean} isSavedByUser  Is article saved by current user
    * @apiSuccess {String}  language       Language of article
    * @apiSuccess {Date}    createdAt      Timestamp
    *
