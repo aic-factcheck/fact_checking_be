@@ -943,10 +943,10 @@ anymatch@~3.1.2:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-apidoc@^0.54.0:
-  version "0.54.0"
-  resolved "https://registry.yarnpkg.com/apidoc/-/apidoc-0.54.0.tgz#b30d3c46ef451ed4fe024c18a7ffbda978bf5fd5"
-  integrity sha512-VCOdwkAaFK7bDLbiAiFKqX8SVlAnk7sQCXDARwshBQpVRqRGDNY993kAMPkWmSD1RCVBDMFIOgOfOR9mcISNZQ==
+apidoc@^0.50.0:
+  version "0.50.5"
+  resolved "https://registry.yarnpkg.com/apidoc/-/apidoc-0.50.5.tgz#7d026041506fa6a462ab0f18093fa347a5212d64"
+  integrity sha512-bp4nze32IsUgeDoRHcpZY8mdZ/GHMHyMak6ptLQkrzQ1rL6LYf0Mu4mBJmVksA+N6/hOsnOhoPQGeiZp2BVX2w==
   dependencies:
     bootstrap "3.4.1"
     commander "^8.3.0"
@@ -962,9 +962,11 @@ apidoc@^0.54.0:
     lodash "^4.17.21"
     markdown-it "^12.2.0"
     nodemon "^2.0.15"
+    path-to-regexp "^6.2.0"
     prismjs "^1.25.0"
     semver "^7.3.5"
     style-loader "^3.3.1"
+    url-parse "^1.5.3"
     webpack "^5.64.2"
     webpack-cli "^4.9.1"
     winston "^3.3.3"
@@ -4887,6 +4889,11 @@ path-to-regexp@^1.7.0:
   dependencies:
     isarray "0.0.1"
 
+path-to-regexp@^6.2.0:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-6.2.1.tgz#d54934d6798eb9e5ef14e7af7962c945906918e5"
+  integrity sha512-JLyh7xT1kizaEvcaXOQwOc2/Yhw6KZOvPf1S8401UyLk86CU79LN3vl7ztXGm/pZ+YjoyAJ4rxmHwbkBXJX+yw==
+
 path-type@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/path-type/-/path-type-3.0.0.tgz"
@@ -5362,6 +5369,11 @@ qs@~6.5.2:
   version "6.5.2"
   resolved "https://registry.npmjs.org/qs/-/qs-6.5.2.tgz"
 
+querystringify@^2.1.1:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.2.0.tgz#3345941b4153cb9d082d8eee4cda2016a9aef7f6"
+  integrity sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==
+
 quick-lru@^1.0.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/quick-lru/-/quick-lru-1.1.0.tgz"
@@ -5570,6 +5582,11 @@ require-in-the-middle@^5.0.0:
 require-main-filename@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/require-main-filename/-/require-main-filename-2.0.0.tgz"
+
+requires-port@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
+  integrity sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==
 
 resolve-cwd@^3.0.0:
   version "3.0.0"
@@ -6476,6 +6493,14 @@ url-parse-lax@^3.0.0:
   resolved "https://registry.npmjs.org/url-parse-lax/-/url-parse-lax-3.0.0.tgz"
   dependencies:
     prepend-http "^2.0.0"
+
+url-parse@^1.5.3:
+  version "1.5.10"
+  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.10.tgz#9d3c2f736c1d75dd3bd2be507dcc111f1e2ea9c1"
+  integrity sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==
+  dependencies:
+    querystringify "^2.1.1"
+    requires-port "^1.0.0"
 
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
