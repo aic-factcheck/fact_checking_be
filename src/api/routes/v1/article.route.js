@@ -8,6 +8,7 @@ const {
   createArticle,
   replaceArticle,
   updateArticle,
+  listSavedArticles,
 } = require('../../validations/article.validation');
 
 const router = express.Router({ mergeParams: true });
@@ -29,8 +30,8 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {Number{1-}}         [page=1]     List page (optional)
-   * @apiParam  {Number{1-100}}      [perPage=1]  Users per page (optional)
+   * @apiQuery  {Number{1-}}         [page=1]     List page (optional)
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page (optional)
    *
    * @apiSuccess {Object[]} articles List of articles.
    */
@@ -45,10 +46,10 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String{6..16448}}                text          Article text
-   * @apiParam  {String{..128}}                   sourceUrl     SorceUrl of article
-   * @apiParam  {String=article,tv,radio,other}   sourceType    Source type of article
-   * @apiParam  {String=cz,sk,en}                 language      Article language
+   * @apiBody  {String{6..16448}}                text          Article text
+   * @apiBody  {String{..128}}                   sourceUrl     SorceUrl of article
+   * @apiBody  {String=article,tv,radio,other}   sourceType    Source type of article
+   * @apiBody  {String=cz,sk,en}                 language      Article language
    *
    * @apiSuccess (Created 201) {String}  _id            Article id
    * @apiSuccess (Created 201) {String}  addedBy        Id of user who added the article
@@ -63,10 +64,28 @@ router
    */
   .post(authorize(), validate(createArticle), controller.create);
 
+router.route('/saved')
+  /**
+   * @api {get} v1/articles/saved List saved Articles
+   * @apiDescription Get a list of saved articles
+   * @apiVersion 1.0.0
+   * @apiName ListSavedArticles
+   * @apiGroup Article
+   * @apiPermission user
+   *
+   * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiQuery  {Number{1-}}         [page=1]     List page (optional)
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page (optional)
+   *
+   * @apiSuccess {Object[]} articles List of articles.
+   */
+  .get(authorize(), validate(listSavedArticles), controller.listSaved);
+
 router
   .route('/:articleId')
   /**
-   * @api {get} v1/articles/:id Get Article
+   * @api {get} v1/articles/:articleId Get Article
    * @apiDescription Get article information
    * @apiVersion 1.0.0
    * @apiName GetArticle
@@ -74,6 +93,8 @@ router
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam {String} articleId   ArticleId
    *
    * @apiSuccess {String}  _id            Article's id
    * @apiSuccess {Object}  addedBy        User object who added the article
@@ -88,7 +109,7 @@ router
    */
   .get(controller.get)
   /**
-   * @api {put} v1/articles/:id Replace Article
+   * @api {put} v1/articles/:articleId Replace Article
    * @apiDescription Replace the whole article document with a new one
    * @apiVersion 1.0.0
    * @apiName ReplaceArticle
@@ -97,10 +118,12 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String{6..16448}}                text          Article text
-   * @apiParam  {String{..128}}                   sourceUrl     SorceUrl of article
-   * @apiParam  {String=article,tv,radio,other}   sourceType    Source type of article
-   * @apiParam  {String=cz,sk,en}                 language      Article language
+   * @apiParam {String} articleId   ArticleId
+   *
+   * @apiBody  {String{6..16448}}                text          Article text
+   * @apiBody  {String{..128}}                   sourceUrl     SorceUrl of article
+   * @apiBody  {String=article,tv,radio,other}   sourceType    Source type of article
+   * @apiBody  {String=cz,sk,en}                 language      Article language
    *
    * @apiSuccess (Created 201) {String}  _id            Article id
    * @apiSuccess (Created 201) {String}  addedBy        Id of user who added the article
@@ -116,7 +139,7 @@ router
    */
   .put(authorize(), validate(replaceArticle), controller.replace)
   /**
-   * @api {patch} v1/articles/:id Update Article
+   * @api {patch} v1/articles/:articleId Update Article
    * @apiDescription Update some fields of a article document
    * @apiVersion 1.0.0
    * @apiName UpdateArticle
@@ -125,7 +148,7 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  TODO
+   * @apiParam {String} articleId   ArticleId
    *
    * @apiSuccess TODO
    *
@@ -135,7 +158,7 @@ router
    */
   .patch(authorize(), validate(updateArticle), controller.update)
   /**
-   * @api {patch} v1/articles/:id Delete Article
+   * @api {patch} v1/articles/:articleId Delete Article
    * @apiDescription Delete an article
    * @apiVersion 1.0.0
    * @apiName DeleteArticle
@@ -143,6 +166,8 @@ router
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam {String} articleId   ArticleId
    *
    * @apiSuccess (No Content 204)  Successfully deleted
    *

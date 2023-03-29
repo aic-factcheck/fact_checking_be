@@ -30,8 +30,10 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {Number{1-}}         [page=1]     List page
-   * @apiParam  {Number{1-100}}      [perPage=1]  Users per page
+   * @apiParam {String} articleId   ArticleId
+   *
+   * @apiBody  {Number{1-}}         [page=1]     List page
+   * @apiBody  {Number{1-100}}      [perPage=1]  Users per page
    *
    * @apiSuccess {Object[]} Claims List of Claims.
    * @apiSuccess {[].userReview} Logged user's review for claim.
@@ -47,9 +49,11 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             text      Claims's text
-   * @apiParam  {Number}             priority  Priority of claim
-   * @apiParam  {Number}             claimId  Iff adding existing claim to article
+   * @apiParam {String} articleId   ArticleId
+   *
+   * @apiBody  {String}             text      Claims's text
+   * @apiBody  {Number}             priority  Priority of claim
+   * @apiBody  {Number}             claimId  Iff adding existing claim to article
    *
    * @apiSuccess (Created 201) {String}  text         Claim's text
    * @apiSuccess (Created 201) {String}  priority     Claim's priority
@@ -65,7 +69,7 @@ router
 router
   .route('/:claimId')
   /**
-   * @api {get} v1/articles/:articleId/claims/:id Get Claim
+   * @api {get} v1/articles/:articleId/claims/:claimId Get Claim
    * @apiDescription Get Claims information
    * @apiVersion 1.0.0
    * @apiName GetClaims
@@ -73,6 +77,9 @@ router
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId   Id of claim
    *
    * @apiSuccess {String}  id         Claim's id
    * @apiSuccess {String}  text         Claim's text
@@ -89,7 +96,7 @@ router
    */
   .get(authorize(), controller.get)
   /**
-   * @api {put} v1/articles/:articleId/claims/:id Replace Claim
+   * @api {put} v1/articles/:articleId/claims/:claimId Replace Claim
    * @apiDescription Replace the whole Claims document with a new one
    * @apiVersion 1.0.0
    * @apiName ReplaceClaims
@@ -98,7 +105,10 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             text     Claims's text
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId   Id of claim
+   *
+   * @apiBody  {String}             text     Claims's text
    *
    *
    * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
@@ -107,7 +117,7 @@ router
    */
   .put(authorize(), validate(replaceClaim), controller.replace)
   /**
-   * @api {patch} v1/articles/:articleId/claims/:id Update Claim
+   * @api {patch} v1/articles/:articleId/claims/:claimId Update Claim
    * @apiDescription Update some fields of a Claims document
    * @apiVersion 1.0.0
    * @apiName UpdateClaims
@@ -116,7 +126,10 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             text     Claims's text
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId   Id of claim
+   *
+   * @apiBody  {String}             text     Claims's text
    *
    *
    * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
@@ -125,7 +138,7 @@ router
    */
   .patch(authorize(), validate(updateClaim), controller.update)
   /**
-   * @api {patch} v1/articles/:articleId/claims/:id Delete Claim
+   * @api {patch} v1/articles/:articleId/claims/:claimId Delete Claim
    * @apiDescription Delete an Claims
    * @apiVersion 1.0.0
    * @apiName DeleteClaims
@@ -134,6 +147,9 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId     ClaimId
+   *
    * @apiSuccess (No Content 204)  Successfully deleted
    *
    * @apiError (Unauthorized 401) Unauthorized  Only authenticated users can delete the data
@@ -141,7 +157,7 @@ router
    */
   .delete(authorize(), controller.remove)
   /**
-   * @api {put} v1/articles/:articleId/claims/:id Add articleId to claim
+   * @api {put} v1/articles/:articleId/claims/:claimId Add articleId to claim
    * @apiDescription Adding existing claim to article
    * @apiVersion 1.0.0
    * @apiName AddExistingClaim
@@ -149,6 +165,9 @@ router
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId   Id of claim
    *
    *
    * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values

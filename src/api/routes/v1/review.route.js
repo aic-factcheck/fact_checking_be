@@ -28,8 +28,11 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {Number{1-}}         [page=1]     List page
-   * @apiParam  {Number{1-100}}      [perPage=1]  Users per page
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId   Id of claim
+   *
+   * @apiQuery  {Number{1-}}         [page=1]     List page
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page
    *
    * @apiSuccess {Object[]} Review List of Reviews.
    */
@@ -44,8 +47,11 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             text            Review's text
-   * @apiParam  {String=positive,neutral,negative}   Vote of the review
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId   Id of claim
+   *
+   * @apiBody  {String}             text            Review's text
+   * @apiBody  {String=positive,neutral,negative}   Vote of the review
    *
    * @apiSuccess {String}  id            Review's id
    * @apiSuccess {String}  text          Review's text
@@ -76,6 +82,10 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId   Id of claim
+   * @apiParam {String} reviewId   ReviewId
+   *
    * @apiSuccess {String}  id            Review's id
    * @apiSuccess {String}  text          Review's text
    * @apiSuccess {String}  vote          Vote - decision of reviewer
@@ -102,8 +112,12 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             text     Review's text
-   * @apiParam  {String=positive,neutral,negative}   Vote of the review
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId   Id of claim
+   * @apiParam {String} reviewId   ReviewId
+   *
+   * @apiBody  {String}             text     Review's text
+   * @apiBody  {String=positive,neutral,negative}   Vote of the review
    *
    *
    * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
@@ -121,8 +135,12 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             text            Review's text
-   * @apiParam  {String=positive,neutral,negative}   Vote of the review
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId   Id of claim
+   * @apiParam {String} reviewId   ReviewId
+   *
+   * @apiBody  {String}             text            Review's text
+   * @apiBody  {String=positive,neutral,negative}   Vote of the review
    *
    *
    * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
@@ -139,6 +157,10 @@ router
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam {String} articleId   ArticleId
+   * @apiParam {String} claimId   Id of claim
+   * @apiParam {String} reviewId   ReviewId
    *
    * @apiSuccess (No Content 204)  Successfully deleted
    *

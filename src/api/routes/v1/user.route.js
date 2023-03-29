@@ -31,11 +31,11 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {Number{1-}}         [page=1]     List page
-   * @apiParam  {Number{1-100}}      [perPage=1]  Users per page
-   * @apiParam  {String}             [name]       User's name
-   * @apiParam  {String}             [email]      User's email
-   * @apiParam  {String=user,admin}  [role]       User's role
+   * @apiQuery  {Number{1-}}         [page=1]     List page
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page
+   * @apiBody  {String}             [name]       User's name
+   * @apiBody  {String}             [email]      User's email
+   * @apiBody  {String=user,admin}  [role]       User's role
    *
    * @apiSuccess {Object[]} users List of users.
    *
@@ -53,10 +53,10 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             email     User's email
-   * @apiParam  {String{6..128}}     password  User's password
-   * @apiParam  {String{..128}}      [name]    User's name
-   * @apiParam  {String=user,admin}  [role]    User's role
+   * @apiBody  {String}             email     User's email
+   * @apiBody  {String{6..128}}     password  User's password
+   * @apiBody  {String{..128}}      [name]    User's name
+   * @apiBody  {String=user,admin}  [role]    User's role
    *
    * @apiSuccess (Created 201) {String}  id         User's id
    * @apiSuccess (Created 201) {String}  name       User's name
@@ -98,7 +98,7 @@ router
 router
   .route('/:userId')
   /**
-   * @api {get} v1/users/:id Get User
+   * @api {get} v1/users/:userId Get User
    * @apiDescription Get user information
    * @apiVersion 1.0.0
    * @apiName GetUser
@@ -106,6 +106,8 @@ router
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam {String} userId  User's id
    *
    * @apiSuccess {String}  id         User's id
    * @apiSuccess {String}  name       User's name
@@ -119,7 +121,7 @@ router
    */
   .get(authorize(LOGGED_USER), controller.get)
   /**
-   * @api {put} v1/users/:id Replace User
+   * @api {put} v1/users/:userId Replace User
    * @apiDescription Replace the whole user document with a new one
    * @apiVersion 1.0.0
    * @apiName ReplaceUser
@@ -128,12 +130,14 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             email     User's email
-   * @apiParam  {String{6..128}}     password  User's password
-   * @apiParam  {String{..128}}      [name]    User's name
-   * @apiParam  {String=user,admin}  [role]    User's role
-   * @apiParam  {String}             firstName  User's first name
-   * @apiParam  {String}             lastName   User's last name
+   * @apiParam {String} userId  User's id
+   *
+   * @apiBody  {String}             email     User's email
+   * @apiBody  {String{6..128}}     password  User's password
+   * @apiBody  {String{..128}}      [name]    User's name
+   * @apiBody  {String=user,admin}  [role]    User's role
+   * @apiBody  {String}             firstName  User's first name
+   * @apiBody  {String}             lastName   User's last name
    * (You must be an admin to change the user's role)
    *
    * @apiSuccess {String}  id         User's id
@@ -151,7 +155,7 @@ router
    */
   .put(authorize(LOGGED_USER), validate(replaceUser), controller.replace)
   /**
-   * @api {patch} v1/users/:id Update User
+   * @api {patch} v1/users/:userId Update User
    * @apiDescription Update some fields of a user document
    * @apiVersion 1.0.0
    * @apiName UpdateUser
@@ -160,12 +164,14 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             email     User's email
-   * @apiParam  {String{6..128}}     password  User's password
-   * @apiParam  {String{..128}}      [name]    User's name
-   * @apiParam  {String=user,admin}  [role]    User's role
-   * @apiParam  {String}             firstName  User's first name
-   * @apiParam  {String}             lastName   User's last name
+   * @apiParam {String} userId  User's id
+   *
+   * @apiBody  {String}             email     User's email
+   * @apiBody  {String{6..128}}     password  User's password
+   * @apiBody  {String{..128}}      [name]    User's name
+   * @apiBody  {String=user,admin}  [role]    User's role
+   * @apiBody  {String}             firstName  User's first name
+   * @apiBody  {String}             lastName   User's last name
    * (You must be an admin to change the user's role)
    *
    * @apiSuccess {String}  id         User's id
@@ -183,7 +189,7 @@ router
    */
   .patch(authorize(LOGGED_USER), validate(updateUser), controller.update)
   /**
-   * @api {patch} v1/users/:id Delete User
+   * @api {patch} v1/users/:userId Delete User
    * @apiDescription Delete a user
    * @apiVersion 1.0.0
    * @apiName DeleteUser
@@ -191,6 +197,8 @@ router
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam {String} userId  User's id
    *
    * @apiSuccess (No Content 204)  Successfully deleted
    *
@@ -214,8 +222,12 @@ router
    * @apiGroup Article
    * @apiPermission user
    *
-   * @apiParam  {Number{1-}}         [page=1]     List page
-   * @apiParam  {Number{1-100}}      [perPage=1]  Users per page
+   * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam {String} userId  User's id
+   *
+   * @apiQuery  {Number{1-}}         [page=1]     List page
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page
    *
    * @apiSuccess {Object[]} user's List of articles.
    *
@@ -237,8 +249,10 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {Number{1-}}         [page=1]     List page
-   * @apiParam  {Number{1-100}}      [perPage=1]  Users per page
+   * @apiParam {String} userId  User's id
+   *
+   * @apiQuery  {Number{1-}}         [page=1]     List page
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page
    *
    * @apiSuccess {Object[]} user's List of users.
    *
