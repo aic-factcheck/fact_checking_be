@@ -72,7 +72,7 @@ router.route('/saved')
    * @apiDescription Get a list of saved articles
    * @apiVersion 1.0.0
    * @apiName ListSavedArticles
-   * @apiGroup Article
+   * @apiGroup SavedArticles
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token

@@ -32,7 +32,7 @@ const articleSchema = new mongoose.Schema({
   text: {
     type: String,
     maxlength: 16448,
-    index: true,
+    index: 'text',
   },
   claims: [
     {

@@ -1,6 +1,27 @@
 // const httpStatus = require('http-status');
 const Claim = require('../models/claim.model');
+const User = require('../models/user.model');
 const Article = require('../models/article.model');
+
+/**
+ * GET search for user-name
+ * @public
+ */
+exports.searchUsers = async (req, res, next) => {
+  try {
+    const { text } = req.query;
+    const claims = await User.find({
+      $text: {
+        $search: text,
+        $diacriticSensitive: false,
+      },
+    });
+
+    res.json(claims);
+  } catch (error) {
+    next(error);
+  }
+};
 
 /**
  * Get Search claims
