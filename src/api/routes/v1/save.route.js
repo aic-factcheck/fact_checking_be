@@ -11,11 +11,11 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   /**
-   * @api {post} v1/save SavedArticle
+   * @api {post} v1/save Save Article
    * @apiDescription POST Add a newly saved article into list of liekd articles
    * @apiVersion 1.0.0
    * @apiName AddSavedArticle
-   * @apiGroup Save
+   * @apiGroup SavedArticles
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token
@@ -30,11 +30,11 @@ router
    */
   .post(authorize(), validate(saveRoute), controller.saveByUser)
   /**
-   * @api {delete} v1/save UnsaveArticle
+   * @api {delete} v1/save Unsave Article
    * @apiDescription DELETE Remove saved article from list of lieked articles
    * @apiVersion 1.0.0
    * @apiName RemoveSavedArticle
-   * @apiGroup Save
+   * @apiGroup SavedArticles
    * @apiPermission user
    *
    * @apiHeader {String} Authorization   User's access token

@@ -35,7 +35,6 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     maxlength: 128,
-    index: true,
     trim: true,
   },
   firstName: {
@@ -46,7 +45,6 @@ const userSchema = new mongoose.Schema({
   lastName: {
     type: String,
     maxlength: 64,
-    index: true,
     trim: true,
   },
   services: {
@@ -255,6 +253,13 @@ userSchema.statics = {
     });
   },
 };
+
+userSchema.index({
+  firstName: 'text',
+  lastName: 'text',
+  name: 'text',
+  email: 'text',
+});
 
 /**
  * @typedef User

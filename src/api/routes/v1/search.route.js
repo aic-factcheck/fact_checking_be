@@ -5,9 +5,29 @@ const { authorize } = require('../../middlewares/auth');
 const {
   searchClaims,
   searchArticles,
+  searchUsers,
 } = require('../../validations/search.validation');
 
 const router = express.Router({ mergeParams: true });
+
+router
+  .route('/users')
+  /**
+   * @api {get} v1/search/users Search claims
+   * @apiDescription Get a list of claims that contain query string
+   * @apiVersion 1.0.0
+   * @apiName SearchClaim
+   * @apiGroup Search
+   * @apiPermission user
+   *
+   * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiQuery  {String}             [text]     Key to be searched by
+   *
+   * @apiSuccess {Object[]} Users List of Users that matched the text search.
+   *
+   */
+  .get(authorize(), validate(searchUsers), controller.searchUsers);
 
 router
   .route('/claims')
@@ -21,7 +41,7 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             [text]       Search text
+   * @apiQuery  {String}             [text]       Search text
    *
    * @apiSuccess {Object[]} Claims List of Claims that matched the text search.
    *
@@ -40,7 +60,7 @@ router
    *
    * @apiHeader {String} Authorization   User's access token
    *
-   * @apiParam  {String}             [text]       Search text
+   * @apiQuery  {String}             [text]       Search text
    *
    * @apiSuccess {Object[]} Articles List of Articles that matched the text search.
    *

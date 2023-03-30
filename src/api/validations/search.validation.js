@@ -2,6 +2,16 @@ const Joi = require('joi');
 
 module.exports = {
 
+  // GET /v1/search/users
+  searchUsers: {
+    query: {
+      text: Joi.string()
+        .min(3).max(56)
+        // .alphanum()
+        .required(),
+    },
+  },
+
   // GET /v1/search/claims
   searchClaims: {
     query: {

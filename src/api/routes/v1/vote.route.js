@@ -26,8 +26,8 @@ router
    * @apiParam  {String}             [reviewId]      reviewId to be voted for
    * @apiParam  {String}             [userId]        userId to be voted for
    *
-   * @apiParam  {Number{-1, 0, 1}}   [rating]          Value of the actual vote
-   * @apiParam  {String}             [text]            Text of the vote - optional
+   * @apiBody  {Number{-1, 0, 1}}   [rating]          Value of the actual vote
+   * @apiBody  {String}             [text]            Text of the vote - optional
    *
    * @apiSuccess {String}  _id                  Claim id
    * @apiSuccess {String}  claimId/reviewId/articleId     Id of rated object
