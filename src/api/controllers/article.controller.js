@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
 const Article = require('../models/article.model');
-const User = require('../models/user.model');
+const SavedArticle = require('../models/savedArticle.model');
 const APIError = require('../errors/api-error');
 const { checkIsOwnerOfResurce } = require('../utils/helpers/resourceOwner');
 
@@ -88,9 +88,11 @@ exports.list = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
     const articles = await Article.find().populate('addedBy').limit(perPage).skip(perPage * (page - 1));
+    const savedArticles = await SavedArticle.find({ addedBy: req.user.id })
+      .distinct('articleId').exec();
     const trans = articles.map((x) => x.transform());
     trans.forEach((x) => {
-      _.assign(x, { isSavedByUser: req.user.savedArticles.includes(x._id) });
+      _.assign(x, { isSavedByUser: savedArticles.includes(x._id) });
     });
 
     res.json(trans);
@@ -118,32 +120,26 @@ exports.remove = async (req, res, next) => {
 
 exports.saveByUser = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const addedBy = req.user.id;
     const { articleId } = req.query;
 
     const articleCnt = await Article.findById(articleId).count();
+    const alreadySaved = await SavedArticle.findOne({ addedBy, articleId }).count();
 
-    if (req.user.savedArticles.includes(articleId)) {
-      throw new APIError({
-        status: httpStatus.BAD_REQUEST,
-        message: 'Article already saved',
-      });
+    if (alreadySaved !== 0) {
+      throw new APIError({ status: httpStatus.BAD_REQUEST, message: 'Article already saved' });
     }
 
     if (articleCnt < 1) {
-      throw new APIError({
-        status: httpStatus.BAD_REQUEST,
-        message: 'ArticleId not valid',
-      });
+      throw new APIError({ status: httpStatus.BAD_REQUEST, message: 'ArticleId not valid' });
     }
 
-    await User.findOneAndUpdate({ _id: userId }, {
-      $push: { savedArticles: articleId },
-    }).exec();
+    await Article.findOneAndUpdate({ _id: articleId }, { $inc: { nSaved: 1 } }).exec();
+    const newArticle = new SavedArticle({ addedBy, articleId });
+    const savedArticle = await newArticle.save();
 
-    const resUser = await User.findById(userId);
     res.status(httpStatus.CREATED);
-    res.json(resUser.transform());
+    res.json(savedArticle.transform());
   } catch (error) {
     next(error);
   }
@@ -152,35 +148,35 @@ exports.saveByUser = async (req, res, next) => {
 exports.unsaveByUser = async (req, res, next) => {
   try {
     const { articleId } = req.query;
+    await Article.findOneAndUpdate({ _id: articleId }, { $inc: { nSaved: -1 } }).exec();
 
-    await User.findOneAndUpdate({ _id: req.user.id }, {
-      $pull: { savedArticles: articleId },
-    }).exec();
-
-    res.status(httpStatus.NO_CONTENT).end();
+    await SavedArticle.remove({ addedBy: req.user.id, articleId })
+      .then(() => res.status(httpStatus.NO_CONTENT).end())
+      .catch((e) => next(e));
   } catch (error) {
     next(error);
   }
 };
 
 /**
- * Get saved article list
+ * Get saved article list of current user
  * @public
  */
 exports.listSaved = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
+    const savedArticles = await SavedArticle.find({ addedBy: req.user.id })
+      .distinct('articleId').exec();
+
     const articles = await Article
       .where('_id')
-      .in(req.user.savedArticles)
-      .populate('addedBy').limit(perPage)
+      .in(savedArticles)
+      .populate('addedBy')
+      .limit(perPage)
       .skip(perPage * (page - 1));
-    const trans = articles.map((x) => x.transform());
-    trans.forEach((x) => {
-      _.assign(x, { isSavedByUser: req.user.savedArticles.includes(x._id) });
-    });
 
-    res.json(trans);
+    const transformedArticles = articles.map((x) => x.transform());
+    res.json(transformedArticles);
   } catch (error) {
     next(error);
   }

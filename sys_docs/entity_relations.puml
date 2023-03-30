@@ -21,6 +21,13 @@ entity "User" as user {
   *savedArticles: [<<FK>>]
 }
 
+entity "Saved" as saved {
+  *_id : string <<generated>>
+  --
+  *addedBy : text <<FK>>
+  *articleId : text <<FK>>
+}
+
 entity "Invitation" as inv {
   *_id : string <<generated>>
   --
@@ -61,6 +68,7 @@ entity "Article" as article {
   *sourceType : enum
   *language : text
   *nBeenVoted: Number
+  *nSaved: Number
 }
 
 entity "Claim" as claim {
@@ -103,7 +111,9 @@ entity "Review comment" as reviewComment {
 
 user ||..o{ article
 user ||..o{ inv
+user ||..o{ saved
 article }o..o{ claim
+article ||..o{ saved
 ' article ||..o{ vote
 user ||..o{ review
 ' user ||..o{ vote

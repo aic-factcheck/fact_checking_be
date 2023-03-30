@@ -61,6 +61,10 @@ const articleSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  nSaved: {
+    type: Number,
+    default: 0,
+  },
 }, {
   timestamps: true,
 });
@@ -71,7 +75,7 @@ const articleSchema = new mongoose.Schema({
 articleSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'title', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims', 'nBeenVoted'];
+    const fields = ['_id', 'title', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims', 'nBeenVoted', 'nSaved'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
