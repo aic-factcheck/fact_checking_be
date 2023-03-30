@@ -56,7 +56,7 @@ describe('Claim API', async () => {
       text: 'Lorem Ipsum is simply dummg industry. Lorem Ipsum has been the industry',
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
-      language: 'en',
+      lang: 'en',
     };
 
     claim1 = {
@@ -93,7 +93,6 @@ describe('Claim API', async () => {
           expect(res.body.addedBy._id).to.be.equal(user._id);
           expect(res.body.text).to.be.equal(claim1.text);
           expect(res.body.nBeenVoted).to.be.equal(0);
-          // expect(res.body.language).to.be.equal(claim1.language);
         });
     });
 
@@ -132,7 +131,7 @@ describe('Claim API', async () => {
       return request(app)
         .post('/v1/articles')
         .set('Authorization', 'Bearer ')
-        .send(_.omit(claim2, ['language']))
+        .send(_.omit(claim2, ['lang']))
         .expect(httpStatus.UNAUTHORIZED);
     });
   });

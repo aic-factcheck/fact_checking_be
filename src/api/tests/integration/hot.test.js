@@ -55,8 +55,9 @@ describe('Hottest resources API', async () => {
       text: 'Lorem Ipsum is simply dummg industry. Lorem Ipsum has been the industry',
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
-      language: 'en',
+      lang: 'en',
       nBeenVoted: 3,
+      nSaved: 3,
     };
 
     article2 = {
@@ -66,8 +67,9 @@ describe('Hottest resources API', async () => {
       text: 'Lorem Ipsum is simply dummg industry. Lorem Ipsum has been the industry',
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
-      language: 'en',
+      lang: 'en',
       nBeenVoted: 2,
+      nSaved: 1,
     };
 
     claim1 = {

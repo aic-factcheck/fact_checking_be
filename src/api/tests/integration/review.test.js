@@ -42,7 +42,7 @@ describe('Review API', async () => {
       text: 'Lorem Ipsum is simply dummg industry. Lorem Ipsum has been the industry',
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
-      language: 'en',
+      lang: 'en',
     };
 
     claim = {
@@ -129,7 +129,7 @@ describe('Review API', async () => {
       return request(app)
         .post(`/v1/articles/${article._id}/claims/${claim._id}/reviews`)
         .set('Authorization', 'Bearer ')
-        .send(_.omit(review2, ['language']))
+        .send(_.omit(review2, ['lang']))
         .expect(httpStatus.UNAUTHORIZED);
     });
   });

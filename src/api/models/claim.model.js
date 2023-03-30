@@ -35,7 +35,6 @@ const claimSchema = new mongoose.Schema({
   text: {
     type: String,
     maxlength: 512,
-    index: 'text',
   },
   nNegativeVotes: {
     type: Number,
@@ -80,7 +79,7 @@ claimSchema.method({
     // remove unwanted fields from populated ArticleId and append as article
     const article = this.articleId;
     const transformedArticle = {};
-    const articleFields = ['_id', 'sourceType', 'language', 'title', 'sourceUrl', 'createdAt'];
+    const articleFields = ['_id', 'sourceType', 'lang', 'title', 'sourceUrl', 'createdAt'];
 
     if (this.addedBy) {
       articleFields.forEach((field) => {
@@ -183,7 +182,10 @@ claimSchema.statics = {
   },
 };
 
-// claimSchema.index({ text: 'text' });
+claimSchema.index({
+  text: 'text',
+});
+
 /**
  * @typedef Claim
  */

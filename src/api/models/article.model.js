@@ -32,7 +32,7 @@ const articleSchema = new mongoose.Schema({
   text: {
     type: String,
     maxlength: 16448,
-    index: 'text',
+    index: true,
   },
   claims: [
     {
@@ -52,7 +52,7 @@ const articleSchema = new mongoose.Schema({
     enum: articleTypes,
     default: 'article',
   },
-  language: {
+  lang: {
     type: String,
     enum: languages,
     default: 'cz',
@@ -75,7 +75,7 @@ const articleSchema = new mongoose.Schema({
 articleSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'title', 'text', 'sourceUrl', 'sourceType', 'language', 'createdAt', 'claims', 'nBeenVoted', 'nSaved'];
+    const fields = ['_id', 'title', 'text', 'sourceUrl', 'sourceType', 'lang', 'createdAt', 'claims', 'nBeenVoted', 'nSaved'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -189,6 +189,11 @@ articleSchema.statics = {
   },
 };
 
+articleSchema.index({
+  title: 'text',
+  text: 'text',
+  sourceUrl: 'text',
+});
 /**
  * @typedef Article
  */

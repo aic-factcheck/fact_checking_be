@@ -87,7 +87,7 @@ router
    * @apiSuccess {Object}  addedBy      User object  who added
    * @apiSuccess {Object}  article    Associated article (creation)
    * @apiSuccess {String[]}  links    Array of links
-   * @apiSuccess {String}  language       Language of article
+   * @apiSuccess {String}  lang       Language of claim
    * @apiSuccess {Date}    createdAt    Timestamp
    * @apiSuccess {Object}  userReview    Object containing logged user review
    * @apiSuccess {String}  userReview.vote    Logged user review vote - positive/neutral/negative
