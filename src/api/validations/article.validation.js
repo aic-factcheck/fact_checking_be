@@ -26,7 +26,7 @@ module.exports = {
       text: Joi.string().min(6).max(16448).required(),
       sourceUrl: Joi.string().max(256),
       sourceType: Joi.string().valid(Article.articleTypes).required(),
-      language: Joi.string().valid(Article.languages).required(),
+      lang: Joi.string().valid(Article.languages).required(),
     },
   },
 
@@ -36,7 +36,7 @@ module.exports = {
       text: Joi.string().min(6).max(16448).required(),
       sourceUrl: Joi.string().max(256),
       sourceType: Joi.string().valid(Article.articleTypes).required(),
-      language: Joi.string().valid(Article.languages).required(),
+      lang: Joi.string().valid(Article.languages).required(),
     },
     params: {
       articleId: Joi.string().regex(/^[a-fA-F0-9]{24}$/).required(),

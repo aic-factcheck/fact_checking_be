@@ -59,7 +59,7 @@ describe('Vote API', async () => {
       text: 'Lorem Ipsum is simply dummg industry. Lorem Ipsum has been the industry',
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
-      language: 'en',
+      lang: 'en',
     };
 
     article2 = {
@@ -69,7 +69,7 @@ describe('Vote API', async () => {
       text: 'Lorem Ipsum is simply dummg industry. Lorem Ipsum has been the industry',
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
-      language: 'en',
+      lang: 'en',
     };
 
     claim1 = {

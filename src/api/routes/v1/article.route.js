@@ -49,14 +49,14 @@ router
    * @apiBody  {String{6..16448}}                text          Article text
    * @apiBody  {String{..128}}                   sourceUrl     SorceUrl of article
    * @apiBody  {String=article,tv,radio,other}   sourceType    Source type of article
-   * @apiBody  {String=cz,sk,en}                 language      Article language
+   * @apiBody  {String=cz,sk,en}                 lang      Article language
    *
    * @apiSuccess (Created 201) {String}  _id            Article id
    * @apiSuccess (Created 201) {String}  addedBy        Id of user who added the article
    * @apiSuccess (Created 201) {String}  text           Text of article
    * @apiSuccess (Created 201) {String}  sourceUrl      Source url of article
    * @apiSuccess (Created 201) {String}  sourceType     Source type of article
-   * @apiSuccess (Created 201) {String}  language       Language of article
+   * @apiSuccess (Created 201) {String}  lang       Language of article
    * @apiSuccess (Created 201) {String}  nBeenVoted     Number of votes
    * @apiSuccess (Created 201) {String}  nSaved         Number of saves
    * @apiSuccess (Created 201) {Date}    createdAt      Timestamp
@@ -104,7 +104,7 @@ router
    * @apiSuccess {String}  sourceUrl      Source url of article
    * @apiSuccess {String}  sourceType     Source type of article
    * @apiSuccess {Boolean} isSavedByUser  Is article saved by current user
-   * @apiSuccess {String}  language       Language of article
+   * @apiSuccess {String}  lang           Language of article
    * @apiSuccess {String}  nBeedVoted     Number of votes for this article
    * @apiSuccess {String}  nSaved         Number of user who saved this article
    * @apiSuccess {Date}    createdAt      Timestamp
@@ -127,14 +127,14 @@ router
    * @apiBody  {String{6..16448}}                text          Article text
    * @apiBody  {String{..128}}                   sourceUrl     SorceUrl of article
    * @apiBody  {String=article,tv,radio,other}   sourceType    Source type of article
-   * @apiBody  {String=cz,sk,en}                 language      Article language
+   * @apiBody  {String=cz,sk,en}                 lang      Article language
    *
    * @apiSuccess (Created 201) {String}  _id            Article id
    * @apiSuccess (Created 201) {String}  addedBy        Id of user who added the article
    * @apiSuccess (Created 201) {String}  text           Text of article
    * @apiSuccess (Created 201) {String}  sourceUrl      Source url of article
    * @apiSuccess (Created 201) {String}  sourceType     Source type of article
-   * @apiSuccess (Created 201) {String}  language       Language of article
+   * @apiSuccess (Created 201) {String}  lang       Language of article
    * @apiSuccess (Created 201) {String}  nSaved         Number of saves
    * @apiSuccess (Created 201) {Date}    createdAt      Timestamp
    *

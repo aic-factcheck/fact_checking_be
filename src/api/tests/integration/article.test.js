@@ -48,7 +48,7 @@ describe('Article API', async () => {
       text: 'Lorem Ipsum is simply dummg industry. Lorem Ipsum has been the industry',
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
-      language: 'en',
+      lang: 'en',
     };
 
     article2 = {
@@ -56,7 +56,7 @@ describe('Article API', async () => {
       text: 'Druhy clanok hh nejaky nahodny text. Nema to ziadny zmysel, ale vsak to nie je podsatatne..',
       sourceUrl: 'https://xyzabc.com',
       sourceType: 'article',
-      language: 'cz',
+      lang: 'cz',
     };
 
     await User.deleteMany({});
@@ -81,8 +81,9 @@ describe('Article API', async () => {
           expect(res.body.text).to.be.equal(article1.text);
           expect(res.body.sourceUrl).to.be.equal(article1.sourceUrl);
           expect(res.body.sourceType).to.be.equal(article1.sourceType);
-          expect(res.body.language).to.be.equal(article1.language);
+          expect(res.body.lang).to.be.equal(article1.lang);
           expect(res.body.nBeenVoted).to.be.equal(0);
+          expect(res.body.nSaved).to.be.equal(0);
         });
     });
 
@@ -99,8 +100,9 @@ describe('Article API', async () => {
           expect(res.body.text).to.be.equal(article2.text);
           expect(res.body.sourceUrl).to.be.equal(article2.sourceUrl);
           expect(res.body.sourceType).to.be.equal(article2.sourceType);
-          expect(res.body.language).to.be.equal(article2.language);
+          expect(res.body.lang).to.be.equal(article2.lang);
           expect(res.body.nBeenVoted).to.be.equal(0);
+          expect(res.body.nSaved).to.be.equal(0);
         });
     });
   });
@@ -121,19 +123,19 @@ describe('Article API', async () => {
       });
   });
 
-  it('should report error when language is not provided', () => {
+  it('should report error when lang is not provided', () => {
     return request(app)
       .post('/v1/articles')
       .set('Authorization', `Bearer ${userAccessToken}`)
-      .send(_.omit(article2, ['language']))
+      .send(_.omit(article2, ['lang']))
       .expect(httpStatus.BAD_REQUEST)
       .then((res) => {
         const { field } = res.body.errors[0];
         const { location } = res.body.errors[0];
         const { messages } = res.body.errors[0];
-        expect(field).to.be.equal('language');
+        expect(field).to.be.equal('lang');
         expect(location).to.be.equal('body');
-        expect(messages).to.include('"language" is required');
+        expect(messages).to.include('"lang" is required');
       });
   });
 
@@ -192,7 +194,7 @@ describe('Article API', async () => {
           expect(res.body).to.have.a.property('claims');
           expect(res.body).to.have.a.property('sourceUrl');
           expect(res.body).to.have.a.property('sourceType');
-          expect(res.body).to.have.a.property('language');
+          expect(res.body).to.have.a.property('lang');
           expect(res.body.nBeenVoted).to.be.equal(0);
 
           expect(res.body.addedBy).to.have.a.property('firstName');
@@ -209,7 +211,7 @@ describe('Article API', async () => {
         text: 'This is an updated article',
         sourceUrl: 'https://www.update.com/',
         sourceType: 'article',
-        language: 'cz',
+        lang: 'cz',
       };
 
       return request(app)
@@ -225,7 +227,7 @@ describe('Article API', async () => {
           expect(res.body.title).to.not.have.property('title');
           expect(res.body.sourceUrl).to.be.equal(updatedArticle.sourceUrl);
           expect(res.body.sourceType).to.be.equal(updatedArticle.sourceType);
-          expect(res.body.language).to.be.equal(updatedArticle.language);
+          expect(res.body.lang).to.be.equal(updatedArticle.lang);
 
           expect(res.body.addedBy._id).to.be.equal(user._id);
         });
@@ -236,7 +238,7 @@ describe('Article API', async () => {
         title: 'This is an updated article',
         sourceUrl: 'https://www.update.com/',
         sourceType: 'article',
-        language: 'cz',
+        lang: 'cz',
       };
 
       return request(app)
@@ -258,7 +260,7 @@ describe('Article API', async () => {
         text: 'This is an updated article',
         sourceUrl: 'https://www.update.com/asdbdadadsdasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadadadaasdbdadadsdasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadadadaasdbdadadsdasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadaasdbdadadsddadadada',
         sourceType: 'article',
-        language: 'cz',
+        lang: 'cz',
       };
 
       return request(app)
@@ -291,7 +293,7 @@ describe('Article API', async () => {
         text: 'This is an updated article',
         sourceUrl: 'https://www.update.com/',
         sourceType: 'article',
-        language: 'cz',
+        lang: 'cz',
       };
 
       return request(app)
@@ -313,7 +315,7 @@ describe('Article API', async () => {
         text: 'This is an updated article',
         sourceUrl: 'https://www.update.com/',
         sourceType: 'article',
-        language: 'cz',
+        lang: 'cz',
       };
 
       return request(app)
@@ -328,7 +330,7 @@ describe('Article API', async () => {
           expect(res.body.text).to.not.be.equal(updatedArticle.text);
           expect(res.body.sourceUrl).to.be.equal(updatedArticle.sourceUrl);
           expect(res.body.sourceType).to.be.equal(updatedArticle.sourceType);
-          expect(res.body.language).to.be.equal(updatedArticle.language);
+          expect(res.body.lang).to.be.equal(updatedArticle.lang);
         });
     });
 
@@ -337,7 +339,7 @@ describe('Article API', async () => {
         text: 'new text field',
         sourceUrl: 'https://www.update.com/',
         sourceType: 'article',
-        language: 'cz',
+        lang: 'cz',
       };
 
       return request(app)
