@@ -57,6 +57,8 @@ router
    * @apiSuccess (Created 201) {String}  sourceUrl      Source url of article
    * @apiSuccess (Created 201) {String}  sourceType     Source type of article
    * @apiSuccess (Created 201) {String}  language       Language of article
+   * @apiSuccess (Created 201) {String}  nBeenVoted     Number of votes
+   * @apiSuccess (Created 201) {String}  nSaved         Number of saves
    * @apiSuccess (Created 201) {Date}    createdAt      Timestamp
    *
    * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
@@ -103,6 +105,8 @@ router
    * @apiSuccess {String}  sourceType     Source type of article
    * @apiSuccess {Boolean} isSavedByUser  Is article saved by current user
    * @apiSuccess {String}  language       Language of article
+   * @apiSuccess {String}  nBeedVoted     Number of votes for this article
+   * @apiSuccess {String}  nSaved         Number of user who saved this article
    * @apiSuccess {Date}    createdAt      Timestamp
    *
    * @apiError (Not Found 404)    NotFound     Article does not exist
@@ -131,6 +135,7 @@ router
    * @apiSuccess (Created 201) {String}  sourceUrl      Source url of article
    * @apiSuccess (Created 201) {String}  sourceType     Source type of article
    * @apiSuccess (Created 201) {String}  language       Language of article
+   * @apiSuccess (Created 201) {String}  nSaved         Number of saves
    * @apiSuccess (Created 201) {Date}    createdAt      Timestamp
    *
    * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
