@@ -1,6 +1,6 @@
 {
   "name": "fact_check_api",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Fact checking app backend",
   "title": "Fact checking API",
   "url" : "https://localhost/"
