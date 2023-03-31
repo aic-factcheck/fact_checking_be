@@ -1,4 +1,4 @@
-const httpStatus = require('http-status');
+// const httpStatus = require('http-status');
 const mongoose = require('mongoose');
 const { _ } = require('lodash');
 const Claim = require('../models/claim.model');
@@ -74,7 +74,7 @@ const getSavedArticles = async (userId) => {
  * GET statistics about currently logged user
  * @public
  */
-exports.currentlyLogged = async (req, res, next) => {
+exports.getUserStats = async (req, res, next) => {
   try {
     let uId = req.user.id;
     let { user } = req;
@@ -95,8 +95,40 @@ exports.currentlyLogged = async (req, res, next) => {
     _.assign(userStats.claims, await getClaimsStats(uId));
     _.assign(userStats.reviews, await getReviewsStats(uId));
 
-    res.status(httpStatus.CREATED);
     res.json(userStats);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * GET leaderboard list
+ * @public
+ */
+exports.getLeaderboard = async (req, res, next) => {
+  try {
+    const { page, perPage } = req.query;
+
+    const users = await User.find()
+      .sort({ nReviews: -1 })
+      .limit(perPage)
+      .skip(perPage * (page - 1));
+    const userIds = users.map((el) => mongoose.Types.ObjectId(el.id));
+
+    const articles = await Article
+      .aggregate([{ $match: { addedBy: { $in: userIds } } }])
+      .group({ _id: '$addedBy', nArticles: { $sum: 1 } })
+      .exec();
+    const claims = await Claim
+      .aggregate([{ $match: { addedBy: { $in: userIds } } }])
+      .group({ _id: '$addedBy', nClaims: { $sum: 1 } })
+      .exec();
+
+    const transformedUsers = users.map((x) => x.transform());
+    const merged = _.merge(_.keyBy(transformedUsers, 'id'), _.keyBy(articles, '_id'), _.keyBy(claims, '_id'));
+    const values = _.values(merged);
+
+    res.json(values);
   } catch (error) {
     next(error);
   }

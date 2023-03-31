@@ -13,10 +13,10 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/users')
   /**
-   * @api {get} v1/search/users Search claims
-   * @apiDescription Get a list of claims that contain query string
+   * @api {get} v1/search/users Search users
+   * @apiDescription Get a list of users that contain query string
    * @apiVersion 1.0.0
-   * @apiName SearchClaim
+   * @apiName SearchUsers
    * @apiGroup Search
    * @apiPermission user
    *
@@ -54,7 +54,7 @@ router
    * @api {get} v1/search/articles Search articles
    * @apiDescription Get a list of articles that contain query string
    * @apiVersion 1.0.0
-   * @apiName SearchClaim
+   * @apiName SearchArticles
    * @apiGroup Search
    * @apiPermission user
    *

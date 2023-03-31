@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
+const User = require('../models/user.model');
 const Review = require('../models/review.model');
 const APIError = require('../errors/api-error');
 
@@ -35,7 +36,7 @@ const checkCurrentUserReview = async (userId, claimId, next) => {
   if (review) {
     throw new APIError({
       status: httpStatus.CONFLICT,
-      message: 'User already voted for this claim.',
+      message: 'User already reviewed this claim.',
     });
   }
 };
@@ -76,6 +77,7 @@ exports.create = async (req, res, next) => {
     }
 
     await claim.save();
+    await User.findOneAndUpdate({ _id: req.user.id }, { $inc: { nReviews: 1 } }).exec();
 
     const savedReview = await review.save();
     res.status(httpStatus.CREATED);
