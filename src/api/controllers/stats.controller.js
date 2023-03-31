@@ -107,49 +107,28 @@ exports.getUserStats = async (req, res, next) => {
  */
 exports.getLeaderboard = async (req, res, next) => {
   try {
+    const { page, perPage } = req.query;
+
+    const users = await User.find()
+      .sort({ nReviews: -1 })
+      .limit(perPage)
+      .skip(perPage * (page - 1));
+    const userIds = users.map((el) => mongoose.Types.ObjectId(el.id));
+
+    const articles = await Article
+      .aggregate([{ $match: { addedBy: { $in: userIds } } }])
+      .group({ _id: '$addedBy', nArticles: { $sum: 1 } })
+      .exec();
     const claims = await Claim
-      .aggregate()
-      .group({
-        _id: '$addedBy',
-        nClaims: { $sum: 1 },
-      })
-      .lookup({
-        from: 'users',
-        localField: '_id',
-        foreignField: '_id',
-        as: 'user',
-      })
-      .project({
-        'user._id': 1,
-        'user.firstName': 1,
-        'user.lastName': 1,
-        'user.name': 1,
-        'user.email': 1,
-        'user.role': 1,
-        'user.nReviews': 1,
-        'user.nBeenVoted': 1,
-        nClaims: 1,
-      })
+      .aggregate([{ $match: { addedBy: { $in: userIds } } }])
+      .group({ _id: '$addedBy', nClaims: { $sum: 1 } })
       .exec();
 
-    const mappedClaims = [];
+    const transformedUsers = users.map((x) => x.transform());
+    const merged = _.merge(_.keyBy(transformedUsers, 'id'), _.keyBy(articles, '_id'), _.keyBy(claims, '_id'));
+    const values = _.values(merged);
 
-    claims.forEach((it) => {
-      let newObj = it;
-      if (it.user.length !== 0) {
-        const usr = it.user[0];
-        newObj = _.omit(newObj, ['user']);
-        newObj.user = usr;
-        newObj.nReviews = newObj.user.nReviews;
-      } else {
-        newObj.user = {};
-      }
-      newObj.score = newObj.nClaims + newObj.nReviews;
-
-      mappedClaims.push(newObj);
-    });
-
-    res.json(mappedClaims);
+    res.json(values);
   } catch (error) {
     next(error);
   }
