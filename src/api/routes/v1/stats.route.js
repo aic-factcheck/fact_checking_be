@@ -4,6 +4,7 @@ const controller = require('../../controllers/stats.controller');
 const { authorize } = require('../../middlewares/auth');
 const {
   userStats,
+  usersLeaderboard,
 } = require('../../validations/stats.validation');
 
 const router = express.Router();
@@ -47,6 +48,30 @@ router
    * @apiError (Unauthorized 401) Unauthorized     Authenticated users can access the data
    * @apiError (Not Found 404)    NotFound         User does not exist
    */
-  .get(authorize(), validate(userStats), controller.currentlyLogged);
+  .get(authorize(), validate(userStats), controller.getUserStats);
+
+router
+  .route('/leaderboard')
+  /**
+   * @api {get} v1/stats/leaderboard Leaderboard
+   * @apiDescription GET leaderboard
+   * @apiVersion 1.0.0
+   * @apiName GetLeaderBoard
+   * @apiGroup Statistics
+   * @apiPermission user
+   *
+   * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiQuery  {Number{1-}}         [page=1]     List page (optional)
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page (optional)
+   *
+   * @apiSuccess {Object[]} users List of users.
+   *
+   *
+   * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
+   * @apiError (Unauthorized 401) Unauthorized     Authenticated users can access the data
+   * @apiError (Not Found 404)    NotFound         User does not exist
+   */
+  .get(authorize(), validate(usersLeaderboard), controller.getLeaderboard);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const httpStatus = require('http-status');
+// const httpStatus = require('http-status');
 const mongoose = require('mongoose');
 const { _ } = require('lodash');
 const Claim = require('../models/claim.model');
@@ -74,7 +74,7 @@ const getSavedArticles = async (userId) => {
  * GET statistics about currently logged user
  * @public
  */
-exports.currentlyLogged = async (req, res, next) => {
+exports.getUserStats = async (req, res, next) => {
   try {
     let uId = req.user.id;
     let { user } = req;
@@ -95,8 +95,61 @@ exports.currentlyLogged = async (req, res, next) => {
     _.assign(userStats.claims, await getClaimsStats(uId));
     _.assign(userStats.reviews, await getReviewsStats(uId));
 
-    res.status(httpStatus.CREATED);
     res.json(userStats);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * GET leaderboard list
+ * @public
+ */
+exports.getLeaderboard = async (req, res, next) => {
+  try {
+    const claims = await Claim
+      .aggregate()
+      .group({
+        _id: '$addedBy',
+        nClaims: { $sum: 1 },
+      })
+      .lookup({
+        from: 'users',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'user',
+      })
+      .project({
+        'user._id': 1,
+        'user.firstName': 1,
+        'user.lastName': 1,
+        'user.name': 1,
+        'user.email': 1,
+        'user.role': 1,
+        'user.nReviews': 1,
+        'user.nBeenVoted': 1,
+        nClaims: 1,
+      })
+      .exec();
+
+    const mappedClaims = [];
+
+    claims.forEach((it) => {
+      let newObj = it;
+      if (it.user.length !== 0) {
+        const usr = it.user[0];
+        newObj = _.omit(newObj, ['user']);
+        newObj.user = usr;
+        newObj.nReviews = newObj.user.nReviews;
+      } else {
+        newObj.user = {};
+      }
+      newObj.score = newObj.nClaims + newObj.nReviews;
+
+      mappedClaims.push(newObj);
+    });
+
+    res.json(mappedClaims);
   } catch (error) {
     next(error);
   }
