@@ -90,12 +90,12 @@ exports.list = async (req, res, next) => {
     const articles = await Article.find().populate('addedBy').limit(perPage).skip(perPage * (page - 1));
     const savedArticles = await SavedArticle.find({ addedBy: req.user.id })
       .distinct('articleId').exec();
-    const trans = articles.map((x) => x.transform());
-    trans.forEach((x) => {
-      _.assign(x, { isSavedByUser: savedArticles.includes(x._id) });
+    const transformed = articles.map((x) => x.transform());
+    transformed.forEach((x) => {
+      _.assign(x, { isSavedByUser: _.some(savedArticles, x._id) });
     });
 
-    res.json(trans);
+    res.json(transformed);
   } catch (error) {
     next(error);
   }
