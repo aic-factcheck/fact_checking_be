@@ -111,7 +111,7 @@ router
    *
    * @apiError (Not Found 404)    NotFound     Article does not exist
    */
-  .get(controller.get)
+  .get(authorize(), controller.get)
   /**
    * @api {put} v1/articles/:articleId Replace Article
    * @apiDescription Replace the whole article document with a new one
