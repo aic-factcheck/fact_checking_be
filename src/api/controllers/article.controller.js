@@ -23,7 +23,16 @@ exports.load = async (req, res, next, id) => {
  * Get article
  * @public
  */
-exports.get = (req, res) => res.json(req.locals.article.transform());
+exports.get = async (req, res, next) => {
+  const savedArticleCnt = await SavedArticle.find({
+    addedBy: req.user.id,
+    articleId: req.locals.article._id,
+  }).count();
+
+  const article = req.locals.article.transform();
+  article.isSavedByUser = (savedArticleCnt >= 1);
+  res.json(article);
+};
 
 /**
  * Create new article
