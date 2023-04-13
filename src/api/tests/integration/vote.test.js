@@ -167,6 +167,14 @@ describe('Vote API', async () => {
   });
 
   describe('POST /v1/vote?claimId=', async () => {
+    it('Only articleId/claimId/reviewId or userId can be used for voting', () => {
+      return request(app)
+        .post(`/v1/vote?otherId=${claim2._id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(positiveVote)
+        .expect(httpStatus.BAD_REQUEST);
+    });
+
     it('user1 should vote for an claim1', async () => {
       return request(app)
         .post(`/v1/vote?claimId=${claim1._id}`)
@@ -456,6 +464,19 @@ describe('Vote API', async () => {
           expect(field).to.be.equal('rating');
           expect(location).to.be.equal('body');
           expect(messages).to.include('"rating" is required');
+        });
+    });
+  });
+
+  describe('POST /v1/vote?userId=', async () => {
+    it('user1 should vote for user2', async () => {
+      return request(app)
+        .post(`/v1/vote?userId=${user2._id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(positiveVote)
+        .expect(httpStatus.CREATED)
+        .then((res) => {
+          expect(res.body.rating).to.be.equal(1);
         });
     });
   });
