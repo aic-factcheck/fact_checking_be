@@ -10,7 +10,7 @@ const Invitation = require('../../models/invitation.model');
 // const { updateUser } = require('../../validations/user.validation');
 // const emailProvider = require('../../services/emails/emailProvider');
 
-describe('Invitations API', async () => {
+describe('INVITATION API', async () => {
   let userAccessToken;
   let user;
   let invitation1;

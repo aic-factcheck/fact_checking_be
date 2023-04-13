@@ -26,7 +26,7 @@ const getClaimById = async (articleId, claimId, accessToken) => {
     .then((res) => res.body);
 };
 
-describe('Vote API', async () => {
+describe('VOTE API', async () => {
   let userAccessToken;
   let user2AccessToken;
   let user1;

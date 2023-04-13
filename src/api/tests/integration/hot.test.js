@@ -12,7 +12,7 @@ const Claim = require('../../models/claim.model');
 const Review = require('../../models/review.model');
 const Vote = require('../../models/vote.model');
 
-describe('Hottest resources API', async () => {
+describe('HOT resources API', async () => {
   let user2AccessToken;
   let user1;
   let user2;

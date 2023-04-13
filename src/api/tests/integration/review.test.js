@@ -10,7 +10,7 @@ const Article = require('../../models/article.model');
 const Claim = require('../../models/claim.model');
 const Review = require('../../models/review.model');
 
-describe('Review API', async () => {
+describe('REVIEW API', async () => {
   let userAccessToken;
   let user;
   let article;
