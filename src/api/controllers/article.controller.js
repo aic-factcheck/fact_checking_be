@@ -27,7 +27,7 @@ exports.get = async (req, res, next) => {
   const savedArticleCnt = await SavedArticle.find({
     addedBy: req.user.id,
     articleId: req.locals.article._id,
-  }).count();
+  }).countDocuments();
 
   const article = req.locals.article.transform();
   article.isSavedByUser = (savedArticleCnt >= 1);
@@ -132,8 +132,8 @@ exports.saveByUser = async (req, res, next) => {
     const addedBy = req.user.id;
     const { articleId } = req.query;
 
-    const articleCnt = await Article.findById(articleId).count();
-    const alreadySaved = await SavedArticle.findOne({ addedBy, articleId }).count();
+    const articleCnt = await Article.findById(articleId).countDocuments();
+    const alreadySaved = await SavedArticle.findOne({ addedBy, articleId }).countDocuments();
 
     if (alreadySaved !== 0) {
       throw new APIError({ status: httpStatus.BAD_REQUEST, message: 'Article already saved' });

@@ -93,6 +93,8 @@ describe('Claim API', async () => {
           expect(res.body.addedBy._id).to.be.equal(user._id);
           expect(res.body.text).to.be.equal(claim1.text);
           expect(res.body.nBeenVoted).to.be.equal(0);
+          expect(res.body.nPositiveVotes).to.be.equal(0);
+          expect(res.body.nNegativeVotes).to.be.equal(0);
         });
     });
 
@@ -108,6 +110,8 @@ describe('Claim API', async () => {
           expect(res.body.addedBy._id).to.be.equal(user2._id);
           expect(res.body.text).to.be.equal(claim2.text);
           expect(res.body.nBeenVoted).to.be.equal(0);
+          expect(res.body.nPositiveVotes).to.be.equal(0);
+          expect(res.body.nNegativeVotes).to.be.equal(0);
         });
     });
 

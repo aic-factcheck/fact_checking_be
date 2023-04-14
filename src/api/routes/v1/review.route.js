@@ -90,6 +90,7 @@ router
    * @apiSuccess {String}  text          Review's text
    * @apiSuccess {String}  vote          Vote - decision of reviewer
    * @apiSuccess {String}  userId        Reviewer's id
+   * @apiSuccess {Number}  userVote      Rating by current user - if voted
    * @apiSuccess {Object}  addedBy       User object who added the article
    * @apiSuccess {String}  claimId       Claim id
    * @apiSuccess {Number}  nUpvotes      Number of positive votes
@@ -100,8 +101,9 @@ router
    * @apiSuccess {Date}    createdAt     Timestamp
    *
    * @apiError (Not Found 404)    NotFound     Review does not exist
+   * @apiError (Unauthorized 401) Unauthorized Only authenticated users can access the data
    */
-  .get(controller.get)
+  .get(authorize(), controller.get)
   /**
    * @api {put} v1/articles/:articleId/claims/:claimId/reviews/:reviewId Replace review
    * @apiDescription Replace the whole review document with a new one
