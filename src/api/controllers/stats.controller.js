@@ -5,7 +5,6 @@ const Claim = require('../models/claim.model');
 const Article = require('../models/article.model');
 const User = require('../models/user.model');
 const Review = require('../models/review.model');
-// const APIError = require('../errors/api-error');
 
 const getClaimsStats = async (userId) => {
   const claims = await Claim
@@ -65,7 +64,7 @@ const getSavedArticles = async (userId) => {
     .aggregate([{ $match: { addedBy: mongoose.Types.ObjectId(userId) } }])
     .group({ _id: null, nSaved: { $sum: '$nSaved' }, total: { $sum: 1 } }).exec();
 
-  if (articles.length <= 0 || !_.has(articles[0], 'total') || !_.has(articles[0], 'nSaved')) return 0;
+  if (articles.length <= 0 || !_.has(articles[0], 'total') || !_.has(articles[0], 'nSaved')) return { total: 0, nSaved: 0 };
 
   return { total: articles[0].total, nSaved: articles[0].nSaved };
 };
@@ -91,6 +90,8 @@ exports.getUserStats = async (req, res, next) => {
       articles: {},
     };
 
+    // const savedArticles = await getSavedArticles(uId);
+    // if (!_.isNil(savedArticles)) _.assign(userStats.articles, savedArticles);
     _.assign(userStats.articles, await getSavedArticles(uId));
     _.assign(userStats.claims, await getClaimsStats(uId));
     _.assign(userStats.reviews, await getReviewsStats(uId));
