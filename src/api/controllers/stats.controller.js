@@ -125,7 +125,11 @@ exports.getLeaderboard = async (req, res, next) => {
       .group({ _id: '$addedBy', nClaims: { $sum: 1 } })
       .exec();
 
-    const transformedUsers = users.map((x) => x.transform());
+    const transformedUsers = users.map((x) => {
+      const newEl = x.transform();
+      if (_.isNil(newEl.name)) newEl.name = `${newEl.firstName} ${newEl.lastName}`;
+      return newEl;
+    });
     const merged = _.merge(_.keyBy(transformedUsers, 'id'), _.keyBy(articles, '_id'), _.keyBy(claims, '_id'));
     const values = _.values(merged);
 
