@@ -47,7 +47,7 @@ entity "Vote" as vote {
   --
   One of following is required
   --
-  ' *userId: text <<FK>>
+  *userId: text <<FK>>
   ' *articleId: text <<FK>>
   *claimId: text <<FK>>
   *reviewId: text <<FK>>
@@ -112,6 +112,7 @@ entity "Review comment" as reviewComment {
 user ||..o{ article
 user ||..o{ inv
 user ||..o{ saved
+user ||..o{ vote
 article }o..o{ claim
 article ||..o{ saved
 ' article ||..o{ vote

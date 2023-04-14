@@ -1,5 +1,6 @@
-const httpStatus = require('http-status');
 const { _ } = require('lodash');
+const mongoose = require('mongoose');
+const httpStatus = require('http-status');
 const User = require('../models/user.model');
 const Vote = require('../models/vote.model');
 const Review = require('../models/review.model');
@@ -26,6 +27,8 @@ exports.loadReview = async (req, res, next, id) => {
 exports.get = async (req, res, next) => {
   try {
     const review = req.locals.review.transform();
+    review.userVote = null;
+
     const userVote = await Vote.findOne({
       reviewId: req.locals.review._id,
       addedBy: req.user.id,
@@ -137,9 +140,24 @@ exports.update = (req, res, next) => {
 exports.list = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
-    const reviews = await Review.find({ claimId: req.locals.claim._id }).populate('userId').limit(perPage).skip(perPage * (page - 1));
-    const transformedReviews = reviews.map((x) => x.transform());
-    res.json(transformedReviews);
+
+    const reviews = await Review
+      .find({ claimId: req.locals.claim._id })
+      .populate('userId').limit(perPage).skip(perPage * (page - 1));
+
+    const transformedReviews = reviews.map((x) => {
+      const newElement = x.transform();
+      newElement.userVote = null;
+      return newElement;
+    });
+
+    const reviewIds = reviews.map((it) => mongoose.Types.ObjectId(it.id));
+    const userVotes = await Vote
+      .aggregate([{ $match: { reviewId: { $in: reviewIds } } }])
+      .project({ userVote: '$rating', _id: '$reviewId' }).exec();
+
+    const mergedReviews = _.values(_.merge(_.keyBy(transformedReviews, '_id'), _.keyBy(userVotes, '_id')));
+    res.json(mergedReviews);
   } catch (error) {
     next(error);
   }

@@ -149,12 +149,14 @@ describe('REVIEW API', async () => {
           expect(res.body[0]).to.have.a.property('addedBy');
           expect(res.body[0]).to.have.a.property('vote');
           expect(res.body[0]).to.have.a.property('links');
+          expect(res.body[0]).to.have.a.property('userVote');
 
           expect(res.body[0].addedBy).to.have.a.property('firstName');
           expect(res.body[0].addedBy).to.have.a.property('lastName');
           expect(res.body[0].addedBy).to.have.a.property('email');
           expect(res.body[0].addedBy).to.have.a.property('_id');
           expect(res.body[0].nBeenVoted).to.be.equal(0);
+          expect(res.body[0].userVote).to.be.equal(null);
         });
     });
   });
@@ -175,12 +177,14 @@ describe('REVIEW API', async () => {
           expect(res.body).to.have.a.property('addedBy');
           expect(res.body).to.have.a.property('vote');
           expect(res.body).to.have.a.property('links');
+          expect(res.body).to.have.a.property('userVote');
 
           expect(res.body.addedBy).to.have.a.property('firstName');
           expect(res.body.addedBy).to.have.a.property('lastName');
           expect(res.body.addedBy).to.have.a.property('email');
           expect(res.body.addedBy).to.have.a.property('_id');
           expect(res.body.nBeenVoted).to.be.equal(0);
+          expect(res.body.userVote).to.be.equal(null);
         });
     });
   });

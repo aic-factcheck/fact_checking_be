@@ -382,8 +382,6 @@ describe('VOTE API', async () => {
           expect(review.nPositiveVotes).to.be.equal(review2.nPositiveVotes + 1);
           expect(review.nNegativeVotes).to.be.equal(review2.nNegativeVotes);
           expect(review.nBeenVoted).to.be.equal(review2.nBeenVoted + 1);
-
-          console.log(review);
           expect(review).to.have.a.property('userVote');
           expect(review.userVote).to.be.equal(positiveVote.rating);
 
