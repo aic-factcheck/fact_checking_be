@@ -8,7 +8,7 @@ const User = require('../../models/user.model');
 const Article = require('../../models/article.model');
 const SavedArticle = require('../../models/savedArticle.model');
 
-const getArticleById = async (articleId,accessToken) => {
+const getArticleById = async (articleId, accessToken) => {
   return request(app)
     .get(`/v1/articles/${articleId}`)
     .set('Authorization', `Bearer ${accessToken}`)

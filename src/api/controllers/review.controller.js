@@ -1,6 +1,7 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
 const User = require('../models/user.model');
+const Vote = require('../models/vote.model');
 const Review = require('../models/review.model');
 const APIError = require('../errors/api-error');
 
@@ -22,8 +23,20 @@ exports.loadReview = async (req, res, next, id) => {
  * Get Review
  * @public
  */
-exports.get = (req, res) => {
-  res.json(req.locals.review.transform());
+exports.get = async (req, res, next) => {
+  try {
+    const review = req.locals.review.transform();
+    const userVote = await Vote.findOne({
+      reviewId: req.locals.review._id,
+      addedBy: req.user.id,
+    });
+
+    if (!_.isNil(userVote)) review.userVote = userVote.rating;
+
+    res.json(review);
+  } catch (error) {
+    next(error);
+  }
 };
 
 /*
