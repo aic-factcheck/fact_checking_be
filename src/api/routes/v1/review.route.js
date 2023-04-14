@@ -90,6 +90,7 @@ router
    * @apiSuccess {String}  text          Review's text
    * @apiSuccess {String}  vote          Vote - decision of reviewer
    * @apiSuccess {String}  userId        Reviewer's id
+   * @apiSuccess {Number}  userVote      Rating by current user - if voted
    * @apiSuccess {Object}  addedBy       User object who added the article
    * @apiSuccess {String}  claimId       Claim id
    * @apiSuccess {Number}  nUpvotes      Number of positive votes

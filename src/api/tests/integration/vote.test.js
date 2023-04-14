@@ -223,7 +223,7 @@ describe('VOTE API', async () => {
           expect(res.body.rating).to.be.equal(1);
         })
         .then(async () => {
-          const claim = await getClaimById(article1._id, claim1._id, userAccessToken);
+          const claim = await getClaimById(article1._id, claim1._id, user2AccessToken);
           expect(claim.nPositiveVotes).to.be.equal(claim1.nPositiveVotes + 1);
           expect(claim.nNegativeVotes).to.be.equal(claim1.nNegativeVotes);
           expect(claim.nBeenVoted).to.be.equal(claim1.nBeenVoted + 1);
@@ -239,10 +239,10 @@ describe('VOTE API', async () => {
         .send(negVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(-1);
+          expect(res.body.rating).to.be.equal(negVote.rating);
         })
         .then(async () => {
-          const claim = await getClaimById(article1._id, claim2._id, userAccessToken);
+          const claim = await getClaimById(article1._id, claim2._id, user2AccessToken);
           expect(claim.nPositiveVotes).to.be.equal(claim2.nPositiveVotes);
           expect(claim.nNegativeVotes).to.be.equal(claim2.nNegativeVotes + 1);
           expect(claim.nBeenVoted).to.be.equal(claim2.nBeenVoted + 1);
@@ -306,7 +306,7 @@ describe('VOTE API', async () => {
         .send(neutralVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(0);
+          expect(res.body.rating).to.be.equal(neutralVote.rating);
         })
         .then(async () => {
           const review = await reviewById(article1._id, claim1._id, review1._id, userAccessToken);
@@ -314,7 +314,11 @@ describe('VOTE API', async () => {
           expect(review.nNeutralVotes).to.be.equal(review1.nNeutralVotes + 1);
           expect(review.nNegativeVotes).to.be.equal(review1.nNegativeVotes);
           expect(review.nBeenVoted).to.be.equal(review1.nBeenVoted + 1);
-          review1.nNeutralVotes += 1;
+
+          expect(review).to.have.a.property('userVote');
+          expect(review.userVote).to.be.equal(neutralVote.rating);
+
+          review1.nNeutralVotes += 1; // update local review obj
           review1.nBeenVoted += 1;
         });
     });
@@ -326,7 +330,7 @@ describe('VOTE API', async () => {
         .send(negVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(-1);
+          expect(res.body.rating).to.be.equal(negVote.rating);
         })
         .then(async () => {
           const review = await reviewById(article1._id, claim1._id, review2._id, userAccessToken);
@@ -334,6 +338,10 @@ describe('VOTE API', async () => {
           expect(review.nNeutralVotes).to.be.equal(review2.nNeutralVotes);
           expect(review.nNegativeVotes).to.be.equal(review2.nNegativeVotes + 1);
           expect(review.nBeenVoted).to.be.equal(review2.nBeenVoted + 1);
+
+          expect(review).to.have.a.property('userVote');
+          expect(review.userVote).to.be.equal(negVote.rating);
+
           review2.nNegativeVotes += 1;
           review2.nBeenVoted += 1;
         });
@@ -346,14 +354,15 @@ describe('VOTE API', async () => {
         .send(neutralVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(0);
+          expect(res.body.rating).to.be.equal(neutralVote.rating);
         })
         .then(async () => {
-          const review = await reviewById(article1._id, claim1._id, review1._id, userAccessToken);
+          const review = await reviewById(article1._id, claim1._id, review1._id, user2AccessToken);
           expect(review.nPositiveVotes).to.be.equal(review1.nPositiveVotes);
           expect(review.nNeutralVotes).to.be.equal(review1.nNeutralVotes + 1);
           expect(review.nNegativeVotes).to.be.equal(review1.nNegativeVotes);
           expect(review.nBeenVoted).to.be.equal(review1.nBeenVoted + 1);
+
           review1.nNeutralVotes += 1;
           review1.nBeenVoted += 1;
         });
@@ -366,13 +375,18 @@ describe('VOTE API', async () => {
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(1);
+          expect(res.body.rating).to.be.equal(positiveVote.rating);
         })
         .then(async () => {
-          const review = await reviewById(article1._id, claim1._id, review2._id, userAccessToken);
+          const review = await reviewById(article1._id, claim1._id, review2._id, user2AccessToken);
           expect(review.nPositiveVotes).to.be.equal(review2.nPositiveVotes + 1);
           expect(review.nNegativeVotes).to.be.equal(review2.nNegativeVotes);
           expect(review.nBeenVoted).to.be.equal(review2.nBeenVoted + 1);
+
+          console.log(review);
+          expect(review).to.have.a.property('userVote');
+          expect(review.userVote).to.be.equal(positiveVote.rating);
+
           review2.nPositiveVotes += 1;
           review2.nBeenVoted += 1;
         });
@@ -410,29 +424,29 @@ describe('VOTE API', async () => {
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then((res) => {
-          expect(res.body.rating).to.be.equal(1);
+          expect(res.body.rating).to.be.equal(positiveVote.rating);
         });
     });
 
-    it('user1 should vote for an article2', () => {
+    it('user1 should vote for the article2', () => {
       return request(app)
         .post(`/v1/vote?articleId=${article2._id}`)
         .set('Authorization', `Bearer ${userAccessToken}`)
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then((res) => {
-          expect(res.body.rating).to.be.equal(1);
+          expect(res.body.rating).to.be.equal(positiveVote.rating);
         });
     });
 
-    it('user2 should vote for an article1', () => {
+    it('user2 should vote for the article1', () => {
       return request(app)
         .post(`/v1/vote?articleId=${article1._id}`)
         .set('Authorization', `Bearer ${user2AccessToken}`)
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then((res) => {
-          expect(res.body.rating).to.be.equal(1);
+          expect(res.body.rating).to.be.equal(positiveVote.rating);
         });
     });
 
