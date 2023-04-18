@@ -1,7 +1,9 @@
 // const httpStatus = require('http-status');
+const { _ } = require('lodash');
 const Claim = require('../models/claim.model');
 const User = require('../models/user.model');
 const Article = require('../models/article.model');
+const SavedArticle = require('../models/savedArticle.model');
 
 /**
  * GET search for user-name
@@ -48,22 +50,24 @@ exports.searchClaims = async (req, res, next) => {
  */
 exports.searchArticles = async (req, res, next) => {
   try {
-    const { text } = req.query;
+    const { page, perPage, text } = req.query;
 
-    const articles1 = await Article.find( // TODO similarity index
+    const articles = await Article.find( // TODO similarity index
       { $text: { $search: text } },
       { score: { $meta: 'textScore' } },
-    ).sort({ score: { $meta: 'textScore' } });
+    ).sort({ score: { $meta: 'textScore' } })
+      .populate('addedBy')
+      .limit(perPage)
+      .skip(perPage * (page - 1));
 
-    console.log(articles1[0]);
-
-    const articles = await Article.find({
-      $text: {
-        $search: text,
-      },
+    const savedArticles = await SavedArticle.find({ addedBy: req.user.id })
+      .distinct('articleId').exec();
+    const transformed = articles.map((x) => x.transform());
+    transformed.forEach((x) => {
+      _.assign(x, { isSavedByUser: _.some(savedArticles, x._id) });
     });
 
-    res.json(articles);
+    res.json(transformed);
   } catch (error) {
     next(error);
   }
