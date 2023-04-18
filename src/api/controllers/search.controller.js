@@ -2,8 +2,10 @@
 const { _ } = require('lodash');
 const Claim = require('../models/claim.model');
 const User = require('../models/user.model');
+const Review = require('../models/review.model');
 const Article = require('../models/article.model');
 const SavedArticle = require('../models/savedArticle.model');
+const { mergeClaimsWithReviews } = require('../utils/helpers/mergeReviewsClaims');
 
 /**
  * GET search for user-name
@@ -31,14 +33,18 @@ exports.searchUsers = async (req, res, next) => {
  */
 exports.searchClaims = async (req, res, next) => {
   try {
-    const { text } = req.query;
-    const claims = await Claim.find({
-      $text: {
-        $search: text,
-      },
-    });
+    const { page, perPage, text } = req.query;
 
-    res.json(claims);
+    const userReviews = await Review.find({ userId: req.user.id }).lean();
+
+    const claims = await Claim.find({ $text: { $search: text } })
+      .populate('articleId').populate('addedBy')
+      .limit(perPage)
+      .skip(perPage * (page - 1));
+    const transformedClaims = claims.map((x) => x.transform());
+
+    const mergedClaims = await mergeClaimsWithReviews(transformedClaims, userReviews);
+    res.json(mergedClaims);
   } catch (error) {
     next(error);
   }
