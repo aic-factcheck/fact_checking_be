@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
+const User = require('../models/user.model');
 const Claim = require('../models/claim.model');
 const Article = require('../models/article.model');
 const Review = require('../models/review.model');
@@ -68,6 +69,7 @@ exports.create = async (req, res, next) => {
       const savedClaim = await claim.save();
       await Article.addClaimId(req.locals.article._id, savedClaim._id);
 
+      await User.addExp(req.user.id, 'createClaim');
       res.status(httpStatus.CREATED);
       res.json(savedClaim.transform());
     }

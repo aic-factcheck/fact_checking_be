@@ -7,6 +7,7 @@ const voteRoutes = require('./vote.route');
 const saveRoutes = require('./save.route');
 const hotRoutes = require('./hot.route');
 const statsRoutes = require('./stats.route');
+const gameRoutes = require('./game.route');
 
 const router = express.Router();
 
@@ -25,5 +26,6 @@ router.use('/vote', voteRoutes);
 router.use('/hot', hotRoutes);
 router.use('/save', saveRoutes);
 router.use('/stats', statsRoutes);
+router.use('/game', gameRoutes);
 
 module.exports = router;

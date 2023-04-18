@@ -6,12 +6,32 @@ const moment = require('moment-timezone');
 const jwt = require('jwt-simple');
 const uuidv4 = require('uuid/v4');
 const APIError = require('../errors/api-error');
+const Experience = require('./experience.model');
+const { getLevel, getLastExp } = require('../utils/gamification/level');
 const { env, jwtSecret, jwtExpirationInterval } = require('../../config/vars');
 
 /**
 * User Roles
 */
 const roles = ['user', 'admin'];
+
+/**
+ * User actions and experience
+ */
+const userActions = {
+  register: 20,
+  dailyLogin: 10,
+  createArticle: 30,
+  createClaim: 15,
+  createReview: 30,
+  appearAtLeaderboard: 10,
+  inviteFriend: 30,
+  shareFactCheck: 15,
+  vote: 3,
+  // saveArticle: 5,
+  createCommunity: 100,
+  joinCommunity: 50,
+};
 
 /**
  * User Schema
@@ -79,6 +99,10 @@ const userSchema = new mongoose.Schema({
       default: [],
     },
   ],
+  level: {
+    type: Number,
+    default: 1,
+  },
 }, {
   timestamps: true,
 });
@@ -110,7 +134,7 @@ userSchema.pre('save', async function save(next) {
 userSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt', 'firstName', 'lastName', 'invitedBy', 'nReviews', 'nBeenVoted', 'savedArticles'];
+    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt', 'firstName', 'lastName', 'invitedBy', 'nReviews', 'nBeenVoted', 'savedArticles', 'level'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -251,6 +275,21 @@ userSchema.statics = {
     return this.create({
       services: { [service]: id }, email, password, name, picture,
     });
+  },
+
+  /**
+   * add exp to user
+   *
+   * @param {ObjectId} userId - The objectId of user.
+   * @returns {Promise<User, APIError>}
+   */
+  async addExp(userId, action) {
+    const lastExp = await getLastExp(userId);
+    const exp = lastExp.exp + userActions[action];
+    const newExp = new Experience({ userId, exp, action });
+
+    await newExp.save();
+    await this.findOneAndUpdate({ _id: userId }, { level: getLevel(exp) }).exec();
   },
 };
 
