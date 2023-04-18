@@ -5,6 +5,7 @@ const Claim = require('../models/claim.model');
 const Article = require('../models/article.model');
 const Review = require('../models/review.model');
 const { checkIsOwnerOfResurce } = require('../utils/helpers/resourceOwner');
+const { mergeClaimsWithReviews } = require('../utils/helpers/mergeReviewsClaims');
 
 /**
  * Load claim and append to req.
@@ -143,26 +144,6 @@ exports.update = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
-
-/*
- * Takes `claims` array and logged user array of `reviews`
- * returns new array of merged claims with user's review for each claim
- */
-const mergeClaimsWithReviews = async (claims, reviews) => {
-  const mergedClaims = claims.map((claim) => {
-    const userReview = _.find(reviews, { claimId: claim._id });
-
-    const mergedClaim = _.assign(claim, { userReview });
-    if (userReview) {
-      mergedClaim.userReview = userReview.vote;
-    } else {
-      mergedClaim.userReview = null;
-    }
-    return mergedClaim;
-  });
-
-  return mergedClaims;
 };
 
 /**
