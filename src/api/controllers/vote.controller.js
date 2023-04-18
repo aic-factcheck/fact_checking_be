@@ -99,6 +99,7 @@ exports.voteFor = async (req, res, next) => {
       }
     }
 
+    await User.addExp(req.user.id, 'vote');
     res.status(httpStatus.CREATED);
     res.json(savedVote.transform());
   } catch (error) {

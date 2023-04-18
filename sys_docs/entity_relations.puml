@@ -19,6 +19,16 @@ entity "User" as user {
   *nReviews: number
   *nBeenVoted: Number
   *savedArticles: [<<FK>>]
+  *level: Number
+}
+
+entity "Experience" as exp {
+  *_id : string <<generated>>
+  --
+  *userId : text <<FK>>
+  *exp: number
+  *action: actionId
+  *createdAt
 }
 
 entity "Saved" as saved {
@@ -113,6 +123,7 @@ user ||..o{ article
 user ||..o{ inv
 user ||..o{ saved
 user ||..o{ vote
+user ||..o{ exp
 article }o..o{ claim
 article ||..o{ saved
 ' article ||..o{ vote

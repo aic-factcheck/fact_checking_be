@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const { _ } = require('lodash');
+const User = require('../models/user.model');
 const Article = require('../models/article.model');
 const SavedArticle = require('../models/savedArticle.model');
 const APIError = require('../errors/api-error');
@@ -42,6 +43,7 @@ exports.create = async (req, res, next) => {
   try {
     const article = new Article(_.assign(req.body, { addedBy: req.user.id }));
     const savedArticle = await article.save();
+    await User.addExp(req.user.id, 'createArticle');
     res.status(httpStatus.CREATED);
     res.json(savedArticle.transform());
   } catch (error) {

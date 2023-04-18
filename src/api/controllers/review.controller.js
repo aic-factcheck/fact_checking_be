@@ -96,6 +96,7 @@ exports.create = async (req, res, next) => {
     await User.findOneAndUpdate({ _id: req.user.id }, { $inc: { nReviews: 1 } }).exec();
 
     const savedReview = await review.save();
+    await User.addExp(req.user.id, 'createReview');
     res.status(httpStatus.CREATED);
     res.json(savedReview.transform());
   } catch (error) {
