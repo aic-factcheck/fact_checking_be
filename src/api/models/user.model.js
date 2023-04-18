@@ -19,10 +19,10 @@ const roles = ['user', 'admin'];
  * User actions and experience
  */
 const userActions = {
-  register: 20,
-  dailyLogin: 10,
-  createArticle: 30,
-  createClaim: 15,
+  register: 0,
+  dailyLogin: 0,
+  createArticle: 8,
+  createClaim: 20,
   createReview: 30,
   appearAtLeaderboard: 10,
   inviteFriend: 30,

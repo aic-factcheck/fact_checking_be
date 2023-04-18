@@ -23,24 +23,28 @@ exports.voteFor = async (req, res, next) => {
     }));
 
     let referencedExists = true;
-    let alreadyExists = false;
+    // let alreadyExists = false;
 
     if (userId) {
       vote.userId = userId;
       referencedExists = await User.exists({ _id: userId });
-      alreadyExists = await Vote.findOne({ addedBy: req.user.id, userId });
+      await Vote.deleteOne({ addedBy: req.user.id, userId });
+      // alreadyExists = await Vote.findOne({ addedBy: req.user.id, userId });
     } else if (articleId) {
       vote.articleId = articleId;
       referencedExists = await Article.exists({ _id: articleId });
-      alreadyExists = await Vote.findOne({ addedBy: req.user.id, articleId });
+      await Vote.deleteOne({ addedBy: req.user.id, articleId });
+      // alreadyExists = await Vote.findOne({ addedBy: req.user.id, articleId });
     } else if (claimId) {
       vote.claimId = claimId;
       referencedExists = await Claim.exists({ _id: claimId });
-      alreadyExists = await Vote.findOne({ addedBy: req.user.id, claimId });
+      await Vote.deleteOne({ addedBy: req.user.id, claimId });
+      // alreadyExists = await Vote.findOne({ addedBy: req.user.id, claimId });
     } else if (reviewId) {
       vote.reviewId = reviewId;
       referencedExists = await Review.exists({ _id: reviewId });
-      alreadyExists = await Vote.findOne({ addedBy: req.user.id, reviewId });
+      // alreadyExists = await Vote.findOne({ addedBy: req.user.id, reviewId });
+      await Vote.deleteOne({ addedBy: req.user.id, reviewId });
     } else {
       throw new APIError({
         status: httpStatus.BAD_REQUEST,
@@ -48,12 +52,12 @@ exports.voteFor = async (req, res, next) => {
       });
     }
 
-    if (alreadyExists) {
-      throw new APIError({
-        status: httpStatus.CONFLICT,
-        message: 'Already voted.',
-      });
-    }
+    // if (alreadyExists) {
+    // throw new APIError({
+    //   status: httpStatus.CONFLICT,
+    //   message: 'Already voted.',
+    // });
+    // }
 
     if (!referencedExists) {
       throw new APIError({
@@ -64,30 +68,36 @@ exports.voteFor = async (req, res, next) => {
 
     const savedVote = await vote.save();
 
+    await User.addExp(req.user.id, 'vote');
+
     if (userId) {
-      await User.findOneAndUpdate({ _id: userId }, { $inc: { nBeenVoted: 1 } }).exec();
+      const ret = await User.findOneAndUpdate({ _id: userId }, { $inc: { nBeenVoted: 1 } }).exec();
+      res.json(ret.transform());
     } else if (articleId) {
       await Article.findOneAndUpdate({ _id: articleId }, { $inc: { nBeenVoted: 1 } }).exec();
     } else if (claimId) {
+      let ret;
       if (savedVote.rating === -1) {
-        await Claim.findOneAndUpdate(
+        ret = await Claim.findOneAndUpdate(
           { _id: claimId },
           { $inc: { nNegativeVotes: 1, nBeenVoted: 1 } },
         ).exec();
       } else if (savedVote.rating === 1) {
-        await Claim.findOneAndUpdate(
+        ret = await Claim.findOneAndUpdate(
           { _id: claimId },
           { $inc: { nPositiveVotes: 1, nBeenVoted: 1 } },
         ).exec();
       }
+      res.json(ret.transform());
     } else if (reviewId) {
+      let ret;
       if (savedVote.rating === -1) {
-        await Review.findOneAndUpdate(
+        ret = await Review.findOneAndUpdate(
           { _id: reviewId },
           { $inc: { nNegativeVotes: 1, nBeenVoted: 1 } },
         ).exec();
       } else if (savedVote.rating === 1) {
-        await Review.findOneAndUpdate(
+        ret = await Review.findOneAndUpdate(
           { _id: reviewId },
           { $inc: { nPositiveVotes: 1, nBeenVoted: 1 } },
         ).exec();
@@ -97,11 +107,11 @@ exports.voteFor = async (req, res, next) => {
           { $inc: { nNeutralVotes: 1, nBeenVoted: 1 } },
         ).exec();
       }
+      res.json(ret.transform());
     }
 
-    await User.addExp(req.user.id, 'vote');
-    res.status(httpStatus.CREATED);
-    res.json(savedVote.transform());
+    // res.status(httpStatus.CREATED);
+    // res.json(savedVote.transform());
   } catch (error) {
     next(error);
   }
