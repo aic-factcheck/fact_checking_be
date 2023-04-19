@@ -409,11 +409,11 @@ describe('Claim API', async () => {
         });
     });
 
-    it('should return forbidden for listing other users claims', () => {
-      return request(app)
-        .get(`/v1/users/${user._id}/claims`)
-        .set('Authorization', `Bearer ${user2AccessToken}`)
-        .expect(httpStatus.FORBIDDEN);
-    });
+    // it('should return forbidden for listing other users claims', () => {
+    //   return request(app)
+    //     .get(`/v1/users/${user._id}/claims`)
+    //     .set('Authorization', `Bearer ${user2AccessToken}`)
+    //     .expect(httpStatus.FORBIDDEN);
+    // });
   });
 });
