@@ -13,13 +13,16 @@ const { mergeClaimsWithReviews } = require('../utils/helpers/mergeReviewsClaims'
  */
 exports.searchUsers = async (req, res, next) => {
   try {
-    const { text } = req.query;
+    const { page, perPage, text } = req.query;
+
     const claims = await User.find({
       $text: {
         $search: text,
         $diacriticSensitive: false,
       },
-    });
+    })
+      .limit(perPage)
+      .skip(perPage * (page - 1));
 
     res.json(claims);
   } catch (error) {
@@ -66,12 +69,9 @@ exports.searchArticles = async (req, res, next) => {
       .limit(perPage)
       .skip(perPage * (page - 1));
 
-    const savedArticles = await SavedArticle.find({ addedBy: req.user.id })
-      .distinct('articleId').exec();
+    const savedArticles = await SavedArticle.find({ addedBy: req.user.id }).distinct('articleId').exec();
     const transformed = articles.map((x) => x.transform());
-    transformed.forEach((x) => {
-      _.assign(x, { isSavedByUser: _.some(savedArticles, x._id) });
-    });
+    transformed.forEach((x) => _.assign(x, { isSavedByUser: _.some(savedArticles, x._id) }));
 
     res.json(transformed);
   } catch (error) {

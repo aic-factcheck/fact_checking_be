@@ -40,9 +40,8 @@ router
    * @apiSuccess {Object[]} users List of users.
    *
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
-   * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .get(authorize(ADMIN), validate(listUsers), controller.list)
+  .get(authorize(), validate(listUsers), controller.list)
   /**
    * @api {post} v1/users Create User
    * @apiDescription Create a new user
@@ -116,10 +115,9 @@ router
    * @apiSuccess {Date}    createdAt  Timestamp
    *
    * @apiError (Unauthorized 401) Unauthorized Only authenticated users can access the data
-   * @apiError (Forbidden 403)    Forbidden    Only user with same id or admins can access the data
    * @apiError (Not Found 404)    NotFound     User does not exist
    */
-  .get(authorize(LOGGED_USER), controller.get)
+  .get(authorize(), controller.get)
   /**
    * @api {put} v1/users/:userId Replace User
    * @apiDescription Replace the whole user document with a new one
@@ -206,7 +204,7 @@ router
    * @apiError (Forbidden 403)    Forbidden     Only user with same id or admins can delete the data
    * @apiError (Not Found 404)    NotFound      User does not exist
    */
-  .delete(authorize(LOGGED_USER), controller.remove);
+  .delete(authorize(ADMIN), controller.remove);
 
 // include nested - Claim routes
 router.use('/:userId/invitations', invitationRoutes);
@@ -232,9 +230,8 @@ router
    * @apiSuccess {Object[]} user's List of articles.
    *
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
-   * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .get(authorize(LOGGED_USER), validate(listUsersArticles), controller.getUsersArticles);
+  .get(authorize(), validate(listUsersArticles), controller.getUsersArticles);
 
 // User's claims
 router
@@ -257,8 +254,7 @@ router
    * @apiSuccess {Object[]} user's List of users.
    *
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
-   * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
    */
-  .get(authorize(LOGGED_USER), validate(listUsersClaims), controller.getUsersClaims);
+  .get(authorize(), validate(listUsersClaims), controller.getUsersClaims);
 
 module.exports = router;
