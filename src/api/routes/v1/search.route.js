@@ -23,6 +23,8 @@ router
    * @apiHeader {String} Authorization   User's access token
    *
    * @apiQuery  {String}             [text]     Key to be searched by
+   * @apiQuery  {Number{1-}}         [page=1]     List page (optional)
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page (optional)
    *
    * @apiSuccess {Object[]} Users List of Users that matched the text search.
    *
@@ -42,6 +44,8 @@ router
    * @apiHeader {String} Authorization   User's access token
    *
    * @apiQuery  {String}             [text]       Search text
+   * @apiQuery  {Number{1-}}         [page=1]     List page (optional)
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page (optional)
    *
    * @apiSuccess {Object[]} Claims List of Claims that matched the text search.
    *
@@ -61,6 +65,8 @@ router
    * @apiHeader {String} Authorization   User's access token
    *
    * @apiQuery  {String}             [text]       Search text
+   * @apiQuery  {Number{1-}}         [page=1]     List page (optional)
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page (optional)
    *
    * @apiSuccess {Object[]} Articles List of Articles that matched the text search.
    *
