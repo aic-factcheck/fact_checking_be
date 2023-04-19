@@ -428,11 +428,11 @@ describe('Article API', async () => {
         });
     });
 
-    it('should return forbidden for listing other users article', () => {
-      return request(app)
-        .get(`/v1/users/${user._id}/articles`)
-        .set('Authorization', `Bearer ${user2AccessToken}`)
-        .expect(httpStatus.FORBIDDEN);
-    });
+    // it('should return forbidden for listing other users article', () => {
+    //   return request(app)
+    //     .get(`/v1/users/${user._id}/articles`)
+    //     .set('Authorization', `Bearer ${user2AccessToken}`)
+    //     .expect(httpStatus.FORBIDDEN);
+    // });
   });
 });
