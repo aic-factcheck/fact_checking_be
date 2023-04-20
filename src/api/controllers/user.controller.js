@@ -34,7 +34,7 @@ exports.loggedIn = async (req, res, next) => {
     const baseUserInfo = req.user.transform();
     baseUserInfo.nArticles = await Article.countDocuments({ addedBy: req.user.id }).exec();
     baseUserInfo.nClaim = await Claim.countDocuments({ addedBy: req.user.id }).exec();
-    baseUserInfo.nReviews = await Review.countDocuments({ userId: req.user.id }).exec();
+    baseUserInfo.nReviews = await Review.countDocuments({ addedBy: req.user.id }).exec();
     res.json(baseUserInfo);
   } catch (error) {
     next(error);
@@ -122,7 +122,7 @@ exports.remove = (req, res, next) => {
  */
 exports.getUsersArticles = async (req, res, next) => {
   try {
-    req.query.addedBy = req.user.id; // add current userId to req.query to be parsed in db query
+    req.query.addedBy = req.locals.user._id; // add req.userId to req.query to be parsed in db query
     const articles = await Article.userArticlesList(req.query);
     const transformedArticles = articles.map((x) => x.transform());
     res.json(transformedArticles);
@@ -137,10 +137,25 @@ exports.getUsersArticles = async (req, res, next) => {
  */
 exports.getUsersClaims = async (req, res, next) => {
   try {
-    req.query.addedBy = req.user.id; // add current userId to req.query to be parsed in db query
+    req.query.addedBy = req.locals.user._id; // add req.userId to req.query to be parsed in db query
     const claims = await Claim.userClaimsList(req.query);
     const transformedClaims = claims.map((x) => x.transform());
     res.json(transformedClaims);
+  } catch (e) {
+    next(e);
+  }
+};
+
+/**
+ * Get list of user's reviews
+ * @public
+ */
+exports.getUsersReviews = async (req, res, next) => {
+  try {
+    req.query.addedBy = req.locals.user._id; // add req.userId to req.query to be parsed in db query
+    const reviews = await Review.userReviewsList(req.query);
+    const transformed = reviews.map((x) => x.transform());
+    res.json(transformed);
   } catch (e) {
     next(e);
   }

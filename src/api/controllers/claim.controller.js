@@ -29,7 +29,7 @@ exports.get = async (req, res, next) => {
   const usr = req.user;
   try {
     const currentUserReview = await Review.findOne({
-      userId: usr._id,
+      addedBy: usr._id,
       claimId: req.locals.claim._id,
     });
 
@@ -153,7 +153,7 @@ exports.update = async (req, res, next) => {
 exports.list = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
-    const userReviews = await Review.find({ userId: req.user.id }).lean();
+    const userReviews = await Review.find({ addedBy: req.user.id }).lean();
 
     const claims = await Claim.find({ articleId: req.locals.article._id })
       .populate('articleId').populate('addedBy').limit(perPage)

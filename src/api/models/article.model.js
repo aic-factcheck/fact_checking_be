@@ -61,6 +61,14 @@ const articleSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  nNegativeVotes: {
+    type: Number,
+    default: 0,
+  },
+  nPositiveVotes: {
+    type: Number,
+    default: 0,
+  },
   nSaved: {
     type: Number,
     default: 0,
@@ -75,7 +83,7 @@ const articleSchema = new mongoose.Schema({
 articleSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'title', 'text', 'sourceUrl', 'sourceType', 'lang', 'createdAt', 'claims', 'nBeenVoted', 'nSaved'];
+    const fields = ['_id', 'title', 'text', 'sourceUrl', 'sourceType', 'lang', 'createdAt', 'claims', 'nBeenVoted', 'nSaved', 'nNegativeVotes', 'nPositiveVotes'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];

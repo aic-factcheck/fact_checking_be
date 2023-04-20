@@ -7,6 +7,129 @@ const Vote = require('../models/vote.model');
 const Review = require('../models/review.model');
 const APIError = require('../errors/api-error');
 
+const removeOldVoteIfExists = async (articleId, claimId, reviewId, userId, addedBy) => {
+  const oldVote = await Vote.findOneAndDelete({
+    addedBy,
+    articleId,
+    claimId,
+    reviewId,
+    userId,
+  }).exec();
+
+  if (!oldVote) return;
+
+  let nPositiveVotes = 0;
+  let nNegativeVotes = 0;
+  let nNeutralVotes = 0;
+
+  if (oldVote.rating === 1) nPositiveVotes = -1;
+  if (oldVote.rating === 0) nNeutralVotes = -1;
+  if (oldVote.rating === -1) nNegativeVotes = -1;
+
+  if (userId) {
+    await User.findOneAndUpdate({ _id: userId }, {
+      $inc: { nBeenVoted: -1, nPositiveVotes, nNegativeVotes },
+    }, {
+      returnDocument: 'after',
+    }).exec();
+  } else if (articleId) {
+    await Article.findOneAndUpdate({ _id: articleId }, {
+      $inc: { nBeenVoted: -1, nPositiveVotes, nNegativeVotes },
+    }, {
+      returnDocument: 'after',
+    }).exec();
+  } else if (claimId) {
+    await Claim.findOneAndUpdate({ _id: claimId }, {
+      $inc: { nBeenVoted: -1, nPositiveVotes, nNegativeVotes },
+    }, {
+      returnDocument: 'after',
+    }).exec();
+  } else if (reviewId) {
+    await Review.findOneAndUpdate({ _id: reviewId }, {
+      $inc: {
+        nBeenVoted: -1,
+        nPositiveVotes,
+        nNegativeVotes,
+        nNeutralVotes,
+      },
+    }, {
+      returnDocument: 'after',
+    }).exec();
+  }
+};
+
+const createVote = async (articleId, claimId, reviewId, userId, addedBy, rating) => {
+  let res;
+  const vote = new Vote({ addedBy, rating });
+
+  let nPositiveVotes = 0;
+  let nNegativeVotes = 0;
+  let nNeutralVotes = 0;
+  const nBeenVoted = 1;
+  if (rating === 1) nPositiveVotes = 1;
+  if (rating === 0) nNeutralVotes = 1;
+  if (rating === -1) nNegativeVotes = 1;
+
+  if (userId) {
+    vote.userId = userId;
+    res = await User.findOneAndUpdate({ _id: userId }, {
+      $inc: { nBeenVoted, nPositiveVotes, nNegativeVotes },
+    }, {
+      returnDocument: 'after',
+    }).exec();
+  } else if (articleId) {
+    vote.articleId = articleId;
+    res = await Article.findOneAndUpdate({ _id: articleId }, {
+      $inc: { nBeenVoted, nPositiveVotes, nNegativeVotes },
+    }, {
+      returnDocument: 'after',
+    }).exec();
+  } else if (claimId) {
+    vote.claimId = claimId;
+    res = await Claim.findOneAndUpdate({ _id: claimId }, {
+      $inc: { nBeenVoted, nPositiveVotes, nNegativeVotes },
+    }, {
+      returnDocument: 'after',
+    }).exec();
+  } else if (reviewId) {
+    vote.reviewId = reviewId;
+    res = await Review.findOneAndUpdate({ _id: reviewId }, {
+      $inc: {
+        nBeenVoted,
+        nPositiveVotes,
+        nNegativeVotes,
+        nNeutralVotes,
+      },
+    }, {
+      returnDocument: 'after',
+    }).exec();
+  } else {
+    throw new APIError({
+      message: 'Referenced object does not exist.',
+      status: httpStatus.BAD_REQUESTS,
+    });
+  }
+
+  await vote.save();
+  return res;
+};
+
+const doesReferencedExist = async (articleId, claimId, reviewId, userId) => {
+  let docCount;
+
+  if (articleId) {
+    docCount = await Article.countDocuments({ _id: articleId });
+  } else if (claimId) {
+    docCount = await Claim.countDocuments({ _id: claimId });
+  } else if (reviewId) {
+    docCount = await Review.countDocuments({ _id: reviewId });
+  } else if (userId) {
+    docCount = await User.countDocuments({ _id: userId });
+  }
+
+  return docCount;
+};
+
 /**
  * POST Create new vote by user to
  * Either -> another user, article or claim
@@ -18,89 +141,27 @@ exports.voteFor = async (req, res, next) => {
       claimId, articleId, userId, reviewId,
     } = req.query;
 
-    const vote = new Vote(_.assign(req.body, {
-      addedBy: req.user.id,
-    }));
-
-    let referencedExists = true;
-    let alreadyExists = false;
-
-    if (userId) {
-      vote.userId = userId;
-      referencedExists = await User.exists({ _id: userId });
-      alreadyExists = await Vote.findOne({ addedBy: req.user.id, userId });
-    } else if (articleId) {
-      vote.articleId = articleId;
-      referencedExists = await Article.exists({ _id: articleId });
-      alreadyExists = await Vote.findOne({ addedBy: req.user.id, articleId });
-    } else if (claimId) {
-      vote.claimId = claimId;
-      referencedExists = await Claim.exists({ _id: claimId });
-      alreadyExists = await Vote.findOne({ addedBy: req.user.id, claimId });
-    } else if (reviewId) {
-      vote.reviewId = reviewId;
-      referencedExists = await Review.exists({ _id: reviewId });
-      alreadyExists = await Vote.findOne({ addedBy: req.user.id, reviewId });
-    } else {
+    if (_.isNil(claimId) && _.isNil(articleId) && _.isNil(reviewId) && _.isNil(userId)) {
       throw new APIError({
+        message: 'ArticleId, claimId, reviewId or userId must be specified',
         status: httpStatus.BAD_REQUEST,
-        message: 'Vote must be associated with either userId, articleId or claimId',
       });
     }
 
-    if (alreadyExists) {
+    const refCount = await doesReferencedExist(articleId, claimId, reviewId, userId);
+    if (refCount === 0) {
       throw new APIError({
-        status: httpStatus.CONFLICT,
-        message: 'Already voted.',
-      });
-    }
-
-    if (!referencedExists) {
-      throw new APIError({
+        message: 'Referenced object not found',
         status: httpStatus.NOT_FOUND,
-        message: 'Referenced id does not exists.',
       });
     }
 
-    const savedVote = await vote.save();
+    await removeOldVoteIfExists(articleId, claimId, reviewId, userId, req.user.id);
 
-    if (userId) {
-      await User.findOneAndUpdate({ _id: userId }, { $inc: { nBeenVoted: 1 } }).exec();
-    } else if (articleId) {
-      await Article.findOneAndUpdate({ _id: articleId }, { $inc: { nBeenVoted: 1 } }).exec();
-    } else if (claimId) {
-      if (savedVote.rating === -1) {
-        await Claim.findOneAndUpdate(
-          { _id: claimId },
-          { $inc: { nNegativeVotes: 1, nBeenVoted: 1 } },
-        ).exec();
-      } else if (savedVote.rating === 1) {
-        await Claim.findOneAndUpdate(
-          { _id: claimId },
-          { $inc: { nPositiveVotes: 1, nBeenVoted: 1 } },
-        ).exec();
-      }
-    } else if (reviewId) {
-      if (savedVote.rating === -1) {
-        await Review.findOneAndUpdate(
-          { _id: reviewId },
-          { $inc: { nNegativeVotes: 1, nBeenVoted: 1 } },
-        ).exec();
-      } else if (savedVote.rating === 1) {
-        await Review.findOneAndUpdate(
-          { _id: reviewId },
-          { $inc: { nPositiveVotes: 1, nBeenVoted: 1 } },
-        ).exec();
-      } else if (savedVote.rating === 0) {
-        await Review.findOneAndUpdate(
-          { _id: reviewId },
-          { $inc: { nNeutralVotes: 1, nBeenVoted: 1 } },
-        ).exec();
-      }
-    }
-
+    const r = await createVote(articleId, claimId, reviewId, userId, req.user.id, req.body.rating);
+    // const r = await Review.findById(reviewId);
     res.status(httpStatus.CREATED);
-    res.json(savedVote.transform());
+    res.json(r.transform());
   } catch (error) {
     next(error);
   }

@@ -10,6 +10,7 @@ const {
   updateUser,
   listUsersArticles,
   listUsersClaims,
+  listUsersReviews,
 } = require('../../validations/user.validation');
 
 const router = express.Router({ mergeParams: true });
@@ -225,7 +226,7 @@ router
    * @apiParam {String} userId  User's id
    *
    * @apiQuery  {Number{1-}}         [page=1]     List page
-   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Articles per page
    *
    * @apiSuccess {Object[]} user's List of articles.
    *
@@ -249,12 +250,35 @@ router
    * @apiParam {String} userId  User's id
    *
    * @apiQuery  {Number{1-}}         [page=1]     List page
-   * @apiQuery  {Number{1-100}}      [perPage=1]  Users per page
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Claims per page
    *
    * @apiSuccess {Object[]} user's List of users.
    *
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
    */
   .get(authorize(), validate(listUsersClaims), controller.getUsersClaims);
+
+router
+  .route('/:userId/reviews')
+  /**
+   * @api {get} v1/users/:userId/reviews Get list of user's reviews
+   * @apiDescription Get list of user's reviews
+   * @apiVersion 1.0.0
+   * @apiName GetUsersReview
+   * @apiGroup Review
+   * @apiPermission user
+   *
+   * @apiHeader {String} Authorization   User's access token
+   *
+   * @apiParam {String} userId  User's id
+   *
+   * @apiQuery  {Number{1-}}         [page=1]     List page
+   * @apiQuery  {Number{1-100}}      [perPage=1]  Reviews per page
+   *
+   * @apiSuccess {Object[]} user's List of reviews.
+   *
+   * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
+   */
+  .get(authorize(), validate(listUsersReviews), controller.getUsersReviews);
 
 module.exports = router;

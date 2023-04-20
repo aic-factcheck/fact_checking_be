@@ -46,8 +46,8 @@ exports.get = async (req, res, next) => {
  * Check whether user (who sends the request) already voted
  * for this claim -> throws conflict http status
  */
-const checkCurrentUserReview = async (userId, claimId, next) => {
-  const review = await Review.findOne({ userId, claimId });
+const checkCurrentUserReview = async (addedBy, claimId, next) => {
+  const review = await Review.findOne({ addedBy, claimId });
 
   if (review) {
     throw new APIError({
@@ -73,7 +73,7 @@ exports.create = async (req, res, next) => {
     }
 
     const review = new Review(_.assign(req.body, {
-      userId: req.user.id,
+      addedBy: req.user.id,
       priority: 1,
       claimId: req.locals.claim._id,
     }));
@@ -144,7 +144,7 @@ exports.list = async (req, res, next) => {
 
     const reviews = await Review
       .find({ claimId: req.locals.claim._id })
-      .populate('userId').limit(perPage).skip(perPage * (page - 1));
+      .populate('addedBy').limit(perPage).skip(perPage * (page - 1));
 
     const transformedReviews = reviews.map((x) => {
       const newElement = x.transform();

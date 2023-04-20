@@ -1,0 +1,15 @@
+@startuml Add vote
+title Add vote process
+
+(*) --> "POST create Vote"
+
+if "Vote already exist" then
+  --> [Yes] "Delete old vote"
+  --> Update object vote-count
+
+  --> "Create Vote and add count"
+else
+  --> [No] "Create Vote and add count"
+endif
+-> (*)
+@enduml
