@@ -38,7 +38,7 @@ exports.searchClaims = async (req, res, next) => {
   try {
     const { page, perPage, text } = req.query;
 
-    const userReviews = await Review.find({ userId: req.user.id }).lean();
+    const userReviews = await Review.find({ addedBy: req.user.id }).lean();
 
     const claims = await Claim.find({ $text: { $search: text } })
       .populate('articleId').populate('addedBy')

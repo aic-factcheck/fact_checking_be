@@ -13,12 +13,18 @@ const voteTypes = ['positive', 'negative', 'neutral', 'no_info'];
  * @private
  */
 const reviewSchema = new mongoose.Schema({
-  userId: {
+  addedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
     index: true,
   },
+  // userId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'User',
+  //   required: true,
+  //   index: true,
+  // },
   claimId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Claim',
@@ -70,18 +76,18 @@ const reviewSchema = new mongoose.Schema({
 reviewSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'claimId', 'articleId', 'text', 'createdAt', 'vote', 'links', 'nBeenVoted', 'nNeutralVotes', 'nPositiveVotes', 'nNegativeVotes'];
+    const fields = ['_id', 'claimId', 'articleId', 'addedBy', 'text', 'createdAt', 'vote', 'links', 'nBeenVoted', 'nNeutralVotes', 'nPositiveVotes', 'nNegativeVotes'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
     });
 
     // remove unwanted fields from populated User object
-    const user = this.userId;
+    const user = this.addedBy;
     const transformedUser = {};
     const userFields = ['_id', 'firstName', 'lastName', 'email'];
 
-    if (this.userId) {
+    if (this.addedBy) {
       userFields.forEach((field) => {
         transformedUser[field] = user[field];
       });
@@ -109,7 +115,7 @@ reviewSchema.statics = {
     let review;
 
     if (mongoose.Types.ObjectId.isValid(id)) {
-      review = await this.findById(id).populate('userId').exec();
+      review = await this.findById(id).populate('addedBy').exec();
     }
     if (review) {
       return review;
@@ -119,6 +125,24 @@ reviewSchema.statics = {
       message: 'Review does not exist',
       status: httpStatus.NOT_FOUND,
     });
+  },
+
+  /**
+   * List user's review in descending order of 'createdAt' timestamp.
+   *
+   * @param {number} skip - Number of review to be skipped.
+   * @param {number} limit - Limit number of review to be returned.
+   * @param {ObjectId} addedBy - UserId of user who created resource
+   * @returns {Promise<Article[]>}
+   */
+  userReviewsList({
+    page = 1, perPage = 30, addedBy,
+  }) {
+    return this.find({ addedBy })
+      .sort({ createdAt: -1 })
+      .skip(perPage * (page - 1))
+      .limit(perPage)
+      .exec();
   },
 };
 

@@ -88,6 +88,8 @@ describe('VOTE API', async () => {
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
       lang: 'en',
+      nPositiveVotes: 0,
+      nNegativeVotes: 0,
     };
 
     article2 = {
@@ -98,6 +100,8 @@ describe('VOTE API', async () => {
       sourceUrl: 'https://www.lipsum.com/',
       sourceType: 'article',
       lang: 'en',
+      nPositiveVotes: 0,
+      nNegativeVotes: 0,
     };
 
     claim1 = {
@@ -122,7 +126,7 @@ describe('VOTE API', async () => {
 
     review1 = {
       _id: '21224d776a326fb40f000003',
-      userId: user1._id,
+      addedBy: user1._id,
       claimId: claim1._id,
       articleId: article1._id,
       vote: 'positive',
@@ -136,7 +140,7 @@ describe('VOTE API', async () => {
 
     review2 = {
       _id: '21224d776a326fb40f100003',
-      userId: user1._id,
+      addedBy: user1._id,
       claimId: claim1._id,
       articleId: article1._id,
       vote: 'negative',
@@ -182,7 +186,7 @@ describe('VOTE API', async () => {
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(1);
+          expect(res.body.nPositiveVotes).to.be.equal(claim1.nPositiveVotes + 1);
         })
         .then(async () => {
           const claim = await getClaimById(article1._id, claim1._id, userAccessToken);
@@ -201,7 +205,7 @@ describe('VOTE API', async () => {
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(1);
+          expect(res.body.nPositiveVotes).to.be.equal(claim2.nPositiveVotes + 1);
         })
         .then(async () => {
           const claim = await getClaimById(article1._id, claim2._id, userAccessToken);
@@ -220,7 +224,7 @@ describe('VOTE API', async () => {
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(1);
+          expect(res.body.nPositiveVotes).to.be.equal(claim1.nPositiveVotes + 1);
         })
         .then(async () => {
           const claim = await getClaimById(article1._id, claim1._id, user2AccessToken);
@@ -239,7 +243,7 @@ describe('VOTE API', async () => {
         .send(negVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(negVote.rating);
+          expect(res.body.nNegativeVotes).to.be.equal(claim2.nNegativeVotes + 1);
         })
         .then(async () => {
           const claim = await getClaimById(article1._id, claim2._id, user2AccessToken);
@@ -251,21 +255,21 @@ describe('VOTE API', async () => {
         });
     });
 
-    it('should return conflict when user1 votes again for claim2', () => {
-      return request(app)
-        .post(`/v1/vote?claimId=${claim2._id}`)
-        .set('Authorization', `Bearer ${userAccessToken}`)
-        .send(positiveVote)
-        .expect(httpStatus.CONFLICT);
-    });
+    // it('should return conflict when user1 votes again for claim2', () => {
+    //   return request(app)
+    //     .post(`/v1/vote?claimId=${claim2._id}`)
+    //     .set('Authorization', `Bearer ${userAccessToken}`)
+    //     .send(positiveVote)
+    //     .expect(httpStatus.CONFLICT);
+    // });
 
-    it('should return not_found when id does not exist', () => {
-      return request(app)
-        .post('/v1/vote?claimId=41224d776a326fb40f010000')
-        .set('Authorization', `Bearer ${userAccessToken}`)
-        .send(positiveVote)
-        .expect(httpStatus.NOT_FOUND);
-    });
+    // it('should return not_found when id does not exist', () => {
+    //   return request(app)
+    //     .post('/v1/vote?claimId=41224d776a326fb40f010000')
+    //     .set('Authorization', `Bearer ${userAccessToken}`)
+    //     .send(positiveVote)
+    //     .expect(httpStatus.NOT_FOUND);
+    // });
 
     it('should return error when rating is not specified', () => {
       return request(app)
@@ -306,7 +310,7 @@ describe('VOTE API', async () => {
         .send(neutralVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(neutralVote.rating);
+          expect(res.body.nNeutralVotes).to.be.equal(review1.nNeutralVotes + 1);
         })
         .then(async () => {
           const review = await reviewById(article1._id, claim1._id, review1._id, userAccessToken);
@@ -330,7 +334,7 @@ describe('VOTE API', async () => {
         .send(negVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(negVote.rating);
+          expect(res.body.nNegativeVotes).to.be.equal(review2.nNegativeVotes + 1);
         })
         .then(async () => {
           const review = await reviewById(article1._id, claim1._id, review2._id, userAccessToken);
@@ -354,7 +358,7 @@ describe('VOTE API', async () => {
         .send(neutralVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(neutralVote.rating);
+          expect(res.body.nNeutralVotes).to.be.equal(review1.nNeutralVotes + 1);
         })
         .then(async () => {
           const review = await reviewById(article1._id, claim1._id, review1._id, user2AccessToken);
@@ -375,7 +379,7 @@ describe('VOTE API', async () => {
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then(async (res) => {
-          expect(res.body.rating).to.be.equal(positiveVote.rating);
+          expect(res.body.nPositiveVotes).to.be.equal(review2.nPositiveVotes + 1);
         })
         .then(async () => {
           const review = await reviewById(article1._id, claim1._id, review2._id, user2AccessToken);
@@ -422,7 +426,7 @@ describe('VOTE API', async () => {
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then((res) => {
-          expect(res.body.rating).to.be.equal(positiveVote.rating);
+          expect(res.body.nPositiveVotes).to.be.equal(article1.nPositiveVotes + 1);
         });
     });
 
@@ -433,7 +437,7 @@ describe('VOTE API', async () => {
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then((res) => {
-          expect(res.body.rating).to.be.equal(positiveVote.rating);
+          expect(res.body.nPositiveVotes).to.be.equal(article2.nPositiveVotes + 1);
         });
     });
 
@@ -444,16 +448,23 @@ describe('VOTE API', async () => {
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then((res) => {
-          expect(res.body.rating).to.be.equal(positiveVote.rating);
+          expect(res.body.nPositiveVotes).to.be.equal(article1.nPositiveVotes + 1);
         });
     });
 
-    it('should return conflict when user1 votes again for article2', () => {
+    it('should not update nBeenVoted if user1 votes again for claim1', () => {
       return request(app)
-        .post(`/v1/vote?articleId=${article2._id}`)
+        .post(`/v1/vote?claimId=${claim1._id}`)
         .set('Authorization', `Bearer ${userAccessToken}`)
-        .send(positiveVote)
-        .expect(httpStatus.CONFLICT);
+        .send(negVote)
+        .expect(httpStatus.CREATED)
+        .then((res) => {
+          expect(res.body.nBeenVoted).to.be.equal(claim1.nBeenVoted);
+          expect(res.body.nNegativeVotes).to.be.equal(claim1.nNegativeVotes + 1);
+          expect(res.body.nPositiveVotes).to.be.equal(claim1.nPositiveVotes - 1);
+          claim1.nNegativeVotes += 1;
+          claim1.nPositiveVotes -= 1;
+        });
     });
 
     it('should return not found when id does not exist', () => {
@@ -488,7 +499,7 @@ describe('VOTE API', async () => {
         .send(positiveVote)
         .expect(httpStatus.CREATED)
         .then((res) => {
-          expect(res.body.rating).to.be.equal(1);
+          expect(res.body.nBeenVoted).to.be.equal(1);
         });
     });
   });

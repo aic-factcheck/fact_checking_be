@@ -166,8 +166,8 @@ claimSchema.statics = {
   /**
    * List user's claims in descending order of 'createdAt' timestamp.
    *
-   * @param {number} skip - Number of articles to be skipped.
-   * @param {number} limit - Limit number of articles to be returned.
+   * @param {number} skip - Number of claims to be skipped.
+   * @param {number} limit - Limit number of claims to be returned.
    * @param {ObjectId} userId - UserId of user who created resource
    * @returns {Promise<Article[]>}
    */
