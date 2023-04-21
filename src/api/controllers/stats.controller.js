@@ -127,6 +127,8 @@ exports.getLeaderboard = async (req, res, next) => {
 
     const transformedUsers = users.map((x) => {
       const newEl = x.transform();
+      newEl.nArticles = 0;
+      newEl.nClaims = 0;
       if (_.isNil(newEl.name)) newEl.name = `${newEl.firstName} ${newEl.lastName}`;
       return newEl;
     });
