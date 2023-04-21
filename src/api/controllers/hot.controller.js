@@ -2,6 +2,8 @@
 const User = require('../models/user.model');
 const Article = require('../models/article.model');
 const Claim = require('../models/claim.model');
+// const SavedArticle = require('../models/savedArticle.model');
+// const { mergeClaimsWithReviews } = require('../utils/helpers/mergeReviewsClaims');
 
 /**
  * Get list of hottest users
@@ -53,8 +55,19 @@ exports.hottestArticles = async (req, res, next) => {
       .sort({ nBeenVoted: 'desc' })
       .exec();
 
-    const transArticles = articles.map((x) => x.transform());
-    res.json(transArticles);
+    const transformed = articles.map((x) => x.transform());
+    // let savedArticles = [];
+
+    // if (!_.isNil(req.user) && !_.isNil(req.user.id)) {
+    //   savedArticles = await SavedArticle.find({ addedBy: req.user.id })
+    //     .distinct('articleId').exec();
+    // }
+
+    // transformed.forEach((x) => {
+    //   _.assign(x, { isSavedByUser: _.some(savedArticles, x._id) });
+    // });
+
+    res.json(transformed);
   } catch (error) {
     next(error);
   }
@@ -74,17 +87,19 @@ exports.hottestClaims = async (req, res, next) => {
     if (req.perPage) {
       perPage = req.perPage;
     }
+    // const userReviews = await Review.find({ addedBy: req.user.id }).lean();
 
     const claims = await Claim.find()
-      .skip(perPage * (page - 1))
       .populate('addedBy')
       .populate('articleId')
+      .skip(perPage * (page - 1))
       .limit(perPage)
       .sort({ nBeenVoted: 'desc' })
       .exec();
+    const transformed = claims.map((x) => x.transform());
 
-    const transClaims = claims.map((x) => x.transform());
-    res.json(transClaims);
+    // const mergedClaims = await mergeClaimsWithReviews(transformed, userReviews);
+    res.json(transformed);
   } catch (error) {
     next(error);
   }

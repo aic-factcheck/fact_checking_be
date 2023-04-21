@@ -1,5 +1,5 @@
-const httpStatus = require('http-status');
 const { _ } = require('lodash');
+const httpStatus = require('http-status');
 const User = require('../models/user.model');
 const Article = require('../models/article.model');
 const SavedArticle = require('../models/savedArticle.model');
