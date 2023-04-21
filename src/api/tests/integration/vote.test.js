@@ -255,21 +255,13 @@ describe('VOTE API', async () => {
         });
     });
 
-    // it('should return conflict when user1 votes again for claim2', () => {
-    //   return request(app)
-    //     .post(`/v1/vote?claimId=${claim2._id}`)
-    //     .set('Authorization', `Bearer ${userAccessToken}`)
-    //     .send(positiveVote)
-    //     .expect(httpStatus.CONFLICT);
-    // });
-
-    // it('should return not_found when id does not exist', () => {
-    //   return request(app)
-    //     .post('/v1/vote?claimId=41224d776a326fb40f010000')
-    //     .set('Authorization', `Bearer ${userAccessToken}`)
-    //     .send(positiveVote)
-    //     .expect(httpStatus.NOT_FOUND);
-    // });
+    it('should return not_found when id does not exist', () => {
+      return request(app)
+        .post('/v1/vote?claimId=41224d776a326fb40f010000')
+        .set('Authorization', `Bearer ${userAccessToken}`)
+        .send(positiveVote)
+        .expect(httpStatus.NOT_FOUND);
+    });
 
     it('should return error when rating is not specified', () => {
       return request(app)
