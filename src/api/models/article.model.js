@@ -190,6 +190,7 @@ articleSchema.statics = {
     page = 1, perPage = 30, addedBy,
   }) {
     return this.find({ addedBy })
+      .populate('addedBy')
       .sort({ createdAt: -1 })
       .skip(perPage * (page - 1))
       .limit(perPage)
