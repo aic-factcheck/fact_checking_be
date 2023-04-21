@@ -155,6 +155,7 @@ describe('REVIEW API', async () => {
           expect(res.body[0].addedBy).to.have.a.property('lastName');
           expect(res.body[0].addedBy).to.have.a.property('email');
           expect(res.body[0].addedBy).to.have.a.property('_id');
+          expect(res.body[0].addedBy).not.to.have.a.property('password');
           expect(res.body[0].nBeenVoted).to.be.equal(0);
           expect(res.body[0].userVote).to.be.equal(null);
         });

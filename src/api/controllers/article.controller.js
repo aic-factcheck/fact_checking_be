@@ -4,7 +4,9 @@ const User = require('../models/user.model');
 const Article = require('../models/article.model');
 const SavedArticle = require('../models/savedArticle.model');
 const APIError = require('../errors/api-error');
-const { checkIsOwnerOfResurce } = require('../utils/helpers/resourceOwner');
+
+const checkIsOwnerOfResurce = require('../utils/helpers/resourceOwner');
+const articleService = require('../services/article.service');
 
 /**
  * Load article and append to req.
@@ -98,15 +100,10 @@ exports.update = async (req, res, next) => {
 exports.list = async (req, res, next) => {
   try {
     const { page, perPage } = req.query;
-    const articles = await Article.find().populate('addedBy').limit(perPage).skip(perPage * (page - 1));
-    const savedArticles = await SavedArticle.find({ addedBy: req.user.id })
-      .distinct('articleId').exec();
-    const transformed = articles.map((x) => x.transform());
-    transformed.forEach((x) => {
-      _.assign(x, { isSavedByUser: _.some(savedArticles, x._id) });
-    });
+    const query = { page, perPage, loggedUserId: req.user.id };
 
-    res.json(transformed);
+    const articles = await articleService.listArticles(query);
+    res.json(articles);
   } catch (error) {
     next(error);
   }

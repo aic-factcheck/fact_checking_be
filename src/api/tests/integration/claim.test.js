@@ -406,6 +406,7 @@ describe('Claim API', async () => {
           expect(includesArticle2).to.be.true;
 
           expect(res.body[0].addedBy._id).to.be.equal(user2._id);
+          expect(res.body[0].addedBy).not.to.have.a.property('password');
         });
     });
 
