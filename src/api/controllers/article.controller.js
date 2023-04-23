@@ -27,14 +27,18 @@ exports.load = async (req, res, next, id) => {
  * @public
  */
 exports.get = async (req, res, next) => {
-  const savedArticleCnt = await SavedArticle.find({
-    addedBy: req.user.id,
-    articleId: req.locals.article._id,
-  }).countDocuments();
+  try {
+    const addedBy = req.user.id;
+    const articleId = req.locals.article._id;
 
-  const article = req.locals.article.transform();
-  article.isSavedByUser = (savedArticleCnt >= 1);
-  res.json(article);
+    const savedArticleCnt = await SavedArticle.find({ addedBy, articleId }).countDocuments();
+    const article = req.locals.article.transform();
+
+    article.isSavedByUser = (savedArticleCnt >= 1);
+    res.json(article);
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -46,6 +50,7 @@ exports.create = async (req, res, next) => {
     const article = new Article(_.assign(req.body, { addedBy: req.user.id }));
     const savedArticle = await article.save();
     await User.addExp(req.user.id, 'createArticle');
+
     res.status(httpStatus.CREATED);
     res.json(savedArticle.transform());
   } catch (error) {
