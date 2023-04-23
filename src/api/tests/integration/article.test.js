@@ -164,7 +164,7 @@ describe('Article API', async () => {
         .then(async (res) => {
           const includesArticle1 = some(res.body, article1);
           const includesArticle2 = some(res.body, article2);
-          article1Id = res.body[0]._id;
+          article1Id = res.body[1]._id;
           // article2Id = res.body[1]._id;
 
           expect(res.body).to.be.an('array');
@@ -201,6 +201,7 @@ describe('Article API', async () => {
           expect(res.body.addedBy).to.have.a.property('lastName');
           expect(res.body.addedBy).to.have.a.property('email');
           expect(res.body.addedBy).to.have.a.property('_id');
+          expect(res.body.addedBy).not.to.have.a.property('password');
         });
     });
   });

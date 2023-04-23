@@ -4,7 +4,7 @@ const User = require('../models/user.model');
 const Claim = require('../models/claim.model');
 const Article = require('../models/article.model');
 const Review = require('../models/review.model');
-const { checkIsOwnerOfResurce } = require('../utils/helpers/resourceOwner');
+const checkIsOwnerOfResurce = require('../utils/helpers/resourceOwner');
 const { mergeClaimsWithReviews } = require('../utils/helpers/mergeReviewsClaims');
 
 /**

@@ -4,6 +4,7 @@ const User = require('../models/user.model');
 const Article = require('../models/article.model');
 const Claim = require('../models/claim.model');
 const Review = require('../models/review.model');
+const articleService = require('../services/article.service');
 
 /**
  * Load user and append to req.
@@ -122,10 +123,11 @@ exports.remove = (req, res, next) => {
  */
 exports.getUsersArticles = async (req, res, next) => {
   try {
-    req.query.addedBy = req.locals.user._id; // add req.userId to req.query to be parsed in db query
-    const articles = await Article.userArticlesList(req.query);
-    const transformedArticles = articles.map((x) => x.transform());
-    res.json(transformedArticles);
+    const { page, perPage } = req.query;
+    const query = { page, perPage, query: { addedBy: req.locals.user._id } };
+
+    const articles = await articleService.listArticles(query);
+    res.json(articles);
   } catch (e) {
     next(e);
   }

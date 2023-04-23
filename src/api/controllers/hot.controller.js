@@ -1,8 +1,7 @@
 // const { _ } = require('lodash');
 const User = require('../models/user.model');
-const Article = require('../models/article.model');
+const articleService = require('../services/article.service');
 const Claim = require('../models/claim.model');
-// const SavedArticle = require('../models/savedArticle.model');
 // const { mergeClaimsWithReviews } = require('../utils/helpers/mergeReviewsClaims');
 
 /**
@@ -39,35 +38,11 @@ exports.hottestUsers = async (req, res, next) => {
  */
 exports.hottestArticles = async (req, res, next) => {
   try {
-    let page = 1;
-    let perPage = 20;
-    if (req.page) {
-      page = req.page;
-    }
-    if (req.perPage) {
-      perPage = req.perPage;
-    }
+    const { page, perPage } = req.query;
+    const query = { page, perPage, sortBy: { nBeenVoted: 'desc' } };
 
-    const articles = await Article.find()
-      .skip(perPage * (page - 1))
-      .populate('addedBy')
-      .limit(perPage)
-      .sort({ nBeenVoted: 'desc' })
-      .exec();
-
-    const transformed = articles.map((x) => x.transform());
-    // let savedArticles = [];
-
-    // if (!_.isNil(req.user) && !_.isNil(req.user.id)) {
-    //   savedArticles = await SavedArticle.find({ addedBy: req.user.id })
-    //     .distinct('articleId').exec();
-    // }
-
-    // transformed.forEach((x) => {
-    //   _.assign(x, { isSavedByUser: _.some(savedArticles, x._id) });
-    // });
-
-    res.json(transformed);
+    const articles = await articleService.listArticles(query);
+    res.json(articles);
   } catch (error) {
     next(error);
   }
