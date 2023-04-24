@@ -104,8 +104,7 @@ exports.update = async (req, res, next) => {
  */
 exports.list = async (req, res, next) => {
   try {
-    const { page, perPage } = req.query;
-    const query = { page, perPage, loggedUserId: req.user.id };
+    const query = { page: req.query.page, perPage: req.query.perPage, loggedUserId: req.user.id };
 
     const articles = await articleService.listArticles(query);
     res.json(articles);

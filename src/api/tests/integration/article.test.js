@@ -195,6 +195,7 @@ describe('Article API', async () => {
           expect(res.body).to.have.a.property('sourceUrl');
           expect(res.body).to.have.a.property('sourceType');
           expect(res.body).to.have.a.property('lang');
+          expect(res.body).to.have.a.property('isSavedByUser');
           expect(res.body.nBeenVoted).to.be.equal(0);
 
           expect(res.body.addedBy).to.have.a.property('firstName');

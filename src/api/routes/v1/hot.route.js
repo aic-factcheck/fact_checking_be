@@ -1,5 +1,6 @@
 const express = require('express');
 const validate = require('express-validation');
+const { authorize } = require('../../middlewares/auth');
 const controller = require('../../controllers/hot.controller');
 const {
   listHotUsers,
@@ -45,7 +46,7 @@ router
    *
    * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
    */
-  .get(validate(listHotArticles), controller.hottestArticles);
+  .get(authorize(), validate(listHotArticles), controller.hottestArticles);
 
 router
   .route('/claims')

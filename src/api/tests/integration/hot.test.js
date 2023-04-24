@@ -134,6 +134,7 @@ describe('HOT resources API', async () => {
           expect(res.body).to.have.lengthOf(2);
           expect(includesArticle1).to.be.true;
           expect(includesArticle2).to.be.true;
+          expect(res.body[0]).to.have.a.property('isSavedByUser');
         });
     });
   });

@@ -8,7 +8,7 @@ const SavedArticle = require('../models/savedArticle.model');
 * @param {number} skip - Number of articles to be skipped.
 * @param {number} limit - Limit number of articles to be returned.
 * @param {Object} query - Object of Mongo query.
-* @param {String} addedBy - Object for sorting the list.
+* @param {String} loggedUserId - Object for sorting the list.
 * @param {Object} sortBy - Object for sorting the list.
 * @returns {Promise<Article[]>}
 */
@@ -28,10 +28,11 @@ exports.listArticles = async ({
     savedArticles = await SavedArticle.find({ addedBy: loggedUserId }).distinct('articleId').exec();
   }
 
-  articles.forEach((x) => {
-    _.assign(x, { isSavedByUser: _.some(savedArticles, x._id) });
+  const transformed = articles.map((it) => {
+    const x = it.transform();
+    _.assign(x, { isSavedByUser: _.some(savedArticles, it._id) });
+    return x;
   });
 
-  const transformed = articles.map((x) => x.transform());
   return transformed;
 };
