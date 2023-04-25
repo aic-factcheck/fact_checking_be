@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const httpStatus = require('http-status');
 const User = require('../models/user.model');
 const Vote = require('../models/vote.model');
+const Claim = require('../models/claim.model');
 const Review = require('../models/review.model');
 const APIError = require('../errors/api-error');
 
@@ -63,19 +64,20 @@ const checkCurrentUserReview = async (addedBy, claimId, next) => {
  */
 exports.create = async (req, res, next) => {
   try {
-    await checkCurrentUserReview(req.user.id, req.locals.claim._id, next);
+    const claimId = req.locals.claim._id;
+    await checkCurrentUserReview(req.user.id, claimId, next);
 
-    if (req.user.id === req.locals.claim._id) {
-      throw new APIError({
-        status: httpStatus.BAD_REQUEST,
-        message: 'Owner of a claim cannot review it.',
-      });
-    }
+    // if (req.user.id === req.locals.claim.addedBy) {
+    //   throw new APIError({
+    //     status: httpStatus.BAD_REQUEST,
+    //     message: 'Owner of a claim cannot review it.',
+    //   });
+    // }
 
     const review = new Review(_.assign(req.body, {
       addedBy: req.user.id,
       priority: 1,
-      claimId: req.locals.claim._id,
+      claimId,
     }));
 
     const claim = Object.assign(req.locals.claim);
@@ -94,9 +96,11 @@ exports.create = async (req, res, next) => {
 
     await claim.save();
     await User.findOneAndUpdate({ _id: req.user.id }, { $inc: { nReviews: 1 } }).exec();
+    await Claim.findOneAndUpdate({ _id: claimId }, { $inc: { nReviews: 1 } }).exec();
 
     const savedReview = await review.save();
     await User.addExp(req.user.id, 'createReview');
+
     res.status(httpStatus.CREATED);
     res.json(savedReview.transform());
   } catch (error) {

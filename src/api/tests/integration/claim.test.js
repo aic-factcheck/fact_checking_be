@@ -298,6 +298,7 @@ describe('Claim API', async () => {
           expect(res.body.text).to.be.equal(text);
 
           expect(res.body._id).to.be.equal(claim1Id);
+          expect(res.body.nReviews).to.be.equal(0);
 
           expect(res.body.text).to.be.equal(text);
           expect(res.body.article._id).to.be.equal(xArticles[0]._id.toString());

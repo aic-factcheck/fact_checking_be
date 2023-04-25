@@ -88,6 +88,7 @@ router
    * @apiSuccess {Object}  article    Associated article (creation)
    * @apiSuccess {String[]}  links    Array of links
    * @apiSuccess {String}  lang       Language of claim
+   * @apiSuccess {Number}  nReiews       Number of reviews associated with the claim
    * @apiSuccess {Date}    createdAt    Timestamp
    * @apiSuccess {Object}  userReview    Object containing logged user review
    * @apiSuccess {String}  userReview.vote    Logged user review vote - positive/neutral/negative
