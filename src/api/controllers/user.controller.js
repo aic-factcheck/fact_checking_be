@@ -123,8 +123,12 @@ exports.remove = (req, res, next) => {
  */
 exports.getUsersArticles = async (req, res, next) => {
   try {
-    const { page, perPage } = req.query;
-    const query = { page, perPage, query: { addedBy: req.locals.user._id } };
+    const query = {
+      page: req.query.page,
+      perPage: req.query.perPage,
+      query: { addedBy: req.locals.user._id },
+      loggedUserId: req.user.id,
+    };
 
     const articles = await articleService.listArticles(query);
     res.json(articles);
