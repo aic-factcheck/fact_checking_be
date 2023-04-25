@@ -24,11 +24,5 @@ exports.listClaims = async ({
 
   const transformed = claims.map((x) => x.transform());
 
-  // const userReviews = await Review.find({ addedBy: req.user.id }).lean();
-  // const transformed = claims.map((it) => {
-  //   const x = it.transform();
-  //   return x;
-  // });
-
   return transformed;
 };
