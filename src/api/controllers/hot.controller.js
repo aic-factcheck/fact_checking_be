@@ -49,7 +49,7 @@ exports.hottestArticles = async (req, res, next) => {
  */
 exports.hottestClaims = async (req, res, next) => {
   try {
-    const query = { page: req.query.page, perPage: req.query.perPage, sortBy: { nBeenVoted: 'desc' } };
+    const query = { page: req.query.page, perPage: req.query.perPage, sortBy: { nPositiveVotes: 'desc', createdAt: 'desc' } };
     const claims = await claimService.listClaims(query);
     res.json(claims);
   } catch (error) {
