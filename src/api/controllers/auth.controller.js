@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const moment = require('moment-timezone');
-const { _, omit } = require('lodash');
+const { omit } = require('lodash');
 const User = require('../models/user.model');
 const RefreshToken = require('../models/refreshToken.model');
 const PasswordResetToken = require('../models/passwordResetToken.model');
@@ -32,9 +32,6 @@ function generateTokenResponse(user, accessToken) {
 exports.register = async (req, res, next) => {
   try {
     const userData = omit(req.body, 'role');
-    if (_.isEmpty(userData.name)) {
-      userData.name = `${userData.firstName} ${userData.lastName}`;
-    }
     const user = await new User(userData).save();
     const userTransformed = user.transform();
     const token = generateTokenResponse(user, user.token());
