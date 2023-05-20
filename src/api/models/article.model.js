@@ -92,7 +92,7 @@ articleSchema.method({
     // remove unwanted fields from populated User object
     const user = this.addedBy;
     const transformedUser = {};
-    const userFields = ['_id', 'firstName', 'lastName', 'email'];
+    const userFields = ['_id', 'firstName', 'lastName', 'email', 'level'];
 
     if (this.addedBy) {
       userFields.forEach((field) => {
